@@ -32,7 +32,7 @@ This document defines the technical stack for our Azure DevOps Node API document
   - Auto-linking of URLs
   - Strikethrough
   - Emoji shortcodes
-  - Collapsible sections using `<details>` and `<summary>` HTML tags
+  - Collapsible sections using `<details>` and `<summary>` HTML tags (the only HTML we generally allow)
   - Anchored headings for in-page navigation
   - Table of contents via links to heading anchors
 
@@ -49,12 +49,13 @@ This document defines the technical stack for our Azure DevOps Node API document
 ## Best Practices for Our Constraints
 
 1. **Use Native Markdown**: Rely on standard markdown features rather than HTML when possible
-2. **Visual Distinction**: Use markdown's native formatting (bold, italics, blockquotes) for visual distinction
-3. **Accessible Images**: Ensure all images have descriptive alt text
-4. **Diagrams as Images**: Create diagrams in external tools and import as static images
-5. **Progressive Disclosure**: Use GitHub's collapsible sections for progressive disclosure
-6. **Consistent Structure**: Maintain consistent document structure for predictable navigation
-7. **Link-Based Navigation**: Create clear navigation patterns using links between documents
+2. **Avoid HTML**: Generally avoid HTML in our markdown except for `<details>` and `<summary>` tags for collapsible sections
+3. **Visual Distinction**: Use markdown's native formatting (bold, italics, blockquotes) for visual distinction
+4. **Accessible Images**: Ensure all images have descriptive alt text
+5. **Diagrams as Images**: Create diagrams in external tools and import as static images
+6. **Progressive Disclosure**: Use GitHub's collapsible sections for progressive disclosure
+7. **Consistent Structure**: Maintain consistent document structure for predictable navigation
+8. **Link-Based Navigation**: Create clear navigation patterns using links between documents
 
 ## Example Implementations
 
