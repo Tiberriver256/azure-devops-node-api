@@ -33,26 +33,55 @@ This template has an intermediate complexity level:
 
 ## Key Features
 
-- Clear structure for explaining complex concepts
-- Progressive disclosure from basic to advanced information
-- Visual elements to enhance understanding
-- Relationship mapping to connect concepts
-- Best practices and pitfalls sections for practical guidance
+- **Clear Structure**: Organized flow from general concepts to specific details
+- **Progressive Disclosure**: Information presented from basic to advanced with collapsible sections
+- **Visual Learning Support**: Required diagrams and various visual elements to enhance understanding
+- **Relationship Mapping**: Explicit connections between concepts and components
+- **Practical Guidance**: Best practices and pitfalls sections for real-world application
+- **Prerequisite Knowledge**: Clear indication of what prior knowledge is expected
+- **TL;DR Summaries**: Concise summaries at the beginning of major sections
+- **Concept Difficulty Indicator**: Visual indicator of concept complexity
+- **Categorized Resources**: Related resources organized by purpose (prerequisites, next steps, etc.)
+- **Accessibility Focus**: Guidelines for ensuring content is accessible to all users
 
 ## How to Use
 
 1. Copy the [conceptual-guide-template.md](./conceptual-guide-template.md) file
 2. Follow the guidance in [conceptual-guide-template-guide.md](./conceptual-guide-template-guide.md)
 3. Replace all placeholder text with your content
-4. Add diagrams where appropriate to illustrate concepts
-5. Review the example implementation for reference
+4. Add the appropriate metadata, including difficulty level
+5. Create required diagrams for the "How It Works" section
+6. Include TL;DR summaries for major sections
+7. Replace placeholder content with your specific information
+8. Review the example implementations for reference
 
-## Example Implementation
+## Example Implementations
 
-See the [Authentication Concepts](./examples/authentication-concepts.md) example for a complete implementation of this template.
+- [Authentication Concepts](./examples/authentication-concepts.md) - Example of authentication concept documentation
+- [Resource Areas Concept](./examples/resource-areas-concept.md) - Example of resource areas concept documentation
+
+## Visual Elements
+
+This template encourages the use of various visual elements:
+
+- **Diagrams**: Required for the "How It Works" section (process flows, component relationships)
+- **Tables**: For organizing relationships, comparisons, and terminology
+- **TL;DR Boxes**: Highlighted summary boxes at the beginning of major sections
+- **Difficulty Indicators**: Star rating (⭐ to ⭐⭐⭐) indicating concept complexity
+
+## Accessibility Considerations
+
+All documentation created with this template should follow accessibility best practices:
+
+- Provide alternative text for all diagrams and images
+- Ensure sufficient color contrast in visual elements
+- Use proper heading hierarchy (don't skip levels)
+- Make tables accessible with proper headers
+- Use descriptive link text rather than "click here"
 
 ## See Also
 
 - [Template Selection Guide](../template-selection-guide.md)
 - [Shared Components](../shared-components/README.md)
-- [Documentation Standards](../../README.md) 
+- [Documentation Standards](../../README.md)
+- [Visual Elements Library](../../visual-elements/README.md) 
