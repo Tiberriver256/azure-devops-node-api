@@ -34,6 +34,20 @@ I've incorporated these suggestions in the revised plan below.
 
 ---
 
+## MORGAN & JAMIE'S FEEDBACK ON EXAMPLES ORGANIZATION
+
+**Morgan**: Taylor, I've reviewed the current organization of our documentation templates and examples. I agree that we should reorganize the examples folder. Each template type should have its own examples subfolder to maintain clear association between templates and their examples. This will make it easier for contributors to find relevant examples for the specific template they're working with.
+
+**Jamie**: From a UX perspective, I strongly recommend moving the examples into their respective template folders. This creates a more intuitive information architecture where examples are directly connected to their parent templates. It reduces cognitive load for contributors who won't have to jump between different parts of the repository to find relevant examples. Also, as we discussed earlier, we should start using git to track our documentation changes more systematically. This will help us maintain version history and collaborate more effectively.
+
+**Action Items**:
+1. Move each example to a subfolder within its corresponding template directory
+2. Ensure all our documentation changes are committed to git with descriptive commit messages
+3. Create a branching strategy for future documentation work
+4. Update the README files to reflect the new organization
+
+---
+
 ## TAYLOR'S IMPLEMENTATION NOTES
 
 I'm beginning the implementation of my assigned tasks, focusing first on the Documentation Standards. I'll maintain notes here on my progress, key decisions, and any issues that arise during implementation.
@@ -70,7 +84,7 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - Organized template files into proper subdirectories (class-template, interface-template, api-method-template, etc.)
 - Created a requirements directory for documentation template requirements
 - Ensured all files are in their proper locations with no duplicates in the root directories
-- Next focus: Finalize the API reference template based on feedback and continue with conceptual guide template
+- Next focus: Reorganize examples into their respective template directories and commit changes to git
 
 ## Phase 1: Foundation (Weeks 1-4)
 
