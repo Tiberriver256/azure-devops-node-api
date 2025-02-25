@@ -7,14 +7,15 @@ As the Senior Technical Writer for the Azure DevOps Node API Documentation Proje
 I've been assigned the following major tasks:
 - Task 3: Documentation Standards
 - Task 5: Getting Started Guide
-- Task 6: API Reference Framework
+- Task 6: API Reference Framework (with Split-View Implementation)
+- Task 9: Split-View Implementation Framework (New)
 - Task 20: Architecture Overview
 - Task 29: Migration Guides
 - Task 39: Contributor's Guide
 
 ---
 
-## MORGAN'S REVIEW COMMENTS
+## MORGAN'S REVIEW COMMENTS (2023-03-15)
 
 Taylor, this is an impressive and thorough breakdown of your tasks. I appreciate the meticulous planning and granular approach. Here are my suggestions to enhance your plan:
 
@@ -45,6 +46,22 @@ I've incorporated these suggestions in the revised plan below.
 2. Ensure all our documentation changes are committed to git with descriptive commit messages
 3. Create a branching strategy for future documentation work
 4. Update the README files to reflect the new organization
+
+---
+
+## MORGAN'S FEEDBACK ON IMPLEMENTATION PLANS (2023-06-15)
+
+Taylor, based on our latest review of the project documentation and GitHub hosting constraints, I'd like you to focus on the following priorities:
+
+1. **Split-View Approach**: Your split-view approach for complex API documentation is an excellent solution to our GitHub hosting limitations. We should formalize this as a distinct task (Task 9) and implement it across all complex API clients.
+
+2. **GitHub Optimization**: We need to adapt all our documentation approaches to work within GitHub's markdown constraints, particularly for Tasks 33 (Searchable Documentation) and 34 (Cross-Reference System).
+
+3. **Timeline Adjustments**: I've updated the implementation timeline to reflect these changes. Phase 1 is now extended to Weeks 1-6 to give us more time to develop and test the split-view approach.
+
+4. **Collaboration Sessions**: Please schedule collaboration sessions with Jordan and Casey to review the templates you've created, particularly the new troubleshooting guide template. Their input will be valuable before we propagate these templates across all API clients.
+
+As we've discussed, the split-view approach will require additional work, but it's essential for delivering high-quality documentation within our GitHub constraints. Let's prioritize completing it and ensuring it works well for all complex API components.
 
 ---
 
@@ -86,7 +103,20 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - Ensured all files are in their proper locations with no duplicates in the root directories
 - Next focus: Reorganize examples into their respective template directories and commit changes to git
 
-## Phase 1: Foundation (Weeks 1-4)
+**Split-View Implementation Progress:**
+- Developed the split-view approach for complex API documentation
+- Created standardized template and directory structure for split-view implementation
+- Developed WorkItemTrackingApi prototype using the split-view approach
+- Received positive feedback from Jamie and Morgan on the approach
+- Next focus: Document the split-view implementation process for other writers and API specialists
+
+**Current Focus (Week 6):**
+- Developing troubleshooting guide template with examples
+- Preparing for collaboration session with Jordan and Casey to review all templates
+- Documenting split-view implementation guidelines for the team
+- Planning implementation of split-view approach for complex API clients in Phase 2
+
+## Phase 1: Foundation (Weeks 1-6)
 
 ### Task 3: Documentation Standards
 
@@ -186,9 +216,17 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
   - [x] Incorporate Jamie's feedback on visual elements
   - [x] Create example implementations
   - [x] Establish visual elements library
-- [ ] 3.19: Create troubleshooting guide template
-- [ ] 3.20 Review templates with team (2h)
+- [ ] 3.19: Create troubleshooting guide template (4h)
+  - [ ] Develop comprehensive template structure
+  - [ ] Create implementation guide for writers
+  - [ ] Develop example implementations for common issues
+  - [ ] Add GitHub-compatible collapsible sections
+  - [ ] Include diagnostic tools section
+  - [ ] Create common error codes reference table
+- [ ] 3.20 Review templates with team (3h)
   * **Collaboration**: Workshop with Jordan and Casey (2h)
+  * **Deliverable**: Finalized template package with implementation guides
+  * **Next Steps**: Schedule implementation planning for API clients
 
 #### Terminology Management
 - [ ] 3.21 Create initial glossary structure (2h)
@@ -211,6 +249,50 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - [ ] 3.33 Establish TypeScript/JavaScript conventions (3h)
   * **Collaboration**: Pair with API specialists to validate (3h)
 - [ ] 3.34 Review code standards with API specialists (2h)
+
+### Task 9: Split-View Implementation Framework
+
+**Primary Deliverables:**
+- Split-View Implementation Guide
+- Complex Component Selection Criteria
+- Directory Structure Standards
+- Navigation Pattern Guidelines
+- Example Implementation
+
+#### Framework Development
+- [ ] 9.1 Document split-view approach rationale (3h)
+  * **Dependency**: Based on completed work in 3.17.4-3.17.6
+  * **Deliverable**: Comprehensive explanation of the split-view approach, its benefits, and usage scenarios
+- [ ] 9.2 Create complex component identification criteria (4h)
+  * **Collaboration**: Consult with API specialists to define complexity thresholds
+  * **Deliverable**: Clear guidelines for identifying which API components should use split-view
+- [ ] 9.3 Develop directory structure standards (3h)
+  * **Deliverable**: Standardized directory structure for split-view implementations, with naming conventions
+- [ ] 9.4 Establish navigation patterns and breadcrumbs (4h)
+  * **Collaboration**: Review with Jamie for UX optimization
+  * **Deliverable**: Navigation templates, breadcrumb standards, and cross-linking patterns
+- [ ] 9.5 Create implementation workflow for writers (4h)
+  * **Deliverable**: Step-by-step guide for implementing split-view for a new API component
+- [ ] 9.6 Develop content organization guidelines (3h)
+  * **Deliverable**: Guidelines for organizing content across multiple files while maintaining coherence
+- [ ] 9.7 Create advanced example implementation (6h)
+  * **Collaboration**: Pair with Casey to implement for a complex client
+  * **Deliverable**: Complete example implementation for a complex API client with thorough documentation
+
+#### Implementation Planning
+- [ ] 9.8 Identify candidates for split-view in Phase 2 (3h)
+  * **Collaboration**: Review with Alex and Riley to identify complex clients
+  * **Deliverable**: Prioritized list of API clients requiring split-view implementation
+- [ ] 9.9 Create implementation templates and scripts (4h)
+  * **Collaboration**: Work with Dakota on potential automation
+  * **Deliverable**: Templates and potential scripts to streamline split-view implementation
+- [ ] 9.10 Develop testing approach for split-view navigation (3h)
+  * **Collaboration**: Consult with Jamie on usability testing approach
+  * **Deliverable**: Testing checklist for split-view implementations
+- [ ] 9.11 Schedule training session for documentation team (2h)
+  * **Deliverable**: Training materials and scheduled session for the team
+- [ ] 9.12 Review framework with documentation team (2h)
+  * **Deliverable**: Finalized framework based on team feedback
 
 ### Task 5: Getting Started Guide
 
@@ -271,13 +353,14 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - Documentation Template Package
 - Parameter & Return Type Standards
 - Cross-Reference Implementation Guide
+- Split-View Integration Plan
 
 #### Reference Structure
 - [ ] 6.1 Analyze API client organization (5h)
-  * **Dependency**: Can start after 3.20
+  * **Dependency**: Can start after Task 9 completion
 - [ ] 6.2 Design API reference architecture (6h)
 - [ ] 6.3 Create navigation hierarchy (4h)
-- [ ] 6.4 Design search functionality requirements (3h)
+- [ ] 6.4 Design GitHub-optimized search strategy (4h)
   * **Collaboration**: Workshop with Jamie and Dakota (2h)
 - [ ] 6.5 Establish versioning strategy for documentation (4h)
 - [ ] 6.6 Create reference structure document (5h)
@@ -316,7 +399,7 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - [ ] 6.28 Review system with Documentation DevOps (2h)
   * **Collaboration**: Implementation planning with Dakota (2h)
 
-## Phase 2: Core Documentation (Weeks 5-12)
+## Phase 2: Core Documentation (Weeks 7-14)
 
 ### Task 20: Architecture Overview
 
@@ -370,7 +453,7 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - [ ] 20.28 Review with API specialists (2h)
   * **Stakeholder Checkpoint**: Validate with Microsoft API team
 
-## Phase 3: Advanced Content (Weeks 13-20)
+## Phase 3: Advanced Content (Weeks 15-22)
 
 ### Task 29: Migration Guides
 
@@ -424,7 +507,7 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - [ ] 29.28 Review with API specialists (2h)
   * **Collaboration**: Verify with Alex for on-prem accuracy (2h)
 
-## Phase 4: Finalization and Launch (Weeks 21-24)
+## Phase 4: Finalization and Launch (Weeks 23-28)
 
 ### Task 39: Contributor's Guide
 
@@ -480,9 +563,9 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 
 ## Status Reporting
 
-**Bi-weekly Status Reports** (Instead of weekly, to reduce overhead)
-- [ ] Status Report: End of Week 2
-- [ ] Status Report: End of Week 4
+**Bi-weekly Status Reports**
+- [x] Status Report: End of Week 2
+- [x] Status Report: End of Week 4
 - [ ] Status Report: End of Week 6
 - [ ] Status Report: End of Week 8
 - [ ] Status Report: End of Week 10
@@ -493,10 +576,22 @@ I'm beginning the implementation of my assigned tasks, focusing first on the Doc
 - [ ] Status Report: End of Week 20
 - [ ] Status Report: End of Week 22
 - [ ] Status Report: End of Week 24
+- [ ] Status Report: End of Week 26
 
-## Milestone Presentations
+## Collaboration Sessions Schedule
 
-- [ ] Milestone 1: Documentation Framework (Week 4)
-- [ ] Milestone 2: Core Documentation Complete (Week 12)
-- [ ] Milestone 3: Advanced Guides Complete (Week 20)
-- [ ] Milestone 4: Final Documentation Package (Week 24) 
+- [ ] Template Review with Jordan and Casey (Week 6)
+- [ ] Split-View Training for Documentation Team (Week 7)
+- [ ] API Client Documentation Planning with API Specialists (Week 7)
+- [ ] GitHub Optimization Strategy with Dakota (Week 8)
+- [ ] Authentication Documentation Workshop with Alex (Week 9)
+- [ ] Troubleshooting Guide Review with Support Team (Week 10)
+
+## Version History
+
+| Version | Date | Updated By | Changes |
+|---------|------|------------|---------|
+| 1.0 | 2023-02-15 | Taylor | Initial task breakdown |
+| 1.1 | 2023-03-15 | Taylor | Updated based on Morgan's feedback |
+| 1.2 | 2023-05-01 | Taylor | Added expandable/split-view tasks |
+| 1.3 | 2023-06-15 | Taylor | Added Task 9, updated timelines, incorporated GitHub constraints | 
