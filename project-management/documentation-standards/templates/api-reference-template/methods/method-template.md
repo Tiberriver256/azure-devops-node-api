@@ -4,6 +4,16 @@
 
 ---
 
+## Table of Contents
+- [Syntax](#syntax)
+- [Parameters](#parameters)
+- [Returns](#returns)
+- [Example](#example)
+- [Return Type Structure](#return-type-structure)
+- [Common Errors](#common-errors)
+- [Related Methods](#related-methods)
+- [See Also](#see-also)
+
 ## Syntax
 
 ```typescript
@@ -38,6 +48,32 @@ const {resultVariable} = await {apiInstanceName}.{methodName}(
 
 console.log(`{ExampleOutput}: ${resultVariable.{propertyName}}`);
 ```
+
+<details>
+<summary>View complete example with error handling</summary>
+
+```typescript
+try {
+    const {resultVariable} = await {apiInstanceName}.{methodName}(
+        {param1Value},                // {param1}
+        {param2Value},                // {param2}
+        {param3Value}                 // {param3}
+    );
+    
+    console.log(`{ExampleOutput}: ${resultVariable.{propertyName}}`);
+    return {resultVariable};
+} catch (error) {
+    console.error(`Error calling {methodName}: ${error.message}`);
+    // Handle specific error types
+    if (error.statusCode === 404) {
+        console.error("Resource not found");
+    } else if (error.statusCode === 401) {
+        console.error("Authentication error");
+    }
+    throw error;
+}
+```
+</details>
 
 ## {ReturnType} Object Structure
 
