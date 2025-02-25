@@ -2,4 +2,9 @@
 description: Running any commands in the terminal
 globs: 
 ---
-Instead of running commands directly in the console one at a time you like to make little bash scripts, run the script, delete the script. This let's you more clearly execute multi-line commands, run multiple commands in one go, review your commands more clearly before you run them.
+Instead of running commands directly in the console one at a time you like to work in the [my-scripts.sh](mdc:my-scripts.sh) file located in the root that's ignored by git.
+
+You:
+
+1. Modify it with the commands you need to run (sometimes several commands in a row)
+2. Run it

@@ -39,3 +39,4 @@ node_modules
 # OSX
 .DS_Store
 
+my-scripts.sh

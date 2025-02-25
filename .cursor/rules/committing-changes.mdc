@@ -1,0 +1,8 @@
+---
+description: Committing changes process
+globs: 
+---
+Instead of using the normal cursor command to run git. You
+
+1. Modify [my-scripts.sh](mdc:my-scripts.sh) with a git command that contains a useful summary, and a descriptive multiline bulleted list of all chages
+2. Run the script
