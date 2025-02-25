@@ -1,218 +1,235 @@
-# API Method Documentation Template: Implementation Guide
+# API Method Template Guide
 
-This guide provides instructions and best practices for using the API Method Documentation Template effectively. Follow these guidelines to ensure consistent, high-quality API method documentation across the Azure DevOps Node API documentation.
+This guide explains how to use the API method template to document individual API methods in the Azure DevOps Node API.
 
-## Getting Started
+## Purpose
 
-1. Create a new markdown file for the method you're documenting, named according to our file naming convention: `methodName.md`
-2. Copy the contents of the API Method Template into this new file
-3. Follow the step-by-step instructions below to replace placeholder content with actual documentation
+The API method template provides a standardized structure for documenting individual API methods. It ensures that all method documentation includes consistent sections for:
 
-## Step-by-Step Implementation
+- Method signature
+- Parameters
+- Return type
+- Examples
+- Error handling
+- Related methods
 
-### 1. Method Name and Signature
+## When to Use
 
-- Replace `methodName` with the actual method name
-- Update the TypeScript signature to match the actual method signature
-- Ensure parameter types, return types, and async/await notations are accurate
+Use this template when documenting individual API methods, especially:
 
-✅ **Good Example**:
-```typescript
-public async getRepositories(
-    project?: string,
-    includeLinks?: boolean,
-    includeAllUrls?: boolean
-): Promise<GitRepository[]>
+- Public methods that are part of the API's interface
+- Methods with complex parameters or return types
+- Methods that require detailed examples or error handling information
+- Methods that don't belong to a complex component requiring the split view approach
+
+For methods that are part of a complex API component with 15+ methods, consider using the [API Reference Template](../api-reference-template/) instead.
+
+## Template Structure
+
+The API method template includes the following sections:
+
+```
+# Method Name
+
+## Syntax
+
+## Parameters
+
+## Returns
+
+## Example
+
+## Return Type Structure
+
+## Common Errors
+
+## Related Methods
+
+## See Also
 ```
 
-❌ **Avoid**:
+## How to Fill Out the Template
+
+### Method Name
+
+Use the format `ClassName.methodName` for the heading, e.g., `WorkItemTrackingApi.getWorkItem`.
+
+### Syntax
+
+Include the method signature with types:
+
 ```typescript
-public getRepositories(project, includeLinks, includeAllUrls)
+methodName(
+    param1: type1, 
+    param2?: type2, 
+    param3?: type3
+): Promise<ReturnType>
 ```
-(Missing types, async notation, and return type)
 
-### 2. Description
+### Parameters
 
-- Begin with a clear statement of what the method does
-- Use present tense and active voice
-- Explain when and why to use this method
-- Keep it concise but informative
+Use the standardized [Parameters Section](../shared-components/parameters-section.md) format:
 
-✅ **Good Example**:
-> Gets a list of Git repositories in a project or organization. This method returns basic repository information by default. Use the optional parameters to include additional details like links and remote URLs.
+```markdown
+## Parameters
 
-❌ **Avoid**:
-> This method gets repositories. It is used to retrieve git repositories from Azure DevOps.
-(Too vague and redundant)
-
-### 3. Parameters
-
-- List all parameters in the order they appear in the method signature
-- Include accurate type information
-- Clearly indicate which parameters are required vs. optional
-- Provide default values where applicable
-- Include constraints or acceptable value ranges
-- Keep descriptions focused on what the parameter does, not how it works internally
-
-✅ **Good Example**:
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `project` | `string` | No | Project ID or project name. If not specified, repositories from all projects are returned. |
-| `includeLinks` | `boolean` | No | Include reference links in the response. Default: `false`. |
+| param1 | type1 | Yes | Description of param1 |
+| param2 | type2 | No | Description of param2 |
+| param3 | type3 | No | Description of param3 |
+```
 
-❌ **Avoid**:
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `project` | `string` | No | The project. |
-| `includeLinks` | `boolean` | No | Whether to include links or not. |
-(Descriptions are too vague and don't provide useful information)
+For detailed guidance, see the [Parameters Section](../shared-components/parameters-section.md) in the shared components.
 
-### 4. Options Object
+### Returns
 
-- Only include this section if the method accepts an options object
-- Document each property in the options object
-- Follow the same guidelines as for regular parameters
+Describe the return value using the standardized [Return Type Section](../shared-components/return-type-section.md) format:
 
-### 5. Return Value
+```markdown
+## Returns
 
-- Specify the exact return type
-- Describe what successful execution returns
-- For complex return types, document key properties and their purpose
-- Include any special return values or conditions
+`Promise<ReturnType>`: Description of the return value
+```
 
-✅ **Good Example**:
-> **Type:** `Promise<GitRepository[]>`
->
-> Returns a Promise that resolves to an array of GitRepository objects. Each object contains properties describing a Git repository in the specified project or organization.
+### Example
 
-❌ **Avoid**:
-> **Type:** `Promise<GitRepository[]>`
->
-> Returns git repositories.
-(Too vague, doesn't explain the return structure)
+Provide a practical example using the standardized [Example Section](../shared-components/example-section.md) format:
 
-### 6. Return Object Properties
+```markdown
+## Example
 
-- Include this section only for complex return objects
-- Document key properties that consumers would need to access
-- Include type information and descriptions
+```typescript
+// Example usage of the method
+const result = await api.methodName(
+    param1Value,              // param1
+    param2Value,              // param2
+    param3Value               // param3
+);
 
-✅ **Good Example**:
-| Property | Type | Description |
-|----------|------|-------------|
-| `id` | `string` | The unique identifier of the repository. |
-| `name` | `string` | The display name of the repository. |
-| `url` | `string` | The REST API URL for this repository. |
+console.log(`Output: ${result.property}`);
+```
+```
 
-### 7. Exceptions
+For complex examples, consider using collapsible sections:
 
-- Document all exceptions that might be thrown during normal operation
-- Include the condition that triggers each exception
-- Use the official error type names
-- Include HTTP status codes when applicable
+```markdown
+<details>
+<summary>View complete example with error handling</summary>
 
-✅ **Good Example**:
-| Exception | Condition |
-|-----------|-----------|
-| `UnauthorizedError` | Thrown when the user doesn't have permission to view repositories (HTTP 401 or 403). |
-| `ProjectNotFoundError` | Thrown when the specified project doesn't exist (HTTP 404). |
+```typescript
+try {
+    const result = await api.methodName(
+        param1Value,                // param1
+        param2Value,                // param2
+        param3Value                 // param3
+    );
+    
+    console.log(`Output: ${result.property}`);
+    return result;
+} catch (error) {
+    console.error(`Error calling methodName: ${error.message}`);
+    // Handle specific error types
+    if (error.statusCode === 404) {
+        console.error("Resource not found");
+    }
+    throw error;
+}
+```
+</details>
+```
 
-### 8. Examples
+### Return Type Structure
 
-- Provide complete, runnable examples
-- Include proper import statements
-- Show authentication and setup code in the basic example
-- Provide additional examples showing:
-  - Optional parameters
-  - Error handling
-  - Advanced scenarios
+For complex return types, document the structure:
 
-- Use realistic values and variable names
-- Include comments explaining key steps
+```markdown
+## Return Type Structure
 
-### 9. Response Example
+The returned `ReturnType` object has the following structure:
 
-- Provide a JSON example of a typical successful response
-- Use realistic data values
-- Format the JSON properly
-- Include the most important and common properties
+```typescript
+interface ReturnType {
+    property1: propertyType1;
+    property2: propertyType2;
+    property3?: propertyType3;
+    property4?: propertyType4;
+}
+```
+```
 
-### 10. Related Methods
+### Common Errors
 
-- List methods that are commonly used with this method
-- Include methods that provide alternative approaches
-- Briefly explain how each related method connects to this one
-- Ensure links to related methods are correct
+Document common errors using the standardized [Error Handling Section](../shared-components/error-handling-section.md) format:
 
-✅ **Good Example**:
-- [`getRepository`](./getRepository.md) - Gets a single repository by name or ID
-- [`createRepository`](./createRepository.md) - Creates a new repository in a project
-- [`deleteRepository`](./deleteRepository.md) - Deletes a repository
+```markdown
+## Common Errors
 
-### 11. See Also
+| Error | Cause | Solution |
+|-------|-------|----------|
+| 404 Not Found | Resource doesn't exist | Solution |
+| 401 Unauthorized | Invalid authentication | Solution |
+| 403 Forbidden | Insufficient permissions | Solution |
+```
 
-- Link to relevant conceptual documentation
-- Link to tutorials that use this method
-- Link to the client class documentation
-- Ensure all links are correct and follow the linking standards
+### Related Methods
 
-### 12. API Details
+List related methods:
 
-- Specify the client that exposes this method
-- Include version information if relevant
-- Document required permissions or scopes
+```markdown
+## Related Methods
 
-## Best Practices
+- [relatedMethod1](./related-method1.md) - Brief description
+- [relatedMethod2](./related-method2.md) - Brief description
+- [relatedMethod3](./related-method3.md) - Brief description
+```
 
-1. **Accuracy**: Ensure all information is technically accurate and verified
-2. **Completeness**: Include all relevant information, but avoid unnecessary details
-3. **Clarity**: Use simple, direct language and avoid jargon when possible
-4. **Consistency**: Follow the same patterns and terminology across all method documentation
-5. **Examples**: Provide realistic, runnable examples that demonstrate common usage patterns
-6. **Progressive Detail**: Start with basic information and progressively disclose more complex details
+### See Also
 
-## Common Pitfalls to Avoid
+Include links to related resources:
 
-1. **Vague Descriptions**: Don't use generic descriptions that don't provide useful information
-2. **Missing Parameters**: Ensure all parameters are documented, even optional ones
-3. **Incomplete Return Information**: Fully document what the method returns, especially complex objects
-4. **Inadequate Error Handling**: Always include error handling in examples
-5. **Outdated Information**: Ensure documentation stays in sync with the actual API
-6. **Inconsistent Terminology**: Use the terms defined in our terminology glossary consistently
-7. **Missing Cross-References**: Don't forget to link to related methods and documentation
+```markdown
+## See Also
 
-## Quality Checklist
+- [relatedResource1](../related-resource1.md)
+- [relatedResource2](../related-resource2.md)
+- [Common Scenario: relatedScenario](../common-scenario.md#related-scenario)
+```
 
-Before submitting your documentation, review it against this checklist:
+## Navigation
 
-- [ ] Method signature matches the actual code
-- [ ] All parameters are documented accurately
-- [ ] Return type and structure are clearly explained
-- [ ] All potential exceptions are documented
-- [ ] Examples are complete and runnable
-- [ ] All sections of the template are completed or consciously removed
-- [ ] Code examples follow our code standards
-- [ ] Cross-references and links are correct
-- [ ] Spelling and grammar are correct
-- [ ] Technical information is accurate and verified
+Include consistent navigation links:
 
-## Review Process
+```markdown
+[◀ Back to API Reference](../README.md)
+```
 
-All method documentation will be reviewed for:
+## Formatting Guidelines
 
-1. Technical accuracy (by API specialists)
-2. Adherence to style guide (by documentation team)
-3. Usability and clarity (by UX specialists)
+1. **Code Blocks**: Use triple backticks with language specifier (`typescript`, `json`, etc.)
+2. **Links**: Use standard markdown links: `[text](url)`
+3. **Lists**: Use - for unordered lists and 1. for ordered lists
+4. **Tables**: Align table columns for readability
+5. **Headings**: Use ## for major sections and ### for subsections
 
-## Template Customization
+## Examples
 
-The template may be customized for specific method types:
+See the [getWorkItems.md](./examples/getWorkItems.md) example for a complete implementation of this template.
 
-- **Getter methods**: Focus on return value documentation
-- **Setter methods**: Focus on parameter validation and error conditions
-- **CRUD operations**: Include clear relationships between create, read, update, and delete methods
-- **Long-running operations**: Include information about polling or callbacks
+## Navigation Patterns
 
-## Example Implementation
+Follow the standardized [Navigation Patterns](../shared-components/navigation-patterns.md) for consistency across all documentation.
 
-For a complete example of the template in use, see the [`getWorkItems`](../examples/getWorkItems.md) documentation. 
+## Common Sections
+
+Several sections in this template use standardized formats from the shared components directory:
+
+- [Parameters Section](../shared-components/parameters-section.md)
+- [Return Type Section](../shared-components/return-type-section.md)
+- [Example Section](../shared-components/example-section.md)
+- [Error Handling Section](../shared-components/error-handling-section.md)
+- [Navigation Patterns](../shared-components/navigation-patterns.md)
+
+## Need Help?
+
+If you have questions or need assistance with using this template, please contact the documentation team. 
