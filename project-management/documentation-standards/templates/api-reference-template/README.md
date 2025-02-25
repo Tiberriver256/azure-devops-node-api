@@ -1,0 +1,73 @@
+# {ApiClassName}
+
+[◀ Back to API Reference](../README.md)
+
+---
+
+## Overview
+
+The `{ApiClassName}` class provides methods for {brief description of what the API does}. {Additional context about the API's purpose and functionality}.
+
+## Installation
+
+```typescript
+import * as azdev from "azure-devops-node-api";
+import { {ApiClassName} } from "azure-devops-node-api/{ApiClassName}";
+
+// Get {ApiClassName} instance
+const connection = new azdev.WebApi(orgUrl, authHandler);
+const {apiInstanceName}: {ApiClassName} = await connection.get{ApiClassName}();
+```
+
+## Sections
+
+- [Constructor](./constructor.md)
+- [Properties](./properties.md)
+- [Methods](./methods/README.md)
+- [Examples](./examples.md)
+- [Common Scenarios](./common-scenarios.md)
+- [Error Handling](./error-handling.md)
+
+## Quick Reference
+
+### Key Methods
+
+| Method | Description |
+|--------|-------------|
+| [{keyMethod1}](./methods/{key-method1}.md) | {brief description} |
+| [{keyMethod2}](./methods/{key-method2}.md) | {brief description} |
+| [{keyMethod3}](./methods/{key-method3}.md) | {brief description} |
+| [{keyMethod4}](./methods/{key-method4}.md) | {brief description} |
+| [{keyMethod5}](./methods/{key-method5}.md) | {brief description} |
+
+See [all methods](./methods/README.md) for the complete list.
+
+## Basic Example
+
+```typescript
+// Basic usage example
+const {exampleVariable} = await {apiInstanceName}.{keyMethod1}({exampleParameter});
+console.log(`{ExampleOutput}: ${{exampleVariable}.{exampleProperty}}`);
+```
+
+## Version Information
+
+- **Package**: azure-devops-node-api
+- **Introduced**: v{version}
+- **Last Updated**: v{version}
+
+## Implements
+
+- [{InterfaceName}](../interfaces/{InterfaceName}.md)
+
+---
+
+## Navigation
+
+- [API Reference Home](../README.md)
+- [Constructor](./constructor.md)
+- [Properties](./properties.md)
+- [Methods](./methods/README.md)
+- [Examples](./examples.md)
+- [Common Scenarios](./common-scenarios.md)
+- [Error Handling](./error-handling.md) 
