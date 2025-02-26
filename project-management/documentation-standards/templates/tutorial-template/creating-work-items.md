@@ -5,7 +5,7 @@
 **Progress**: [✓] Setup → [✓] Authentication → [ ] Creating Work Items → [ ] Advanced Options → [ ] Error Handling
 
 ## Contents
-
+- [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Step 1: Setup](#step-1-setup-️-5-minutes)
 - [Step 2: Authentication](#step-2-authentication-️-10-minutes)
@@ -14,6 +14,14 @@
 - [Step 5: Error Handling](#step-5-error-handling-️-10-minutes)
 - [Next Steps](#next-steps)
 - [Troubleshooting](#troubleshooting)
+
+## Overview
+
+This tutorial guides you through creating work items programmatically using the Azure DevOps Node API. By the end, you'll be able to create different types of work items, add custom fields, and establish relationships between work items.
+
+**Estimated completion time**: 50 minutes
+
+---
 
 ## Prerequisites
 
@@ -56,6 +64,10 @@ If you're using TypeScript, you can also install the TypeScript compiler and typ
 ```bash
 npm install typescript @types/node --save-dev
 ```
+
+📊 **Success Criteria**:
+- You have a new Node.js project initialized
+- The azure-devops-node-api package is installed
 
 ---
 
@@ -119,7 +131,14 @@ export AZURE_DEVOPS_TOKEN=your-personal-access-token
 node index.js
 ```
 
-You should see output confirming that you've connected to Azure DevOps and listing the number of projects found.
+📊 **Expected Output**:
+```
+Connected to Azure DevOps!
+Found X projects.
+```
+
+💡 **Tip**:
+For Windows, use `set AZURE_DEVOPS_TOKEN=your-token` instead of export.
 
 ---
 
@@ -247,6 +266,9 @@ async function main() {
 main();
 ```
 
+📊 **Expected Result**:
+A new work item will be created in your Azure DevOps project, and the console will display its ID and title.
+
 ---
 
 ## Step 4: Advanced Options (⏱️ 10 minutes)
@@ -309,6 +331,9 @@ Common link types include:
 - `System.LinkTypes.Dependency-Forward`: This item depends on the linked item
 - `System.LinkTypes.Dependency-Reverse`: The linked item depends on this item
 
+🔗 **Reference**:
+See the [Work Item Link Types Reference](../reference/work-item-link-types.md) for a complete list of link types.
+
 ---
 
 ## Step 5: Error Handling (⏱️ 10 minutes)
@@ -319,10 +344,12 @@ In this step, you'll learn how to handle errors when creating work items.
 
 When creating work items, you might encounter these common errors:
 
-- **401 Unauthorized**: Authentication failed
-- **403 Forbidden**: Insufficient permissions
-- **404 Not Found**: Project or work item type not found
-- **400 Bad Request**: Invalid fields or values
+| Status Code | Description | Common Cause |
+|-------------|-------------|--------------|
+| 401 | Unauthorized | Authentication failed |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Project or work item type not found |
+| 400 | Bad Request | Invalid fields or values |
 
 ### Implementing Error Handling
 
@@ -356,6 +383,11 @@ try {
 ⚠️ **Caution**:
 Always implement proper error handling in production code to provide meaningful feedback and prevent application crashes.
 
+🛠️ **Debugging Tips**:
+- Check network requests in browser developer tools
+- Verify that all required fields are included for the specific work item type
+- Ensure all referenced IDs exist in your Azure DevOps instance
+
 ---
 
 ## Next Steps
@@ -367,21 +399,51 @@ Now that you've learned how to create work items, you can explore these related 
 - [Working with Work Item Links](./work-item-links.md)
 - [Implementing Work Item Workflows](./work-item-workflows.md)
 
+---
+
 ## Troubleshooting
+
+<details>
+<summary><b>Quick Solutions Reference</b></summary>
+
+- **Authentication errors**: Check PAT token validity and permissions
+- **Project not found**: Verify project name and access rights
+- **Invalid fields**: Ensure required fields are included with correct formats
+- **Rate limiting**: Implement retry logic with exponential backoff
+
+</details>
 
 ### Common Issues
 
 #### Authentication Failures
+
+🛠️ **Symptoms**:
+- 401 Unauthorized errors
+- "Unable to authenticate" messages
+
+🛠️ **Solutions**:
 - Ensure your PAT token is valid and has not expired
 - Verify that your PAT has the correct scopes (Work Items Read & Write)
 - Check that your organization URL is correct
 
 #### Project Not Found
+
+🛠️ **Symptoms**:
+- 404 Not Found errors
+- "Project not found" messages
+
+🛠️ **Solutions**:
 - Verify that the project name is spelled correctly
 - Check that you have access to the specified project
 - Try using the project ID instead of the project name
 
 #### Invalid Fields
+
+🛠️ **Symptoms**:
+- 400 Bad Request errors
+- Error messages mentioning specific fields
+
+🛠️ **Solutions**:
 - Ensure that all required fields for your work item type are included
 - Verify that field references use the correct format (e.g., `System.Title`)
 - Check that field values match the expected data types
@@ -390,4 +452,5 @@ Now that you've learned how to create work items, you can explore these related 
 
 - [Work Item Tracking API Reference](../api-reference/work-item-tracking-api.md)
 - [Work Item Fields Reference](../reference/work-item-fields.md)
-- [JSON Patch Format](../concepts/json-patch.md) 
+- [JSON Patch Format](../concepts/json-patch.md)
+- [Error Handling Guide](../guides/error-handling.md)

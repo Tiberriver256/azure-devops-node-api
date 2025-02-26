@@ -1,33 +1,49 @@
-# Token Issues
+**Navigation**: [Home](../../../../index.md) > [Authentication Issues](../../index.md) > [Problem Categories](../../index.md#-common-authentication-issue-categories) > Token Issues
 
-> **Navigation**: [Home](../../index.md) > [Authentication Issues](../../index.md#common-authentication-issue-categories) > Token Issues
+# 🔑 Token Issues
 
 This page covers troubleshooting for common token-related issues when authenticating with the Azure DevOps Node API.
 
-## In This Category
+## Quick Reference
 
-- [Invalid Token](#invalid-token)
-- [Token Expiration](#token-expiration)
-- [Token Format Problems](#token-format-problems)
-- [Token Revocation](#token-revocation)
-- [Basic Authentication vs PAT](#basic-authentication-vs-pat)
+| Issue | Severity | Resolution Time | Success Rate |
+|-------|----------|-----------------|--------------|
+| [Invalid Token](#invalid-token) | 🔴 High | ⏱️ 5 minutes | 95% |
+| [Token Expiration](#token-expiration) | 🟡 Medium | ⏱️ 5 minutes | 98% |
+| [Token Format Problems](#token-format-problems) | 🟢 Low | ⏱️ 3 minutes | 99% |
+| [Token Revocation](#token-revocation) | 🔴 High | ⏱️ 5 minutes | 90% |
+| [Basic Authentication vs PAT](#basic-authentication-vs-pat) | 🟡 Medium | ⏱️ 10 minutes | 95% |
 
 ## Quick Solutions
 
-> **TL;DR:** Most common token issue solutions.
+<details>
+<summary><b>🔴 High Priority Quick Fixes</b></summary>
+
+1. **Generate new PAT token** (⏱️ 2 minutes)
+   - Go to Azure DevOps > User settings > Personal access tokens
+   - Create new token with required scopes
+   - Copy token carefully without extra characters
+
+2. **Check token revocation** (⏱️ 1 minute)
+   - Verify token exists in PAT list
+   - Check for organization policy changes
+   - Look for security alerts
+
+</details>
 
 <details>
-<summary><b>Common Quick Fixes</b></summary>
+<summary><b>🟡 Medium Priority Quick Fixes</b></summary>
 
-1. Generate a new PAT token | ⏱️ 2 minutes | 🔴 High Severity
-2. Check token format and remove whitespace | ⏱️ 1 minute | 🟡 Medium Severity
-3. Verify token scopes in Azure DevOps | ⏱️ 3 minutes | 🟡 Medium Severity
-
+1. **Clean token format** (⏱️ 1 minute)
 ```typescript
-// Example: Properly format and use a PAT token
-const token = process.env.AZURE_DEVOPS_PAT.trim(); // Remove any whitespace
-const authHandler = azdev.getPersonalAccessTokenHandler(token);
+// Remove whitespace and validate
+const token = String(process.env.AZURE_DEVOPS_TOKEN).trim();
 ```
+
+2. **Verify token scopes** (⏱️ 3 minutes)
+   - Check Azure DevOps token settings
+   - Verify required permissions
+   - Test with minimal scope first
 
 </details>
 
@@ -36,22 +52,20 @@ const authHandler = azdev.getPersonalAccessTokenHandler(token);
 ## Invalid Token
 <a id="invalid-token"></a>
 
-> ⏱️ 5 minutes | 🔴 High Severity | 🔑 Authentication Issue
+> 🔴 **High Severity** | ⏱️ 5 minutes | 📊 95% Success Rate
 
-### Symptoms
-
+### 🔍 Symptoms
 - 401 Unauthorized HTTP responses
 - Error message: `TF400813: The user '00000000-0000-0000-0000-000000000000' is not authorized to access this resource.`
 - Authentication fails immediately when trying to connect
 
-### Root Causes
-
+### 🎯 Root Causes
 - The Personal Access Token (PAT) is incorrectly copied or malformed
 - The token string includes whitespace or newline characters
 - The token has been manually revoked in Azure DevOps settings
 - Using an empty or null token value
 
-### Solution Steps
+### ⚡ Quick Solution Steps
 
 1. Generate a new Personal Access Token in Azure DevOps:
    - Go to Azure DevOps > User settings > Personal access tokens
@@ -59,7 +73,6 @@ const authHandler = azdev.getPersonalAccessTokenHandler(token);
    - Copy the token carefully without extra whitespace
 
 2. Update your authentication code:
-
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
@@ -81,7 +94,6 @@ try {
 ```
 
 3. Verify the token works by testing a simple API call:
-
 ```typescript
 // Get a client and make a simple request
 const coreApi = await connection.getCoreApi();
@@ -89,20 +101,17 @@ const projects = await coreApi.getProjects();
 console.log(`Successfully retrieved ${projects.length} projects`);
 ```
 
-### Prevention
-
+### 🛡️ Prevention
 - Store tokens securely in environment variables or a secure vault
 - Never hardcode tokens in source code
 - Implement token rotation policies
 - Use a consistent method for token management across your applications
 
-### Related Issues
-
+### 🔗 Related Issues
 - [Token Expiration](#token-expiration)
 - [Token Format Problems](#token-format-problems)
 
-### Next Steps
-
+### ➡️ Next Steps
 - If generating a new token doesn't help, check your Azure DevOps permissions
 - Verify your organization URL is correct
 - Try using the Azure CLI to authenticate as an alternative
@@ -113,28 +122,25 @@ console.log(`Successfully retrieved ${projects.length} projects`);
 ## Token Expiration
 <a id="token-expiration"></a>
 
-> ⏱️ 5 minutes | 🟡 Medium Severity | 🔑 Authentication Issue
+> 🟡 **Medium Severity** | ⏱️ 5 minutes | 📊 98% Success Rate
 
-### Symptoms
-
+### 🔍 Symptoms
 - Authentication suddenly fails after working previously
 - Error message: `TF400813: Resource not available for anonymous access. Client authentication required.`
 - API calls start failing with 401 errors after a period of successful operation
 
-### Root Causes
-
+### 🎯 Root Causes
 - The Personal Access Token has reached its expiration date
 - The token was created with a short lifespan
 - The token was manually revoked by an administrator
 
-### Solution Steps
+### ⚡ Quick Solution Steps
 
 1. Check token expiration in Azure DevOps:
    - Go to Azure DevOps > User settings > Personal access tokens
    - Look for your token in the list and check its expiration date
 
 2. Generate a new token with appropriate expiration:
-
 ```typescript
 // Update your code with the new token
 const token = process.env.AZURE_DEVOPS_TOKEN; // Your new PAT token
@@ -143,9 +149,8 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 ```
 
 3. Consider implementing token refresh logic:
-
 <details>
-<summary><b>Token Refresh Implementation</b></summary>
+<summary><b>🔧 Token Refresh Implementation</b></summary>
 
 ```typescript
 // Example token refresh monitoring
@@ -178,23 +183,19 @@ class TokenManager {
 const tokenManager = new TokenManager(process.env.AZURE_DEVOPS_TOKEN, 30); // 30-day token
 const authHandler = azdev.getPersonalAccessTokenHandler(tokenManager.getToken());
 ```
-
 </details>
 
-### Prevention
-
+### 🛡️ Prevention
 - Create tokens with longer expiration periods for automated systems
 - Document token expiration dates
 - Set calendar reminders for token rotation
 - Implement monitoring for authentication failures
 
-### Related Issues
-
+### 🔗 Related Issues
 - [Invalid Token](#invalid-token)
 - [Token Revocation](#token-revocation)
 
-### Next Steps
-
+### ➡️ Next Steps
 - If you need longer-lived tokens, consider using service principals
 - Implement automated token rotation
 - Set up monitoring for authentication failures
@@ -205,22 +206,22 @@ const authHandler = azdev.getPersonalAccessTokenHandler(tokenManager.getToken())
 ## Token Format Problems
 <a id="token-format-problems"></a>
 
-> ⏱️ 3 minutes | 🟢 Low Severity | 🔑 Authentication Issue
+> 🟢 **Low Severity** | ⏱️ 3 minutes | 📊 99% Success Rate
 
-### Symptoms
+### 🔍 Symptoms
 
 - Authentication fails with format-related errors
 - Error message: `TypeError: Invalid token format`
 - Error message: `Error: Token must be a non-empty string`
 
-### Root Causes
+### 🎯 Root Causes
 
 - Extra whitespace or newline characters in the token
 - Token includes formatting characters from copy/paste
 - Token is not properly encoded
 - Token is empty or undefined
 
-### Solution Steps
+### ⚡ Quick Solution Steps
 
 1. Clean the token string:
 
@@ -283,19 +284,19 @@ const authHandler = azdev.getPersonalAccessTokenHandler(cleanToken);
 
 </details>
 
-### Prevention
+### 🛡️ Prevention
 
 - Use environment variables to store tokens
 - Implement token validation before use
 - Use a consistent method for loading tokens
 - Add error handling for token-related issues
 
-### Related Issues
+### 🔗 Related Issues
 
 - [Invalid Token](#invalid-token)
 - [Basic Authentication vs PAT](#basic-authentication-vs-pat)
 
-### Next Steps
+### ➡️ Next Steps
 
 - If token format issues persist, try regenerating the token
 - Check how the token is being stored and loaded
@@ -307,22 +308,22 @@ const authHandler = azdev.getPersonalAccessTokenHandler(cleanToken);
 ## Token Revocation
 <a id="token-revocation"></a>
 
-> ⏱️ 5 minutes | 🔴 High Severity | 🔑 Authentication Issue
+> 🔴 **High Severity** | ⏱️ 5 minutes | 📊 90% Success Rate
 
-### Symptoms
+### 🔍 Symptoms
 
 - Authentication suddenly fails after working previously
 - Error message: `TF400813: The user '00000000-0000-0000-0000-000000000000' is not authorized to access this resource.`
 - Token no longer appears in your Personal Access Tokens list
 
-### Root Causes
+### 🎯 Root Causes
 
 - The token was manually revoked in Azure DevOps settings
 - Security policy enforcement automatically revoked the token
 - Organization-wide token refresh was performed
 - Security incident triggered token revocation
 
-### Solution Steps
+### ⚡ Quick Solution Steps
 
 1. Verify token status in Azure DevOps:
    - Go to Azure DevOps > User settings > Personal access tokens
@@ -341,19 +342,19 @@ const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 ```
 
-### Prevention
+### 🛡️ Prevention
 
 - Document all active tokens and their purposes
 - Implement token rotation policies
 - Use separate tokens for different applications
 - Monitor for authentication failures
 
-### Related Issues
+### 🔗 Related Issues
 
 - [Token Expiration](#token-expiration)
 - [Invalid Token](#invalid-token)
 
-### Next Steps
+### ➡️ Next Steps
 
 - If tokens are frequently revoked, discuss with your Azure DevOps administrator
 - Consider implementing centralized token management
@@ -365,22 +366,22 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 ## Basic Authentication vs PAT
 <a id="basic-authentication-vs-pat"></a>
 
-> ⏱️ 10 minutes | 🟡 Medium Severity | 🔑 Authentication Issue
+> 🟡 **Medium Severity** | ⏱️ 10 minutes | 📊 95% Success Rate
 
-### Symptoms
+### 🔍 Symptoms
 
 - Confusion about which authentication method to use
 - Error message: `Basic authentication is not supported`
 - Authentication fails when using username/password
 
-### Root Causes
+### 🎯 Root Causes
 
 - Attempting to use basic authentication (username/password) which is no longer supported
 - Using the wrong authentication handler
 - Mixing authentication methods
 - Following outdated documentation
 
-### Solution Steps
+### ⚡ Quick Solution Steps
 
 1. Switch to Personal Access Token (PAT) authentication:
    - Generate a PAT in Azure DevOps > User settings > Personal access tokens
@@ -403,19 +404,19 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
    - Set appropriate scope limitations
    - Document the token's purpose and owner
 
-### Prevention
+### 🛡️ Prevention
 
 - Always use PAT authentication for Azure DevOps API
 - Never use basic authentication in new code
 - Keep documentation and examples updated
 - Follow security best practices for token management
 
-### Related Issues
+### 🔗 Related Issues
 
 - [Invalid Token](#invalid-token)
 - [Token Expiration](#token-expiration)
 
-### Next Steps
+### ➡️ Next Steps
 
 - If you need alternative authentication methods, consider OAuth or Azure AD
 - For service-to-service authentication, explore service principals
@@ -424,7 +425,7 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 
 ---
 
-## Diagnostic Tools
+## 🔧 Diagnostic Tools
 
 <details>
 <summary><b>Authentication Diagnostic Tools</b></summary>
@@ -440,7 +441,7 @@ async function diagnoseAuthenticationIssues(orgUrl: string, token: string): Prom
     return;
   }
   
-  if (token.includes('\n') || token.includes('\r')) {
+  if (token includes('\n') || token.includes('\r')) {
     console.warn("⚠️ Token contains newline characters that may cause issues");
     token = token.trim();
   }
@@ -473,9 +474,9 @@ async function diagnoseAuthenticationIssues(orgUrl: string, token: string): Prom
     console.error("❌ Connection failed");
     console.error(`Error: ${err.message}`);
     
-    if (err.message.includes("TF400813")) {
+    if (err.message includes("TF400813")) {
       console.log("This error indicates an invalid or revoked token");
-    } else if (err.message.includes("unable to get local issuer certificate")) {
+    } else if (err.message includes("unable to get local issuer certificate")) {
       console.log("This error indicates a network or SSL certificate issue");
     }
   }
@@ -487,16 +488,17 @@ diagnoseAuthenticationIssues("https://dev.azure.com/your-organization", process.
 
 </details>
 
-## Getting Help
+## 🆘 Getting Help
 
 If the solutions in this category don't resolve your issue:
 
-1. Check the [Error Code Reference](../error-code-reference.md)
-2. Try the [Advanced Troubleshooting](../advanced-troubleshooting.md) guide
-3. See [Getting Help](../getting-help.md) for support options
+1. Run the [🔧 Diagnostic Tools](#-diagnostic-tools) to collect error details
+2. Check the [Error Code Reference](../error-code-reference.md)
+3. Try the [Advanced Troubleshooting](../advanced-troubleshooting.md) guide
+4. See [Getting Help](../getting-help.md) for support options
 
 ---
 
 <div align="right">
 <i>Last updated: February 26, 2024</i>
-</div> 
+</div>
