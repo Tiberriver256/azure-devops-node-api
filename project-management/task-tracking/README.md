@@ -1,6 +1,58 @@
 # Task Tracking
 
-This directory contains individual task tracking documents for each team member.
+This directory contains task tracking information for the Azure DevOps Node API Documentation Project team members.
+
+## Directory Structure
+
+Each team member has their own directory for tracking tasks in their preferred format:
+
+```
+task-tracking/
+├── README.md                 # This file
+├── taylor/                   # Taylor's task tracking
+│   ├── task-index.md         # Overview of all Taylor's tasks
+│   ├── documentation-standards/  # Task 3 details
+│   ├── split-view-implementation/  # Task 9 details
+│   ├── getting-started-guide/  # Task 5 details
+│   └── ...                   # Other task categories
+├── jordan/                   # Jordan's task tracking (when created)
+├── casey/                    # Casey's task tracking (when created)
+└── ...                       # Other team members
+```
+
+## Task Tracking Approach
+
+Each team member is encouraged to organize their tasks in a way that works best for them. The project uses a flexible approach to task tracking with these guidelines:
+
+1. **Individual Organization**: Team members can structure their task tracking in whatever way works best for their workflow.
+
+2. **Task Ownership**: Major tasks are assigned to specific team members who are responsible for tracking progress.
+
+3. **Shared Visibility**: While organization is flexible, task status should be visible to the team.
+
+4. **Bi-Weekly Reporting**: Status updates are provided to Morgan bi-weekly.
+
+## Legacy Files
+
+- `taylor_todo.md` - Taylor's original todo list (being migrated to the new structure)
+
+## Creating Your Task Tracking
+
+To create your own task tracking:
+
+1. Create a directory with your name
+2. Organize your tasks in whatever format works best for you
+3. Consider including an index or overview file for easy reference
+
+## Task Numbering Convention
+
+Tasks are numbered according to the project task breakdown:
+
+- Tasks 1-9: Phase 1 (Foundation)
+- Tasks 10-27: Phase 2 (Core Documentation)
+- Tasks 28-41: Phase 3 (Advanced Content)
+- Tasks 42-49: Phase 4 (Finalization and Launch)
+- Tasks 50-60: Additional API Client Documentation
 
 ## File Naming Convention
 

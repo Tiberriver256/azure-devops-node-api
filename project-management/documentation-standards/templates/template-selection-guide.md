@@ -1,200 +1,236 @@
+**Navigation**: [Home](../index.md) > [Documentation Standards](./index.md) > Template Selection Guide
+
 # Template Selection Guide
 
-This guide helps you select the appropriate template for your documentation needs. Choosing the right template ensures your documentation is structured appropriately for its content and complexity.
+This guide helps documentation contributors select the most appropriate template for different documentation needs. Each template is designed for specific use cases and content types.
 
-## Selection Flowchart
+## Contents
 
-```
-Start
-  |
-  +--> Is it a tutorial or step-by-step guide?
-  |     |
-  |     +--> Yes --> Use Tutorial Template
-  |     |
-  |     +--> No
-  |           |
-  +--> Is it explaining a concept rather than an API?
-  |     |
-  |     +--> Yes --> Use Conceptual Guide Template
-  |     |
-  |     +--> No
-  |           |
-  +--> Is it documenting common issues and solutions?
-  |     |
-  |     +--> Yes --> Use Troubleshooting Guide Template
-  |     |
-  |     +--> No
-  |           |
-  +--> Is it documenting an API component?
-        |
-        +--> Yes
-              |
-              +--> Is it a complex component (15+ methods, complex structure)?
-              |     |
-              |     +--> Yes --> Use API Reference Template
-              |     |
-              |     +--> No
-              |           |
-              +--> Is it a single method?
-              |     |
-              |     +--> Yes --> Use API Method Template
-              |     |
-              |     +--> No
-              |           |
-              +--> Is it a class?
-              |     |
-              |     +--> Yes --> Use Class Template
-              |     |
-              |     +--> No
-              |           |
-              +--> Is it an interface?
-                    |
-                    +--> Yes --> Use Interface Template
-                    |
-                    +--> No --> Consult documentation team
-```
+- [Quick Selection Guide](#quick-selection-guide)
+- [Feature Comparison](#feature-comparison)
+- [Detailed Selection Criteria](#detailed-selection-criteria)
+- [Decision Tree](#decision-tree)
+- [Template Customization](#template-customization)
+- [Getting Help](#getting-help)
 
-## Template Complexity Ratings
+## Quick Selection Guide
 
-To help you understand the complexity of each template and the effort required to use it, we've created the following ratings:
+| If you need to document... | Use this template |
+|---------------------------|-------------------|
+| A complex API component with many methods | [API Reference Template](./api-reference-template/) |
+| A single API method or function | [API Method Template](./api-method-template/) |
+| A class with fewer than 15 methods | [Class Template](./class-template/) |
+| A TypeScript interface | [Interface Template](./interface-template/) |
+| A step-by-step process or task | [Tutorial Template](./tutorial-template/) |
+| A complex concept or architectural pattern | [Conceptual Guide Template](./conceptual-guide-template/) |
+| Solutions to common problems | [Troubleshooting Guide Template](./troubleshooting-guide-template/) |
 
-| Template | Complexity | Writer Effort | Reader Navigation Complexity |
-|----------|------------|--------------|------------------------------|
-| API Method Template | ⭐ | Low | Low |
-| Class Template | ⭐⭐ | Medium | Low |
-| Interface Template | ⭐⭐ | Medium | Low |
-| Conceptual Guide Template | ⭐⭐ | Medium | Low |
-| Troubleshooting Guide Template | ⭐⭐ | Medium | Low |
-| Tutorial Template | ⭐⭐⭐ | High | Medium |
-| API Reference Template | ⭐⭐⭐ | High | Medium |
+## Feature Comparison
+
+This table compares the features and characteristics of each template type to help you make an informed decision.
+
+| Feature | API Reference | API Method | Class | Interface | Tutorial | Conceptual | Troubleshooting |
+|---------|---------------|------------|-------|-----------|----------|------------|-----------------|
+| **Structure** |
+| Multi-file structure | ✓ | - | - | - | ✓ | - | ✓ |
+| Single-file document | - | ✓ | ✓ | ✓ | - | ✓ | - |
+| Method categorization | ✓ | - | ✓ | ✓ | - | - | - |
+| Step-by-step format | - | - | - | - | ✓ | - | - |
+| Progressive disclosure | ✓ | - | - | - | ✓ | ✓ | ✓ |
+| **Content Types** |
+| Parameter documentation | ✓ | ✓ | ✓ | ✓ | - | - | - |
+| Return type documentation | ✓ | ✓ | ✓ | ✓ | - | - | - |
+| Code examples | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Visual diagrams | - | - | - | - | ✓ | ✓ | ✓ |
+| Error handling | ✓ | ✓ | ✓ | ✓ | ✓ | - | ✓ |
+| Troubleshooting section | - | - | - | - | ✓ | - | ✓ |
+| **Use Cases** |
+| API documentation | ✓ | ✓ | ✓ | ✓ | - | - | - |
+| Learning-oriented content | - | - | - | - | ✓ | ✓ | - |
+| Problem-solving content | - | - | - | - | - | - | ✓ |
+| Conceptual explanation | - | - | - | - | - | ✓ | - |
+| **Complexity** |
+| Implementation effort | High | Low | Medium | Medium | Medium | Medium | High |
+| Maintenance effort | High | Low | Medium | Medium | Medium | Low | High |
+| Navigation complexity | Medium | Low | Low | Low | Medium | Low | Medium |
 
 ## Detailed Selection Criteria
 
 ### API Reference Template
 
-**When to use:**
-- API component has 15+ methods
-- API component has complex data structures
-- API component is frequently used by developers
-- API component generates many support inquiries
-- Documentation requires splitting across multiple files for maintainability
+**Use when:**
+- The component has 15+ methods
+- The component has complex data structures
+- The component is frequently used
+- The component generates many support inquiries
 
-**Examples:**
+**Benefits:**
+- Split-view approach reduces cognitive load
+- Organized method categorization
+- Comprehensive navigation between related elements
+- Scalable for very complex components
+
+**Example components:**
 - WorkItemTrackingApi
 - GitApi
 - BuildApi
 
 ### API Method Template
 
-**When to use:**
-- Documenting a single API method
-- Method exists independently or as part of a smaller API
-- Method requires detailed documentation but doesn't belong to a complex component
+**Use when:**
+- Documenting a single method that doesn't belong to a complex component
+- Creating standalone method documentation
+- The method has a straightforward signature and purpose
 
-**Examples:**
-- getWorkItem
-- createBuildDefinition
-- updatePullRequest
+**Benefits:**
+- Focused documentation for a single operation
+- Comprehensive parameter and return type documentation
+- Simplified maintenance
+
+**Example methods:**
+- getWorkItems
+- createProject
+- queryBuilds
 
 ### Class Template
 
-**When to use:**
+**Use when:**
 - Documenting a class with fewer than 15 methods
-- Class has a straightforward structure
-- Class doesn't require the split view approach
-- Documentation fits comfortably in a single file
+- The class has a straightforward structure
+- The class doesn't require extensive method categorization
 
-**Examples:**
-- WebApi
-- ConnectionData
-- TeamProject
+**Benefits:**
+- All documentation in a single file for easier consumption
+- Comprehensive class overview
+- Simplified maintenance for smaller components
+
+**Example classes:**
+- WebApiTeam
+- TeamProjectReference
+- TeamContext
 
 ### Interface Template
 
-**When to use:**
+**Use when:**
 - Documenting a TypeScript interface
-- Interface doesn't belong to a complex component
-- Interface requires detailed documentation about implementation
+- The interface is not part of a complex component
+- Documenting type definitions and contracts
 
-**Examples:**
-- IWorkItemTrackingApi
-- IGitApi
-- IBuildApi
+**Benefits:**
+- TypeScript-specific documentation features
+- Focus on type definitions and contracts
+- Documentation of interface extensions and implementations
+
+**Example interfaces:**
+- IWorkItemTrackingApi (simplified version)
+- IRequestHandler
+- IVssRestClientOptions
 
 ### Tutorial Template
 
-**When to use:**
-- Creating step-by-step guides
-- Teaching users how to accomplish specific tasks
-- Documentation benefits from progressive disclosure
-- Content includes multiple sequential steps
+**Use when:**
+- Creating step-by-step guidance for completing a specific task
+- Teaching users how to implement a particular feature
+- Providing a learning-oriented approach to documentation
 
-**Examples:**
-- Work Item Automation Tutorial
-- Setting Up Authentication
-- Creating Custom Build Definitions
+**Benefits:**
+- Progressive disclosure of information
+- User goal-oriented structure
+- Comprehensive troubleshooting sections
+- Clear prerequisites and next steps
+
+**Example tutorials:**
+- "Automating Work Item Creation"
+- "Setting Up Continuous Integration with Azure Pipelines"
+- "Implementing Custom Work Item Types"
 
 ### Conceptual Guide Template
 
-**When to use:**
-- Explaining concepts rather than specific API features
-- Providing architectural overviews
-- Explaining design principles and patterns
-- Helping users understand "why" rather than just "how"
+**Use when:**
+- Explaining complex concepts or architectural patterns
+- Providing background information needed to understand the API
+- Documenting high-level design principles
 
-**Examples:**
-- Azure DevOps Architecture Overview
-- Authentication Concepts
-- REST vs. Node.js API Comparison
+**Benefits:**
+- Visual diagrams and explanations
+- Progressive complexity from basic to advanced
+- Relationship mapping to API components
+- Difficulty indicators for user guidance
+
+**Example conceptual guides:**
+- "Authentication Concepts"
+- "Azure DevOps Resource Areas"
+- "API Versioning Concepts"
 
 ### Troubleshooting Guide Template
 
-**When to use:**
-- Documenting common issues and their solutions
-- Creating Q&A or FAQ content
-- Providing diagnostic information
-- Helping users resolve specific problems
+**Use when:**
+- Documenting solutions to common problems
+- Creating diagnostic guidance
+- Providing error resolution steps
 
-**Examples:**
-- Authentication Troubleshooting
-- Common Errors and Solutions
-- Performance Optimization Guide
+**Benefits:**
+- Problem-solution structure
+- Severity and time indicators
+- Comprehensive diagnostic tools
+- Decision tree for problem identification
 
-## Special Considerations
+**Example troubleshooting guides:**
+- "Connection Problems"
+- "Authentication Issues"
+- "Rate Limiting and Performance Problems"
 
-### Mixed Content Types
+## Decision Tree
 
-Some documentation may include elements of multiple content types. In these cases:
+Still not sure which template to use? Follow this decision tree:
 
-1. Identify the primary purpose of the documentation
-2. Select the template that best matches that purpose
-3. Adapt the template as needed to incorporate secondary elements
-4. Document any significant deviations from the standard template
+1. **Are you documenting an API component?**
+   - Yes → Go to question 2
+   - No → Go to question 5
 
-### Collaborative Decision Making
+2. **Does the component have 15+ methods OR complex data structures?**
+   - Yes → Use the **API Reference Template**
+   - No → Go to question 3
 
-If you're unsure which template to use:
+3. **Are you documenting a single method?**
+   - Yes → Use the **API Method Template**
+   - No → Go to question 4
 
-1. Consult with the documentation team
-2. Consider getting input from UI/UX specialists
-3. Create a small prototype using each potential template
-4. Evaluate based on:
-   - Reader experience
-   - Maintenance requirements
-   - Content organization
-   - Future scalability
+4. **Are you documenting a class or an interface?**
+   - Class → Use the **Class Template**
+   - Interface → Use the **Interface Template**
 
-### Template Customization
+5. **What is the primary purpose of your documentation?**
+   - Teaching how to complete a task → Use the **Tutorial Template**
+   - Explaining a concept → Use the **Conceptual Guide Template**
+   - Solving a problem → Use the **Troubleshooting Guide Template**
 
-While consistency is important, templates can be customized to better serve specific documentation needs:
+## Visual Decision Tree
 
-1. Maintain consistent navigation patterns
-2. Preserve the overall structure
-3. Document any significant deviations
-4. Consider whether your customization should become a standard
+![Template Selection Decision Tree](../images/template-selection-flowchart.png)
+
+*Figure 1: Decision tree for selecting the appropriate template*
+
+Note: The actual image will be created by Jamie and added later.
+
+## Template Customization
+
+All templates can be customized to meet specific documentation needs while maintaining consistency. When customizing:
+
+1. Maintain the core sections required for each template type
+2. Follow the style guide for formatting and structure
+3. Document any significant deviations in the README
+4. Ensure navigation patterns remain consistent
+
+## Getting Help
+
+If you're still unsure which template to use, contact the documentation team for guidance:
+
+- Taylor (Senior Technical Writer): [email/contact info]
+- Documentation Team: [email/contact info]
 
 ## See Also
 
-- [Documentation Templates](./README.md)
-- [Shared Components](./shared-components/README.md)
-- [Documentation Standards](../README.md) 
+- [Documentation Standards Overview](./index.md)
+- [Visual Elements Guide](../visual-elements-guide.md)
+- [Template Implementation Guidelines](../template-implementation-guidelines.md) 

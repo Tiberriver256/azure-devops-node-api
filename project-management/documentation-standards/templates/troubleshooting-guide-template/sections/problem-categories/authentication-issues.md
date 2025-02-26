@@ -1,38 +1,51 @@
+**Navigation**: [Home](../../../index.md) > [Troubleshooting Guide](../../index.md) > Authentication Issues
+
 # Authentication Issues
 
-> **Navigation**: [Home](../../index.md) > [Problem Categories](../../index.md#common-issue-categories) > Authentication Issues
+This page covers troubleshooting for common authentication issues when using the Azure DevOps Node API.
 
-This page covers troubleshooting for common authentication-related issues when using the Azure DevOps Node API.
+## Contents
 
-## In This Category
+- [Quick Fix Summary](#quick-fix-summary)
+- [High Severity Issues](#high-severity-issues)
+- [Medium Severity Issues](#medium-severity-issues)
+- [Low Severity Issues](#low-severity-issues)
+- [Diagnostic Tools](#diagnostic-tools)
 
-- [Invalid Token](#invalid-token)
-- [Token Expiration](#token-expiration)
-- [Insufficient Scopes](#insufficient-scopes)
-- [Two-Factor Authentication Issues](#two-factor-authentication-issues)
-- [Identity Provider Problems](#identity-provider-problems)
+## Quick Fix Summary
+
+<details>
+<summary><b>Quick Fix Summary</b></summary>
+
+- 🔴 **Invalid Token**: Regenerate your PAT token in Azure DevOps
+- 🔴 **Token Expiration**: Create a new token with a longer expiration
+- 🟡 **Insufficient Scopes**: Create a new token with the correct scopes
+- 🟡 **Incorrect Organization URL**: Verify your organization URL format
+- 🟢 **Token Format**: Remove any whitespace or newlines from your token
+
+</details>
 
 ---
 
-## Invalid Token
-<a id="invalid-token"></a>
+## High Severity Issues
 
-> **Applies to:** All API versions
+### Invalid Token
+🔴 **High Severity** | ⏱️ 5 minutes
 
-### Symptoms
+#### Symptoms
 
 - 401 Unauthorized HTTP responses
-- Error message: "The provided token is invalid or has expired"
-- `Error: TF400813: The user '00000000-0000-0000-0000-000000000000' is not authorized to access this resource.`
+- Error message: `TF400813: The user '00000000-0000-0000-0000-000000000000' is not authorized to access this resource.`
+- Authentication fails immediately when trying to connect
 
-### Root Causes
+#### Root Causes
 
 - The Personal Access Token (PAT) is incorrectly copied or malformed
 - The token string includes whitespace or newline characters
 - The token has been manually revoked in Azure DevOps settings
-- The token uses an unsupported authentication scheme
+- Using an empty or null token value
 
-### Solution Steps
+#### Solution Steps
 
 1. Generate a new Personal Access Token in Azure DevOps:
    - Go to Azure DevOps > User settings > Personal access tokens
@@ -48,307 +61,307 @@ import * as azdev from "azure-devops-node-api";
 const token = process.env.AZURE_DEVOPS_TOKEN; // Your new PAT token
 const orgUrl = "https://dev.azure.com/your-organization";
 
+// Create authorization handler
+const authHandler = azdev.getPersonalAccessTokenHandler(token);
+const connection = new azdev.WebApi(orgUrl, authHandler);
+
+// Test the connection
+try {
+    const connData = await connection.connect();
+    console.log("Connection successful:", connData.authenticatedUser.providerDisplayName);
+} catch (err) {
+    console.error("Authentication failed:", err.message);
+}
+```
+
+3. Verify the token works by testing a simple API call:
+
+```typescript
+// Get a client and make a simple request
+const coreApi = await connection.getCoreApi();
+const projects = await coreApi.getProjects();
+console.log(`Successfully retrieved ${projects.length} projects`);
+```
+
+### Token Expiration
+🔴 **High Severity** | ⏱️ 5 minutes
+
+#### Symptoms
+
+- Authentication suddenly fails after working previously
+- Error message: `TF400813: Resource not available for anonymous access. Client authentication required.`
+- API calls start failing with 401 errors after a period of successful operation
+
+#### Root Causes
+
+- The Personal Access Token has reached its expiration date
+- The token was created with a short lifespan
+- The token was manually revoked by an administrator
+
+#### Solution Steps
+
+1. Check token expiration in Azure DevOps:
+   - Go to Azure DevOps > User settings > Personal access tokens
+   - Look for your token in the list and check its expiration date
+
+2. Generate a new token with appropriate expiration:
+
+```typescript
+// Update your code with the new token
+const token = process.env.AZURE_DEVOPS_TOKEN; // Your new PAT token
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 ```
 
-3. Verify the token works:
-
-```typescript
-try {
-    const connectionData = await connection.connect();
-    console.log(`Connected successfully to ${connectionData.authenticatedUser.providerDisplayName}`);
-} catch (err) {
-    console.error("Authentication error:", err.message);
-}
-```
-
-### Prevention
-
-- Store tokens securely in environment variables or a secret management system
-- Don't hardcode tokens in source code
-- Implement automatic token refresh mechanisms for long-running applications
-- Set appropriate token lifetimes (shorter for higher security, longer for convenience)
-
-### Related Issues
-
-- [Token Expiration](#token-expiration)
-- [Insufficient Scopes](#insufficient-scopes)
-- [Connection Problems](./connection-problems.md)
-
----
-
-## Token Expiration
-<a id="token-expiration"></a>
-
-> **Applies to:** All API versions
-
-### Symptoms
-
-- Authentication works initially but fails after some time
-- 401 Unauthorized errors appearing suddenly in a previously working application
-- Error message includes "token has expired" or similar phrasing
-
-### Root Causes
-
-- Personal Access Tokens have an expiration date set during creation
-- Default PAT expiration is typically 30 days
-- OAuth tokens have shorter expiration times (usually hours)
-
-### Solution Steps
-
-1. Check token expiration in Azure DevOps:
-   - Go to Azure DevOps > User settings > Personal access tokens
-   - Verify if the token is listed as "expired"
-
-2. Generate a new token with a longer expiration if needed:
-   - When creating the token, set the "Expiration" field appropriately
-   - For automated systems, consider using service principals instead of PATs
-
-3. Implement token refresh logic for long-running applications:
+3. Consider implementing token refresh logic:
 
 <details>
-<summary><b>Token Management Code Example</b></summary>
+<summary><b>Token Refresh Implementation</b></summary>
 
 ```typescript
-import * as azdev from "azure-devops-node-api";
-import { TokenCredentials } from "azure-devops-node-api/handlers/credentials";
-
+// Example token refresh monitoring
 class TokenManager {
-    private token: string;
-    private expirationDate: Date;
-    private orgUrl: string;
-    private connection: azdev.WebApi | null = null;
+  private token: string;
+  private expirationDate: Date;
+  
+  constructor(token: string, expirationDays: number) {
+    this.token = token;
+    // Calculate expiration date
+    this.expirationDate = new Date();
+    this.expirationDate.setDate(this.expirationDate.getDate() + expirationDays);
+  }
+  
+  getToken(): string {
+    // Check if token is about to expire (within 3 days)
+    const now = new Date();
+    const threeDaysFromNow = new Date();
+    threeDaysFromNow.setDate(now.getDate() + 3);
     
-    constructor(initialToken: string, tokenExpirationDate: Date, orgUrl: string) {
-        this.token = initialToken;
-        this.expirationDate = tokenExpirationDate;
-        this.orgUrl = orgUrl;
+    if (this.expirationDate < threeDaysFromNow) {
+      console.warn("Token is about to expire. Please generate a new token.");
     }
     
-    async getConnection(): Promise<azdev.WebApi> {
-        // Check if token is expired or about to expire (within 1 day)
-        const oneDayFromNow = new Date();
-        oneDayFromNow.setDate(oneDayFromNow.getDate() + 1);
-        
-        if (this.expirationDate < oneDayFromNow) {
-            await this.refreshToken();
-        }
-        
-        if (!this.connection) {
-            const authHandler = azdev.getPersonalAccessTokenHandler(this.token);
-            this.connection = new azdev.WebApi(this.orgUrl, authHandler);
-        }
-        
-        return this.connection;
-    }
-    
-    private async refreshToken(): Promise<void> {
-        // In a real implementation, this would call your token service
-        // or use a refresh token flow to get a new token
-        console.log("Token expired or about to expire, refreshing...");
-        
-        // Example implementation:
-        // const newTokenData = await yourTokenService.getNewToken();
-        // this.token = newTokenData.token;
-        // this.expirationDate = newTokenData.expirationDate;
-        
-        // Reset connection so it will be recreated with the new token
-        this.connection = null;
-    }
+    return this.token;
+  }
 }
 
-// Usage example:
-// const tokenManager = new TokenManager(
-//     "your-initial-token",
-//     new Date("2023-12-31"), // token expiration date
-//     "https://dev.azure.com/your-organization"
-// );
-// 
-// async function getWorkItemTrackingApi() {
-//     const connection = await tokenManager.getConnection();
-//     return await connection.getWorkItemTrackingApi();
-// }
+// Usage
+const tokenManager = new TokenManager(process.env.AZURE_DEVOPS_TOKEN, 30); // 30-day token
+const authHandler = azdev.getPersonalAccessTokenHandler(tokenManager.getToken());
 ```
 
 </details>
 
-### Prevention
-
-- Set longer expiration times for tokens used in automated systems
-- Implement token refresh mechanisms for long-running applications
-- Use a monitoring system to alert before token expiration
-- Consider using service principals for automated systems instead of personal tokens
-
-### Related Issues
-
-- [Invalid Token](#invalid-token)
-- [Identity Provider Problems](#identity-provider-problems)
-
 ---
 
-## Insufficient Scopes
-<a id="insufficient-scopes"></a>
+## Medium Severity Issues
 
-> **Applies to:** All API versions
+### Insufficient Scopes
+🟡 **Medium Severity** | ⏱️ 10 minutes
 
-### Symptoms
+#### Symptoms
 
-- 403 Forbidden HTTP responses
-- Error messages indicating permissions issues
-- Able to authenticate but not perform specific actions
-- Error: `TF400813: Resource not available for anonymous access. Client authentication required.`
+- 403 Forbidden responses
+- Error message: `TF400813: The user does not have permission to access this resource.`
+- Authentication succeeds, but specific API operations fail
 
-### Root Causes
+#### Root Causes
 
-- The Personal Access Token was created with insufficient scopes
-- The user account associated with the token lacks necessary permissions
-- Trying to access resources outside the authorized scopes
-- Organization policies restrict certain API operations
+- The PAT token was created with insufficient scopes
+- The user account lacks necessary permissions
+- The API operation requires additional scopes
 
-### Solution Steps
+#### Solution Steps
 
-1. Check the required scopes for your operation:
-   - Different API operations require different scopes
-   - Common scopes include: `vso.build`, `vso.code`, `vso.work`, etc.
-
-2. Generate a new token with the appropriate scopes:
-   - Go to Azure DevOps > User settings > Personal access tokens > New Token
-   - Select all required scopes for your operations
-   - For full access, use `vso.full_access` (use with caution)
-
-3. Verify user permissions in Azure DevOps:
-   - Ensure the user has appropriate permissions in the organization/project
-   - Check if the user is a member of the required groups
-   - Review any custom security policies that might affect the user
-
-### Prevention
-
-- Document required scopes for different parts of your application
-- Use the principle of least privilege - only request scopes you need
-- Create separate tokens for different applications or functionalities
-- Regularly audit token scopes and permissions
-
-### Related Issues
-
-- [Invalid Token](#invalid-token)
-- [Permission Errors](./permission-errors.md)
-
----
-
-## Two-Factor Authentication Issues
-<a id="two-factor-authentication-issues"></a>
-
-> **Applies to:** All API versions when using Microsoft accounts with 2FA
-
-### Symptoms
-
-- Interactive login prompts appearing unexpectedly
-- Authentication failures with error messages about additional verification
-- Unable to use basic authentication methods
-
-### Root Causes
-
-- Account has two-factor authentication (2FA) enabled
-- Basic authentication doesn't support 2FA flows
-- Using username/password authentication instead of tokens
-
-### Solution Steps
-
-1. Use Personal Access Tokens instead of password authentication:
-   - PATs are specifically designed to work with 2FA
-   - They act as an application-specific password
-
-2. Create a new PAT token:
+1. Check the scopes of your PAT in Azure DevOps:
    - Go to Azure DevOps > User settings > Personal access tokens
-   - Create a new token with appropriate scopes
-   - Use this token for API authentication
+   - Review the scopes assigned to your token
 
-3. Update your authentication code to use PAT:
+2. Create a new PAT with the required scopes:
+   - For full access: `vso.full_access`
+   - For specific resources: Select the appropriate scopes (e.g., `vso.work`, `vso.code`)
+
+3. Update your application code with the new token:
 
 ```typescript
-import * as azdev from "azure-devops-node-api";
-
-// Use PAT instead of username/password
-const token = "your-personal-access-token";
-const orgUrl = "https://dev.azure.com/your-organization";
-
-// Use the PAT handler specifically
+// Update with new token that has appropriate scopes
+const token = process.env.AZURE_DEVOPS_TOKEN; // Your new PAT token
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 ```
 
-### Prevention
+💡 **Tip**: Required scopes for common operations:
 
-- Always use PATs or OAuth for automated scenarios
-- Never rely on basic username/password authentication for API access
-- Keep authentication flows separate from your application logic
-- Document 2FA requirements for your organization
+| Operation | Required Scope |
+|-----------|---------------|
+| Work Items | `vso.work` |
+| Git Repositories | `vso.code` |
+| Build Pipelines | `vso.build` |
+| Release Pipelines | `vso.release` |
 
-### Related Issues
+### Incorrect Organization URL
+🟡 **Medium Severity** | ⏱️ 5 minutes
 
-- [Invalid Token](#invalid-token)
-- [Token Expiration](#token-expiration)
-- [Identity Provider Problems](#identity-provider-problems)
+#### Symptoms
 
----
+- 404 Not Found responses
+- Error message: `TF400813: Resource not available.`
+- Unable to connect to Azure DevOps
 
-## Identity Provider Problems
-<a id="identity-provider-problems"></a>
+#### Root Causes
 
-> **Applies to:** Organizations using custom identity providers or Single Sign-On
+- The organization URL is incorrectly formatted
+- The organization name is misspelled
+- The organization no longer exists or has been renamed
 
-### Symptoms
+#### Solution Steps
 
-- Authentication fails with errors related to identity provider
-- Error messages containing references to SAML, Azure AD, or other identity providers
-- Unexpected redirects during authentication attempts
-- Authentication works in browser but fails from API
+1. Verify the organization URL format:
+   - The correct format is: `https://dev.azure.com/{organization}`
+   - Replace `{organization}` with your organization name
 
-### Root Causes
+2. Update your code with the correct URL:
 
-- Organization uses custom identity provider (IdP) integration
-- Single Sign-On (SSO) requirements conflict with token authentication
-- Identity provider configurations have changed
-- Conditional Access Policies affecting API access
+```typescript
+// Correct format for organization URL
+const orgUrl = 'https://dev.azure.com/your-organization';
+const connection = new azdev.WebApi(orgUrl, authHandler);
+```
 
-### Solution Steps
+3. Test the connection:
 
-1. Check organization authentication settings:
-   - Verify if your organization requires SSO
-   - Identify which identity provider is being used (Azure AD, Okta, etc.)
-
-2. For Azure AD-backed organizations:
-   - Use Azure AD authentication flows instead of basic PAT
-   - Implement proper OAuth2 flow with the correct Azure AD tenant
-
-3. For SSO-required organizations using PATs:
-   - Ensure the PAT was created after SSO was enforced
-   - Verify the PAT creator has completed all SSO requirements
-
-4. Contact your Azure DevOps administrator:
-   - They may need to adjust identity provider settings
-   - Special accommodations might be needed for API service accounts
-
-### Prevention
-
-- Document your organization's identity provider configuration
-- Test authentication flows after any IdP changes
-- Create separate service accounts for API access when possible
-- Implement proper OAuth2 flows for complex identity scenarios
-
-### Related Issues
-
-- [Invalid Token](#invalid-token)
-- [Permission Errors](./permission-errors.md)
-- [Two-Factor Authentication Issues](#two-factor-authentication-issues)
+```typescript
+try {
+  const connectionData = await connection.connect();
+  console.log("Connected to:", connectionData.authenticatedUser.providerDisplayName);
+} catch (error) {
+  console.error("Connection failed:", error.message);
+}
+```
 
 ---
 
-<div align="left">
-  <a href="../../quick-solutions.md">← Back to Quick Solutions</a>
-</div>
+## Low Severity Issues
 
-<div align="right">
-  <a href="./connection-problems.md">Next: Connection Problems →</a>
-</div> 
+### Token Format Problems
+🟢 **Low Severity** | ⏱️ 3 minutes
+
+#### Symptoms
+
+- Authentication fails with format-related errors
+- Error message: `TypeError: Invalid token format`
+- Error message: `Error: Token must be a non-empty string`
+
+#### Root Causes
+
+- Extra whitespace or newline characters in the token
+- Token includes formatting characters from copy/paste
+- Token is not properly encoded
+- Token is empty or undefined
+
+#### Solution Steps
+
+1. Clean the token string:
+
+```typescript
+// Trim whitespace and ensure token is a string
+const token = String(process.env.AZURE_DEVOPS_TOKEN).trim();
+```
+
+2. Verify token format:
+
+```typescript
+// Validate token before using
+function validateToken(token: string): boolean {
+  if (!token || token.length === 0) {
+    console.error("Token is empty");
+    return false;
+  }
+  
+  // Check for common formatting issues
+  if (token.includes('\n') || token.includes('\r')) {
+    console.error("Token contains newline characters");
+    return false;
+  }
+  
+  return true;
+}
+
+const token = process.env.AZURE_DEVOPS_TOKEN;
+if (validateToken(token)) {
+  const authHandler = azdev.getPersonalAccessTokenHandler(token);
+  // Continue with connection
+}
+```
+
+---
+
+## Diagnostic Tools
+
+<details>
+<summary><b>Authentication Diagnostic Utility</b></summary>
+
+```typescript
+// Authentication diagnostic utility
+async function diagnoseAuthenticationIssues(token: string, orgUrl: string): Promise<void> {
+  console.log("Running authentication diagnostics...");
+  
+  // Check token format
+  if (!token || token.length === 0) {
+    console.error("❌ Token is empty or undefined");
+    return;
+  }
+  
+  if (token.includes('\n') || token.includes('\r')) {
+    console.warn("⚠️ Token contains newline characters that may cause issues");
+    token = token.trim();
+  }
+  
+  console.log("✅ Token format appears valid");
+  
+  // Test connection
+  try {
+    const authHandler = azdev.getPersonalAccessTokenHandler(token);
+    const connection = new azdev.WebApi(orgUrl, authHandler);
+    
+    console.log("Attempting to connect to Azure DevOps...");
+    const connData = await connection.connect();
+    
+    console.log("✅ Connection successful!");
+    console.log(`Authenticated as: ${connData.authenticatedUser.providerDisplayName}`);
+    console.log(`User ID: ${connData.authenticatedUser.id}`);
+    
+    // Test a simple API call
+    try {
+      const coreApi = await connection.getCoreApi();
+      const projects = await coreApi.getProjects();
+      console.log(`✅ Successfully retrieved ${projects.length} projects`);
+    } catch (err) {
+      console.error("❌ API call failed despite successful authentication");
+      console.error(`Error: ${err.message}`);
+      console.log("This suggests a permissions issue rather than an authentication problem");
+    }
+  } catch (err) {
+    console.error("❌ Connection failed");
+    console.error(`Error: ${err.message}`);
+    
+    if (err.message.includes("TF400813")) {
+      console.log("This error indicates an invalid or revoked token");
+    } else if (err.message.includes("unable to get local issuer certificate")) {
+      console.log("This error indicates a network or SSL certificate issue");
+    }
+  }
+}
+
+// Usage
+diagnoseAuthenticationIssues("your-pat-token", "https://dev.azure.com/your-organization");
+```
+
+</details>
+
+## See Also
+
+- [Authentication Overview](../../concepts/authentication.md)
+- [Personal Access Tokens Guide](../../guides/personal-access-tokens.md)
+- [Connection Issues](./connection-issues.md)
+- [Permission Errors](./permission-errors.md) 
