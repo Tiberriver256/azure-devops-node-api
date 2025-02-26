@@ -119,10 +119,10 @@ Current focus: Updating example templates with enhancements based on template re
     - [x] Meet with Morgan to plan implementation approach (July 21)
     - [x] Create Visual Elements Guide documenting standardized patterns (July 22-23)
     - [x] Create Template Implementation Guidelines (July 22-23)
-    - [ ] Update example templates with enhancements:
+    - [x] Update example templates with enhancements:
       - [x] API Reference Template: WorkItemTrackingApi (July 24)
-      - [ ] Tutorial Template: Creating Work Items (July 25)
-      - [ ] Troubleshooting Guide Template: Authentication Issues (July 25)
+      - [x] Tutorial Template: Creating Work Items (July 25)
+      - [x] Troubleshooting Guide Template: Authentication Issues (July 25)
       - [x] Template Selection Guide: Add feature comparison table (July 26)
     - [ ] Review example implementations with Jamie (July 27)
     - [ ] Work with Casey on technical enhancements (July 29-30)
