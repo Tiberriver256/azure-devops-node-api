@@ -36,4 +36,10 @@ Each session record should include:
 
 - [Team Reviews](../team-reviews/): Formal reviews of completed work
 - [Task Tracking](../task-tracking/): Tracking of action items from collaboration sessions
-- [Documentation Standards](../documentation-standards/): Where collaboration outcomes are often implemented 
+- [Documentation Standards](../documentation-standards/): Where collaboration outcomes are often implemented
+
+## Subdirectory Overview
+
+- **template-reviews/**: Contains files related to the review of documentation templates, including action items, discussion guides, and workshop notes.
+- **feedback/**: Stores feedback-related documents, including discussions and responses to reviews.
+- **discussions/**: Includes files related to various discussion sessions, such as follow-up sessions, presentations, and structure reviews. 
