@@ -1,89 +1,43 @@
+**Navigation**: [Home](../../index.md) > [API Reference](../index.md) > [WorkItemTrackingApi](./README.md) > Constructor
+
 # WorkItemTrackingApi Constructor
 
-[◀ Back to WorkItemTrackingApi](./README.md)
-
----
-
-## Overview
-
-The `WorkItemTrackingApi` class is not typically instantiated directly. Instead, it is obtained through the `getWorkItemTrackingApi()` method of the `WebApi` class.
-
-## Syntax
+## Signature
 
 ```typescript
-// Not recommended - internal use only
-constructor(baseUrl: string, handlers: VsoClientRequestHandler[], options?: IRequestOptions);
-
-// Recommended approach
-const connection = new azdev.WebApi(orgUrl, authHandler);
-const workItemTrackingApi: WorkItemTrackingApi = await connection.getWorkItemTrackingApi();
+constructor(baseUrl: string, handlers: VsoClientRequestHandler, options?: IRequestOptions)
 ```
+
+Creates a new instance of the `WorkItemTrackingApi` class.
 
 ## Parameters
 
-The constructor is intended for internal use. When using the Azure DevOps Node API, you should obtain an instance of the `WorkItemTrackingApi` class through the `WebApi` class.
+| Name | Type | Description | Required |
+|------|------|-------------|----------|
+| `baseUrl` | `string` | The base URL for the Azure DevOps organization | Yes |
+| `handlers` | `VsoClientRequestHandler` | The request handlers for authentication and request processing | Yes |
+| `options` | `IRequestOptions` | Optional settings for requests | No |
+
+## Returns
+
+A new instance of `WorkItemTrackingApi`.
 
 ## Example
 
 ```typescript
-import * as azdev from "azure-devops-node-api";
-
-// Create a connection to Azure DevOps
-const orgUrl = "https://dev.azure.com/myorganization";
-const token = "YOUR_PERSONAL_ACCESS_TOKEN"; // https://dev.azure.com/YOUR_ORG/_usersSettings/tokens
-const authHandler = azdev.getPersonalAccessTokenHandler(token);
-const connection = new azdev.WebApi(orgUrl, authHandler);
-
-// Get the WorkItemTrackingApi instance
-const workItemTrackingApi = await connection.getWorkItemTrackingApi();
-
-// Now you can use workItemTrackingApi to interact with work items
-const workItem = await workItemTrackingApi.getWorkItem(1);
-console.log(`Work Item ${workItem.id}: ${workItem.fields["System.Title"]}`);
+// Example of creating an instance of the class
+// Note: Typically, you would use the WebApi.getWorkItemTrackingApi() method
+// instead of creating this directly
+const baseUrl = "https://dev.azure.com/organization";
+const handlers = new VsoClientRequestHandler(authHandler);
+const workItemTrackingApi = new WorkItemTrackingApi(baseUrl, handlers);
 ```
 
-## Authentication Options
-
-The `WorkItemTrackingApi` class supports various authentication methods through the `WebApi` class:
-
-### Personal Access Token (PAT)
-
-```typescript
-const token = "YOUR_PERSONAL_ACCESS_TOKEN";
-const authHandler = azdev.getPersonalAccessTokenHandler(token);
-const connection = new azdev.WebApi(orgUrl, authHandler);
-```
-
-### Basic Authentication
-
-```typescript
-const username = "username";
-const password = "password";
-const authHandler = azdev.getBasicHandler(username, password);
-const connection = new azdev.WebApi(orgUrl, authHandler);
-```
-
-### Bearer Token
-
-```typescript
-const token = "YOUR_BEARER_TOKEN";
-const authHandler = azdev.getBearerHandler(token);
-const connection = new azdev.WebApi(orgUrl, authHandler);
-```
+⚠️ **Caution**:
+In most cases, you should not create this class directly. Instead, use the `WebApi.getWorkItemTrackingApi()` method, which handles authentication and instance creation for you.
 
 ## See Also
 
-- [WebApi Class](../web-api.md)
-- [Authentication Overview](../../authentication.md)
-- [Common Scenarios: Authentication](../common-scenarios.md#authentication)
-
----
-
-## Navigation
-
-- [WorkItemTrackingApi Overview](./README.md)
-- [Properties](./properties.md)
-- [Methods](./methods/README.md)
-- [Examples](./examples.md)
-- [Common Scenarios](./common-scenarios.md)
-- [Error Handling](./error-handling.md) 
+- [WorkItemTrackingApi Class](./README.md)
+- [WebApi Class](../web-api/README.md)
+- [Authentication Guide](../../guides/authentication.md)

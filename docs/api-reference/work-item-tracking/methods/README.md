@@ -1,94 +1,84 @@
+**Navigation**: [Home](../../../index.md) > [API Reference](../../index.md) > [WorkItemTrackingApi](../README.md) > Methods
+
 # WorkItemTrackingApi Methods
 
-[◀ Back to WorkItemTrackingApi](../README.md)
+This page provides an overview of all methods available in the WorkItemTrackingApi class, organized by category.
+
+## Contents
+
+- [Work Item Methods](#work-item-methods)
+- [Query Methods](#query-methods)
+- [Type Methods](#type-methods)
+- [Link Methods](#link-methods)
+- [Attachment Methods](#attachment-methods)
 
 ---
-
-## Overview
-
-The `WorkItemTrackingApi` class provides the following methods for working with work items, work item types, fields, and queries in Azure DevOps.
 
 ## Work Item Methods
 
-| Method | Description |
-|--------|-------------|
-| [getWorkItem](./get-work-item.md) | Retrieves a single work item |
-| [getWorkItems](./get-work-items.md) | Retrieves multiple work items |
-| [createWorkItem](./create-work-item.md) | Creates a new work item |
-| [updateWorkItem](./update-work-item.md) | Updates an existing work item |
-| [deleteWorkItem](./delete-work-item.md) | Deletes a work item |
-| [getWorkItemRevisions](./get-work-item-revisions.md) | Gets the revision history of a work item |
-| [getWorkItemRevision](./get-work-item-revision.md) | Gets a specific revision of a work item |
-| [getWorkItemUpdates](./get-work-item-updates.md) | Gets updates to a work item |
-| [getWorkItemUpdate](./get-work-item-update.md) | Gets a specific update to a work item |
+These methods allow you to create, retrieve, update, and delete work items.
 
-## Query Methods
-
-| Method | Description |
-|--------|-------------|
-| [queryByWiql](./query-by-wiql.md) | Queries work items using WIQL |
-| [queryById](./query-by-id.md) | Executes a stored query by ID |
-| [createQuery](./create-query.md) | Creates a new query |
-| [updateQuery](./update-query.md) | Updates an existing query |
-| [deleteQuery](./delete-query.md) | Deletes a query |
-| [getQueries](./get-queries.md) | Gets a list of queries |
-| [getQuery](./get-query.md) | Gets a specific query |
-
-## Work Item Type Methods
-
-| Method | Description |
-|--------|-------------|
-| [getWorkItemTypes](./get-work-item-types.md) | Gets all work item types |
-| [getWorkItemType](./get-work-item-type.md) | Gets a specific work item type |
-| [getWorkItemTypeCategories](./get-work-item-type-categories.md) | Gets work item type categories |
-| [getWorkItemTypeCategory](./get-work-item-type-category.md) | Gets a specific work item type category |
-
-## Field Methods
-
-| Method | Description |
-|--------|-------------|
-| [getFields](./get-fields.md) | Gets all fields |
-| [getField](./get-field.md) | Gets a specific field |
-| [createField](./create-field.md) | Creates a new field |
-| [updateField](./update-field.md) | Updates an existing field |
-| [deleteField](./delete-field.md) | Deletes a field |
-
-## Attachment Methods
-
-| Method | Description |
-|--------|-------------|
-| [createAttachment](./create-attachment.md) | Creates a new attachment |
-| [getAttachment](./get-attachment.md) | Gets a specific attachment |
-| [getAttachmentContent](./get-attachment-content.md) | Gets the content of an attachment |
-| [getAttachments](./get-attachments.md) | Gets all attachments for a work item |
-
-## Comment Methods
-
-| Method | Description |
-|--------|-------------|
-| [addComment](./add-comment.md) | Adds a comment to a work item |
-| [getComments](./get-comments.md) | Gets all comments for a work item |
-| [getComment](./get-comment.md) | Gets a specific comment |
-| [updateComment](./update-comment.md) | Updates a comment |
-| [deleteComment](./delete-comment.md) | Deletes a comment |
-
-## Classification Methods
-
-| Method | Description |
-|--------|-------------|
-| [getClassificationNodes](./get-classification-nodes.md) | Gets classification nodes (areas/iterations) |
-| [getClassificationNode](./get-classification-node.md) | Gets a specific classification node |
-| [createClassificationNode](./create-classification-node.md) | Creates a new classification node |
-| [updateClassificationNode](./update-classification-node.md) | Updates a classification node |
-| [deleteClassificationNode](./delete-classification-node.md) | Deletes a classification node |
+| Method | Description | Common Use |
+|--------|-------------|------------|
+| ⭐ [getWorkItem](./getWorkItem.md) | Retrieves a single work item by ID | Very common |
+| ⭐ [getWorkItems](./getWorkItems.md) | Retrieves multiple work items by ID | Very common |
+| 🆕 [createWorkItem](./createWorkItem.md) | Creates a new work item | Common |
+| 🔄 [updateWorkItem](./updateWorkItem.md) | Updates an existing work item | Common |
+| ⚠️ [deleteWorkItem](./deleteWorkItem.md) | Permanently deletes a work item | Uncommon |
 
 ---
 
-## Navigation
+## Query Methods
 
-- [WorkItemTrackingApi Overview](../README.md)
+These methods allow you to execute and manage work item queries.
+
+| Method | Description | Common Use |
+|--------|-------------|------------|
+| 🔍 [queryByWiql](./queryByWiql.md) | Executes a work item query using WIQL | Common |
+| 🔍 [queryById](./queryById.md) | Executes a saved query by ID | Common |
+| [getQueries](./getQueries.md) | Retrieves all queries for a project | Uncommon |
+| [getQuery](./getQuery.md) | Retrieves a specific query by ID or path | Uncommon |
+
+---
+
+## Type Methods
+
+These methods allow you to work with work item type definitions.
+
+| Method | Description | Common Use |
+|--------|-------------|------------|
+| [getWorkItemType](./getWorkItemType.md) | Retrieves a specific work item type | Common |
+| [getWorkItemTypes](./getWorkItemTypes.md) | Retrieves all work item types for a project | Common |
+| [getFields](./getFields.md) | Retrieves all fields for a project | Uncommon |
+| [getField](./getField.md) | Retrieves a specific field | Uncommon |
+
+---
+
+## Link Methods
+
+These methods allow you to work with work item links.
+
+| Method | Description | Common Use |
+|--------|-------------|------------|
+| [getRelationTypes](./getRelationTypes.md) | Retrieves all relation types | Uncommon |
+| [getRelationType](./getRelationType.md) | Retrieves a specific relation type | Uncommon |
+
+---
+
+## Attachment Methods
+
+These methods allow you to work with work item attachments.
+
+| Method | Description | Common Use |
+|--------|-------------|------------|
+| [createAttachment](./createAttachment.md) | Creates a new attachment | Uncommon |
+| [getAttachment](./getAttachment.md) | Retrieves an attachment | Uncommon |
+| [deleteAttachment](./deleteAttachment.md) | Deletes an attachment | Uncommon |
+
+## See Also
+
+- [WorkItemTrackingApi Class](../README.md)
 - [Constructor](../constructor.md)
 - [Properties](../properties.md)
-- [Examples](../examples.md)
 - [Common Scenarios](../common-scenarios.md)
-- [Error Handling](../error-handling.md) 
+- [Error Handling](../error-handling.md)

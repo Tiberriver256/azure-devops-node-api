@@ -6,7 +6,7 @@ This task involves establishing the documentation architecture, content strategy
 
 ## Status: In Progress
 
-Current focus: Implementing template review feedback and finalizing templates
+Current focus: Updating example templates with enhancements based on template review feedback
 
 ## Subtasks
 
@@ -117,13 +117,13 @@ Current focus: Implementing template review feedback and finalizing templates
     - [x] Conduct template review workshop with Jordan and Casey (July 15)
     - [x] Meet with Jamie to refine UX-related feedback (July 20)
     - [x] Meet with Morgan to plan implementation approach (July 21)
-    - [ ] Create Visual Elements Guide documenting standardized patterns (July 22-23)
-    - [ ] Create Template Implementation Guidelines (July 22-23)
+    - [x] Create Visual Elements Guide documenting standardized patterns (July 22-23)
+    - [x] Create Template Implementation Guidelines (July 22-23)
     - [ ] Update example templates with enhancements:
-      - [ ] API Reference Template: WorkItemTrackingApi (July 24)
+      - [x] API Reference Template: WorkItemTrackingApi (July 24)
       - [ ] Tutorial Template: Creating Work Items (July 25)
       - [ ] Troubleshooting Guide Template: Authentication Issues (July 25)
-      - [ ] Template Selection Guide: Add feature comparison table (July 26)
+      - [x] Template Selection Guide: Add feature comparison table (July 26)
     - [ ] Review example implementations with Jamie (July 27)
     - [ ] Work with Casey on technical enhancements (July 29-30)
     - [ ] Present final templates to team for approval (July 31)
@@ -169,4 +169,4 @@ Current focus: Implementing template review feedback and finalizing templates
 
 - All template files are stored in project-management/documentation-standards/templates/
 - Style guide documents are in project-management/documentation-standards/style-guide/
-- Collaboration session notes are in project-management/collaboration-sessions/ 
+- Collaboration session notes are in project-management/collaboration-sessions/

@@ -1,62 +1,56 @@
+**Navigation**: [Home](../../index.md) > [API Reference](../index.md) > [WorkItemTrackingApi](./README.md) > Properties
+
 # WorkItemTrackingApi Properties
 
-[◀ Back to WorkItemTrackingApi](./README.md)
+This document details the properties available in the WorkItemTrackingApi class.
+
+## Properties Table
+
+| Name | Type | Description | Access |
+|------|------|-------------|--------|
+| `client` | `RestClient` | The underlying REST client used for API requests | protected |
+| `baseUrl` | `string` | The base URL for the Azure DevOps organization | protected |
 
 ---
 
-## Overview
+## Property Details
 
-The `WorkItemTrackingApi` class has several properties that provide information about the API client and its configuration.
-
-## Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| baseUrl | string | The base URL of the Azure DevOps instance |
-| vsoClient | VsoClient | The underlying VSO client used for making requests |
-| restClient | RestClient | The REST client used for making HTTP requests |
-
-## Usage
-
-These properties are primarily used internally by the API client. In most cases, you won't need to access these properties directly.
+### client
 
 ```typescript
-// Example of accessing the baseUrl property
-console.log(`API Base URL: ${workItemTrackingApi.baseUrl}`);
+protected client: RestClient
 ```
 
-## Inherited Properties
+The underlying REST client that handles HTTP requests to the Azure DevOps API endpoints. This client manages authentication, serialization, and response parsing.
 
-The `WorkItemTrackingApi` class inherits properties from its parent classes:
+📝 **Note**: 
+This property is protected and intended for internal use within the class or its subclasses. Client code should use the public methods of the class instead of accessing this property directly.
 
-### From VsoClientBase
+### baseUrl
 
-| Property | Type | Description |
-|----------|------|-------------|
-| options | IRequestOptions | Options for making HTTP requests |
-| authHandler | IRequestHandler | The authentication handler used for requests |
-| userAgent | string | The user agent string sent with requests |
+```typescript
+protected baseUrl: string
+```
 
-### From RestClientBase
+The base URL for the Azure DevOps organization (e.g., "https://dev.azure.com/organization"). This URL is used as the foundation for all API requests made by the class.
 
-| Property | Type | Description |
-|----------|------|-------------|
-| client | RestClient | The REST client used for making HTTP requests |
-| baseUrl | string | The base URL for API requests |
+📝 **Note**: 
+This property is protected and intended for internal use within the class or its subclasses.
+
+## Usage Context
+
+These protected properties are used internally by the WorkItemTrackingApi class to manage connections and execute requests against the Azure DevOps REST API. They are not intended to be accessed directly by client code.
+
+```typescript
+// Internal example (within class methods)
+protected async getWorkItemInternal(id: number): Promise<WorkItem> {
+  const url = `${this.baseUrl}/_apis/wit/workitems/${id}`;
+  return await this.client.get(url);
+}
+```
 
 ## See Also
 
-- [VsoClientBase Class](../vso-client-base.md)
-- [RestClientBase Class](../rest-client-base.md)
-- [IRequestOptions Interface](../interfaces/irequest-options.md)
-
----
-
-## Navigation
-
-- [WorkItemTrackingApi Overview](./README.md)
+- [WorkItemTrackingApi Class](./README.md)
 - [Constructor](./constructor.md)
 - [Methods](./methods/README.md)
-- [Examples](./examples.md)
-- [Common Scenarios](./common-scenarios.md)
-- [Error Handling](./error-handling.md) 
