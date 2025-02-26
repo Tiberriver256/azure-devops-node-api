@@ -124,12 +124,17 @@ Current focus: Updating example templates with enhancements based on template re
       - [x] Tutorial Template: Creating Work Items (July 25)
       - [x] Troubleshooting Guide Template: Authentication Issues (July 25)
       - [x] Template Selection Guide: Add feature comparison table (July 26)
-    - [ ] Review example implementations with Jamie (July 27)
-    - [ ] Work with Casey on technical enhancements (July 29-30)
-    - [ ] Present final templates to team for approval (July 31)
-    - [ ] Document implementation process for remaining templates (August 1)
+    - [x] Review example implementations with Jamie (July 27)
+    - [x] Work with Casey on technical enhancements (July 29-30)
+    - [x] Present final templates to team for approval (July 31)
+    - [x] Document implementation process for remaining templates (August 1)
 
 ### Terminology Management
+
+> **NOTE FROM MORGAN**
+>
+> Be VERY concise with this glossary.
+
 - [ ] 3.21 Create initial glossary structure (2h)
   * **Dependency**: Requires 3.5 completion
 - [ ] 3.22 Compile Azure DevOps specific terminology (6h)

@@ -31,14 +31,29 @@ Example:
 
 #### Table of Contents
 
-For longer documents, include a linked table of contents using GitHub's auto-generated heading anchors:
+For longer documents, include a linked table of contents using GitHub's auto-generated heading anchors. For tutorials and troubleshooting guides, include time estimates and severity indicators where applicable:
 
 ```markdown
 ## Contents
 
 - [Overview](#overview)
-- [Methods](#methods)
-- [Examples](#examples)
+- [Prerequisites](#prerequisites) (⏱️ 2 minutes)
+- [Basic Implementation](#basic-implementation) (⏱️ 10 minutes)
+- [Advanced Features](#advanced-features) (⏱️ 15 minutes)
+- [Troubleshooting](#troubleshooting)
+  - [Authentication Issues](#authentication-issues) 🔴
+  - [Permission Issues](#permission-issues) 🟡
+  - [Configuration Issues](#configuration-issues) 🟢
+```
+
+For documents with extensive code examples, include a code-specific table of contents:
+
+```markdown
+### Code Examples in This Document
+
+1. [Basic Authentication](#basic-authentication) (10 lines)
+2. [Custom Header Implementation](#custom-header) (25 lines)
+3. [Complete Example](#complete-example) (50 lines)
 ```
 
 #### See Also Section
@@ -157,6 +172,27 @@ Use GitHub's collapsible sections for quick fix summaries:
 - 🟢 Missing Parameters: Check required parameters documentation
 
 </details>
+```
+
+#### Success Criteria Indicators
+
+For tutorials and guides, include clear success criteria with checkable indicators:
+
+```markdown
+📊 **Success Criteria**:
+□ Connection established to Azure DevOps
+□ Authentication successful
+□ Work item created successfully
+□ Response contains expected data
+```
+
+Users can manually check (▣) items as they complete them:
+
+```markdown
+📊 **Success Criteria**:
+▣ Project initialized with package.json
+▣ Dependencies installed successfully
+□ Configuration file created
 ```
 
 ### Content Type Indicators
@@ -380,4 +416,4 @@ Never hardcode your PAT token in your source code.
 
 | Version | Date | Updated By | Changes |
 |---------|------|------------|---------|
-| 1.0 | 2024-07-22 | Taylor | Initial version | 
+| 1.0 | 2024-07-22 | Taylor | Initial version |
