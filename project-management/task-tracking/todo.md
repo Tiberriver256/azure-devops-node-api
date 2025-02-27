@@ -4,6 +4,14 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
+- [ ] **ASCII Diagram Removal** (@Casey, @Jordan, Due: Apr 28)
+  - Description:
+    - Remove all ASCII diagrams from documentation
+    - Replace with text descriptions of relationships where necessary
+    - Update cross-references that may point to these diagrams
+  - Dependencies: None
+  - Priority: High - Immediate action required
+
 - [ ] **Standardize Terminology** (@Casey, Due: Apr 29)
   - Description:
     - Create a glossary of key terms with preferred usage
@@ -26,14 +34,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
     - Ensure consistent formatting of comments
     - Maintain consistent variable naming conventions
     - Use consistent error handling patterns
-  - Dependencies: None
-  - Priority: High - Immediate action required
-
-- [ ] **ASCII Diagram Removal** (@Casey, @Jordan, Due: Apr 28)
-  - Description:
-    - Remove all ASCII diagrams from documentation
-    - Replace with text descriptions of relationships where necessary
-    - Update cross-references that may point to these diagrams
   - Dependencies: None
   - Priority: High - Immediate action required
 
