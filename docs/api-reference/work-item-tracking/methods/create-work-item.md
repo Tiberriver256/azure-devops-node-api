@@ -34,6 +34,57 @@ createWorkItem(
 | `suppressNotifications` | `boolean` | If true, suppresses notifications for this creation | No |
 | `expand` | `WorkItemExpand` | The expand options for the created work item | No |
 
+### Understanding bypassRules
+
+The `bypassRules` parameter is particularly important when you need to create work items that might otherwise be blocked by work item rules. When set to `true`, it allows you to:
+
+1. **Set restricted fields**: Some fields may be restricted by rules, but can be set when bypassing rules
+2. **Create work items in invalid states**: For example, creating a work item directly in a "Closed" state
+3. **Skip required fields**: Create work items without filling in fields that would normally be required
+4. **Avoid transition rules**: Skip the normal state transition requirements (e.g., going directly from "New" to "Closed")
+
+**Note**: Using `bypassRules` requires elevated permissions in the project. Most regular users do not have this permission, as it's typically reserved for administrators and service accounts.
+
+Example usage with `bypassRules`:
+
+```typescript
+// Creating a Bug directly in "Resolved" state, bypassing normal workflow rules
+const patchDocument = [
+  {
+    op: "add",
+    path: "/fields/System.Title",
+    value: "Imported bug from legacy system"
+  },
+  {
+    op: "add",
+    path: "/fields/System.State",
+    value: "Resolved" // Would normally require going through "Active" first
+  },
+  {
+    op: "add",
+    path: "/fields/System.Reason",
+    value: "Fixed"
+  },
+  {
+    op: "add",
+    path: "/fields/Microsoft.VSTS.Common.ResolvedBy",
+    value: "user@example.com"
+  }
+];
+
+// Create Bug with bypassRules=true
+const newBug = await witApi.createWorkItem(
+  {}, // Custom headers
+  patchDocument,
+  "MyProject",
+  "Bug",
+  false, // validateOnly
+  true   // bypassRules - This is the key parameter
+);
+
+console.log(`Created Bug #${newBug.id} directly in Resolved state`);
+```
+
 ## Returns
 
 `Promise<WorkItem>`: A promise that resolves to the newly created work item.
@@ -134,6 +185,117 @@ const newTask = await witApi.createWorkItem(
 
 console.log(`Created Task #${newTask.id}`);
 ```
+
+### Creating with Links to Other Work Items
+
+You can create a work item with links to existing work items in a single operation. This is useful for establishing relationships like parent-child, related, or predecessor-successor relationships during creation:
+
+```typescript
+import * as azdev from "azure-devops-node-api";
+
+async function createWorkItemWithLinks() {
+    // Setup connection
+    const orgUrl = "https://dev.azure.com/your-organization";
+    const token = process.env.AZURE_DEVOPS_PAT;
+    const authHandler = azdev.getPersonalAccessTokenHandler(token);
+    const connection = new azdev.WebApi(orgUrl, authHandler);
+    
+    // Get Work Item Tracking API client
+    const witApi = await connection.getWorkItemTrackingApi();
+    
+    const projectName = "MyProject";
+    const parentId = 42; // ID of an existing User Story
+    
+    // Create a document with fields and links
+    const patchDocument = [
+        // Set fields
+        {
+            op: "add",
+            path: "/fields/System.Title",
+            value: "Implement login page UI"
+        },
+        {
+            op: "add",
+            path: "/fields/System.Description",
+            value: "Create the login page UI according to the design specifications"
+        },
+        {
+            op: "add",
+            path: "/fields/System.Tags",
+            value: "UI; Frontend; Sprint 3"
+        },
+        
+        // Add a parent link (this Task is a child of a User Story)
+        {
+            op: "add",
+            path: "/relations/-", // The hyphen (-) indicates adding to the end of the array
+            value: {
+                rel: "System.LinkTypes.Hierarchy-Reverse", // Parent-child relationship (child to parent)
+                url: `${orgUrl}/${projectName}/_apis/wit/workItems/${parentId}`,
+                attributes: {
+                    comment: "This task implements part of the user story"
+                }
+            }
+        },
+        
+        // Add a related link to another work item
+        {
+            op: "add",
+            path: "/relations/-",
+            value: {
+                rel: "System.LinkTypes.Related", // Related work items
+                url: `${orgUrl}/${projectName}/_apis/wit/workItems/43`, // Another related work item
+                attributes: {
+                    comment: "This task depends on the API endpoints"
+                }
+            }
+        }
+    ];
+    
+    try {
+        // Create a new Task with links
+        const newWorkItem = await witApi.createWorkItem(
+            {}, // Custom headers (can be empty)
+            patchDocument,
+            projectName,
+            "Task"
+        );
+        
+        console.log(`Created Task #${newWorkItem.id} with links`);
+        
+        if (newWorkItem.relations) {
+            console.log(`Created with ${newWorkItem.relations.length} relationships`);
+            newWorkItem.relations.forEach(relation => {
+                console.log(`- Relation type: ${relation.rel}`);
+                console.log(`  Linked to: ${relation.url}`);
+                if (relation.attributes?.comment) {
+                    console.log(`  Comment: ${relation.attributes.comment}`);
+                }
+            });
+        }
+        
+        return newWorkItem;
+    } catch (error) {
+        console.error(`Error creating work item with links: ${error.message}`);
+        throw error;
+    }
+}
+```
+
+#### Common Link Types
+
+Here are common link types you can use when creating relationships:
+
+| Relationship | Link Type (rel value) | Description |
+|--------------|----------------------|-------------|
+| Parent → Child | System.LinkTypes.Hierarchy-Forward | Links from parent to child |
+| Child → Parent | System.LinkTypes.Hierarchy-Reverse | Links from child to parent |
+| Related | System.LinkTypes.Related | General relationship between work items |
+| Predecessor → Successor | System.LinkTypes.Dependency-Forward | This item must be completed before the target |
+| Successor → Predecessor | System.LinkTypes.Dependency-Reverse | This item must be completed after the target |
+| Duplicate | System.LinkTypes.Duplicate-Forward | This item is a duplicate of the target |
+| Tested By | Microsoft.VSTS.Common.TestedBy-Forward | This item is tested by the target (test case) |
+| Tests | Microsoft.VSTS.Common.TestedBy-Reverse | This item (test case) tests the target |
 
 ### Validation Only
 

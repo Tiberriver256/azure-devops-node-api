@@ -81,22 +81,21 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 - Basic authentication is less secure than PATs and may not work in all scenarios
 - Consider using PATs instead of passwords when possible
 
-## Bearer Token Handler
+## OAuth Authentication
 
-The Bearer Token handler allows authentication using OAuth access tokens or other bearer tokens.
+OAuth authentication can be used when working with Azure DevOps through Azure Active Directory authentication.
 
 ### getBearerHandler
 
-**Purpose**: Creates an authentication handler that uses a bearer token for authentication.
+**Purpose**: Creates an authentication handler that uses OAuth bearer token authentication.
 
 **Signature**:
 ```typescript
-function getBearerHandler(token: string, allowCrossOriginAuthentication?: boolean): IRequestHandler
+function getBearerHandler(token: string): IRequestHandler
 ```
 
 **Parameters**:
-- `token`: The bearer token to use for authentication
-- `allowCrossOriginAuthentication`: (Optional) Whether to allow cross-origin authentication, defaults to false
+- `token`: The OAuth token
 
 **Returns**: An authentication handler that can be used with the WebApi constructor.
 
@@ -105,12 +104,12 @@ function getBearerHandler(token: string, allowCrossOriginAuthentication?: boolea
 import * as azdev from "azure-devops-node-api";
 
 const orgUrl = "https://dev.azure.com/your-organization";
-const token = "your-bearer-token";
+const token = "your-oauth-token";
 
-// Get Bearer Token handler
+// Get Bearer Authentication handler
 const authHandler = azdev.getBearerHandler(token);
 
-// Create connection with the Bearer Token handler
+// Create connection with the Bearer Authentication handler
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
 // Alternative: Use the factory method
@@ -118,8 +117,16 @@ const connection2 = azdev.WebApi.createWithBearerToken(orgUrl, token);
 ```
 
 **Usage Notes**:
-- Bearer tokens are typically obtained through OAuth flows
-- Tokens have a limited lifetime and may need to be refreshed
+- OAuth tokens typically come from Azure Active Directory authentication
+- OAuth tokens are ideal for user-delegated scenarios
+- Tokens have a limited lifetime and need to be refreshed
+- **Important**: If your token is from Azure AD, ensure it includes the "Bearer " prefix. If not, you must add it manually:
+  ```typescript
+  // If your token doesn't include the "Bearer " prefix
+  const rawToken = "your-raw-azure-ad-token";
+  const formattedToken = `Bearer ${rawToken}`;
+  const authHandler = azdev.getBearerHandler(formattedToken);
+  ```
 
 ## NTLM Authentication Handler
 
@@ -161,6 +168,48 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 **Usage Notes**:
 - NTLM authentication is primarily used in on-premises deployments
 - Not all Azure DevOps scenarios support NTLM authentication
+
+## Certificate Authentication Handler
+
+The Certificate Authentication handler provides certificate-based authentication for secure environments and automated scenarios.
+
+### getCertificateHandler
+
+**Purpose**: Creates an authentication handler that uses certificate-based authentication.
+
+**Signature**:
+```typescript
+function getCertificateHandler(certFilePath: string, certFilePassword: string, keyFilePath?: string): IRequestHandler
+```
+
+**Parameters**:
+- `certFilePath`: Path to the certificate file (.pem or .pfx)
+- `certFilePassword`: Password for the certificate file
+- `keyFilePath`: (Optional) Path to the private key file if separate from certificate
+
+**Returns**: An authentication handler that can be used with the WebApi constructor.
+
+**Example**:
+```typescript
+import * as azdev from "azure-devops-node-api";
+
+const orgUrl = "https://dev.azure.com/your-organization";
+const certPath = "/path/to/certificate.pem";
+const certPassword = "certificate-password";
+const keyPath = "/path/to/key.pem"; // Optional if using a separate key file
+
+// Get Certificate Authentication handler
+const authHandler = azdev.getCertificateHandler(certPath, certPassword, keyPath);
+
+// Create connection with the Certificate Authentication handler
+const connection = new azdev.WebApi(orgUrl, authHandler);
+```
+
+**Usage Notes**:
+- Certificate authentication is ideal for service accounts and CI/CD pipelines
+- Provides better security than username/password or PAT in some scenarios
+- Certificates can be rotated on a schedule without code changes
+- Works best with on-premises Azure DevOps Server deployments that support certificate authentication
 
 ## Custom Authentication Handlers
 

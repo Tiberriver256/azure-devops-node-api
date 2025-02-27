@@ -13,7 +13,8 @@ getRepositories(
     project?: string,
     includeLinks?: boolean,
     includeAllUrls?: boolean,
-    includeHidden?: boolean
+    includeHidden?: boolean,
+    includeDeleted?: boolean
 ): Promise<GitRepository[]>
 ```
 
@@ -25,6 +26,7 @@ getRepositories(
 | includeLinks | boolean | No | Whether to include reference links in the response. Default is false. |
 | includeAllUrls | boolean | No | Whether to include all remote URLs. Default is false. |
 | includeHidden | boolean | No | Whether to include hidden repositories. Default is false. |
+| includeDeleted | boolean | No | Whether to include deleted repositories. Default is true. Set to false to exclude deleted repositories. |
 
 ### Return Value
 
@@ -59,6 +61,17 @@ repositories.forEach(repo => {
     console.log("----------------------------");
 });
 ```
+
+### Important Note
+
+By default, the `getRepositories` method includes deleted repositories in the results. This may cause unexpected behavior if you're not aware of it. To exclude deleted repositories, explicitly set the `includeDeleted` parameter to `false`:
+
+```typescript
+// Exclude deleted repositories
+const activeRepositories = await gitApi.getRepositories("MyProject", false, false, false, false);
+```
+
+Deleted repositories can be identified by checking the `isDisabled` property, which will be set to `true` for repositories that have been deleted but not purged from the system.
 
 ### Common Errors
 

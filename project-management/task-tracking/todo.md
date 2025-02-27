@@ -4,13 +4,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
-- [ ] **Technical Reviews** (@Alex, @Riley, @Quinn, Due: Apr 26)
-  - Description:
-    - Review all API documentation for technical accuracy
-    - Verify code examples work as documented
-  - Dependencies: All API documentation
-
-
 - [ ] **Cross-Reference Implementation** (@Taylor, @Casey, Due: Apr 19)
   - Description:
     - Establish links between related API methods

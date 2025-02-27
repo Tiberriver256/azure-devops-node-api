@@ -43,7 +43,7 @@ async getDefinitions(
 | continuationToken | string | No | A continuation token for pagination |
 | minMetricsTime | Date | No | If specified, indicates the date from which metrics should be included |
 | definitionIds | number[] | No | A comma-delimited list of definition IDs to retrieve |
-| path | string | No | Filters to definitions under this folder |
+| path | string | No | Filters to definitions under this folder path. Must be specified using backslashes (e.g., "\\TeamA\\MicroServices"). Use "\\" for the root folder. |
 | builtAfter | Date | No | Filters to definitions that have builds after this date |
 | notBuiltAfter | Date | No | Filters to definitions that do not have builds after this date |
 | includeAllProperties | boolean | No | Whether to return the full definitions (true) or shallow representations (false, default) |
@@ -80,41 +80,142 @@ async function getBuildDefinitions() {
     const authHandler = azdev.getPersonalAccessTokenHandler(token);
     const connection = new azdev.WebApi(orgUrl, authHandler);
     
-    // Get Build API client
+    try {
+        // Get Build API client
+        const buildApi = await connection.getBuildApi();
+        
+        // Get build definitions
+        const projectName = "YourProject";
+        const definitions = await buildApi.getDefinitions(
+            projectName,
+            undefined, // name
+            undefined, // repositoryId
+            undefined, // repositoryType
+            undefined, // queryOrder
+            10,        // top - limit to 10 results
+            undefined, // continuationToken
+            undefined, // minMetricsTime
+            undefined, // definitionIds
+            undefined, // path
+            undefined, // builtAfter
+            undefined, // notBuiltAfter
+            true,      // includeAllProperties
+            true       // includeLatestBuilds
+        );
+        
+        console.log(`Found ${definitions.length} build definitions`);
+        
+        // Display build definition details
+        definitions.forEach(def => {
+            console.log(`Definition: ${def.name} (ID: ${def.id})`);
+            console.log(`  Path: ${def.path}`);
+            console.log(`  Latest Build: ${def.latestBuild ? def.latestBuild.buildNumber : 'None'}`);
+            console.log(`  Latest Status: ${def.latestBuild ? def.latestBuild.status : 'N/A'}`);
+            console.log(`  Latest Result: ${def.latestBuild ? def.latestBuild.result : 'N/A'}`);
+            console.log('---');
+        });
+        
+        return {
+            success: true,
+            definitions
+        };
+    } catch (error) {
+        console.error(`Error getting build definitions: ${error.message}`);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// Get all build definitions in a project
+const definitions = await buildApi.getDefinitions("MyProject");
+console.log(`Found ${definitions.length} build definitions`);
+
+definitions.forEach(def => {
+    console.log(`Definition: ${def.name} (ID: ${def.id})`);
+    console.log(`Type: ${def.type === BuildInterfaces.DefinitionType.Build ? "Build" : "Release"}`);
+    if (def.latestBuild) {
+        console.log(`Latest build: ${def.latestBuild.buildNumber}`);
+    }
+});
+
+// Get build definitions in a specific folder
+const folderPath = "\\TeamA\\MicroServices";
+const definitionsInFolder = await buildApi.getDefinitions("MyProject", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, folderPath);
+
+console.log(`Found ${definitionsInFolder.length} definitions in ${folderPath}`);
+
+// Get build definitions in the root folder
+const rootDefinitions = await buildApi.getDefinitions("MyProject", undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, "\\");
+
+console.log(`Found ${rootDefinitions.length} definitions in the root folder`);
+
+### Definition References vs. Full Definitions
+
+An important distinction to understand is that the `getDefinitions` method returns `BuildDefinitionReference` objects by default, not complete definition objects with all properties. These references are lightweight objects containing basic information about the build definition.
+
+To understand the difference:
+
+1. **Build Definition Reference**: A lightweight representation that includes:
+   - Basic properties (id, name, path, revision)
+   - References to related entities (project, queue)
+   - Latest build information (if requested with `includeLatestBuilds=true`)
+   
+2. **Full Build Definition**: A complete representation that includes everything in the reference plus:
+   - All build steps/tasks
+   - All variables and their values
+   - Complete repository information
+   - All triggers (continuous integration, scheduled, etc.)
+   - Retention policy
+   - Build options and demands
+
+#### Getting Full Definition Details
+
+To get the complete definition with all details, use the `getDefinition` (singular) method:
+
+```typescript
+async function getFullDefinitionDetails(definitionId: number) {
+    // Setup connection and API client
+    // ... (connection code) ...
+    
     const buildApi = await connection.getBuildApi();
     
-    // Get build definitions
+    // Get the full definition
     const projectName = "YourProject";
-    const definitions = await buildApi.getDefinitions(
-        projectName,
-        undefined, // name
-        undefined, // repositoryId
-        undefined, // repositoryType
-        undefined, // queryOrder
-        10,        // top - limit to 10 results
-        undefined, // continuationToken
-        undefined, // minMetricsTime
-        undefined, // definitionIds
-        undefined, // path
-        undefined, // builtAfter
-        undefined, // notBuiltAfter
-        true,      // includeAllProperties
-        true       // includeLatestBuilds
-    );
-    
-    console.log(`Found ${definitions.length} build definitions`);
-    
-    // Display build definition details
-    definitions.forEach(def => {
-        console.log(`Definition: ${def.name} (ID: ${def.id})`);
-        console.log(`  Path: ${def.path}`);
-        console.log(`  Latest Build: ${def.latestBuild ? def.latestBuild.buildNumber : 'None'}`);
-        console.log(`  Latest Status: ${def.latestBuild ? def.latestBuild.status : 'N/A'}`);
-        console.log(`  Latest Result: ${def.latestBuild ? def.latestBuild.result : 'N/A'}`);
-        console.log('---');
-    });
+    try {
+        const fullDefinition = await buildApi.getDefinition(
+            projectName,
+            definitionId,
+            undefined, // revision (optional)
+            undefined, // minMetricsTime (optional)
+            undefined, // propertyFilters (optional)
+            true       // includeLatestBuilds
+        );
+        
+        console.log(`Definition: ${fullDefinition.name}`);
+        
+        // Access detailed properties only available in the full definition
+        console.log(`Number of steps: ${fullDefinition.process?.phases[0]?.steps?.length || 0}`);
+        console.log(`Number of variables: ${Object.keys(fullDefinition.variables || {}).length}`);
+        console.log(`Continuous integration trigger enabled: ${fullDefinition.triggers?.some(t => t.triggerType === BuildInterfaces.DefinitionTriggerType.ContinuousIntegration)}`);
+        
+        return fullDefinition;
+    } catch (error) {
+        console.error(`Error retrieving definition: ${error.message}`);
+        throw error;
+    }
 }
 ```
+
+#### Performance Considerations
+
+When working with build definitions:
+
+- Use `getDefinitions` when you need basic information about multiple definitions
+- Use `includeAllProperties=true` with `getDefinitions` only when you need all details for multiple definitions
+- Use `getDefinition` (singular) when you need complete details about a specific definition
+- Be aware that retrieving full definitions is more resource-intensive and slower than working with references
 
 ## getBuild
 
@@ -451,6 +552,105 @@ function getBuildStatusText(status: number): string {
     };
     return statusMap[status] || `Unknown (${status})`;
 }
+
+### Setting Build Variables
+
+To set variables for a build, use the `parameters` property of the build object. The `parameters` property takes a stringified JSON object containing the variable names and values:
+
+```typescript
+import * as azdev from "azure-devops-node-api";
+import * as BuildInterfaces from "azure-devops-node-api/interfaces/BuildInterfaces";
+
+async function queueBuildWithVariables(definitionId: number, sourceBranch: string) {
+    // Setup connection
+    const orgUrl = "https://dev.azure.com/yourorganization";
+    const token = process.env.AZURE_DEVOPS_PAT; // Personal Access Token
+    
+    const authHandler = azdev.getPersonalAccessTokenHandler(token);
+    const connection = new azdev.WebApi(orgUrl, authHandler);
+    
+    // Get Build API client
+    const buildApi = await connection.getBuildApi();
+    
+    // Define variables to pass to the build
+    const buildVariables = {
+        "DEPLOY_ENVIRONMENT": "Production",
+        "ENABLE_DEBUG": "false",
+        "VERSION": "1.2.3",
+        "RUN_INTEGRATION_TESTS": "true"
+    };
+    
+    // Create build object with variables
+    const build: BuildInterfaces.Build = {
+        definition: {
+            id: definitionId
+        },
+        sourceBranch: sourceBranch,
+        reason: BuildInterfaces.BuildReason.Manual,
+        priority: BuildInterfaces.BuildPriority.Normal,
+        parameters: JSON.stringify(buildVariables)
+    };
+    
+    // Queue the build
+    const projectName = "YourProject";
+    try {
+        const queuedBuild = await buildApi.queueBuild(build, projectName);
+        
+        console.log(`Build queued successfully with custom variables!`);
+        console.log(`Build ID: ${queuedBuild.id}`);
+        console.log(`Build Number: ${queuedBuild.buildNumber}`);
+        
+        return queuedBuild;
+    } catch (error) {
+        console.error(`Error queuing build: ${error.message}`);
+        throw error;
+    }
+}
+```
+
+**Note**: Only variables that are defined in the build definition can be set when queuing a build. Setting undefined variables will have no effect.
+
+### Branch Policy Considerations
+
+When queueing builds, be aware that branch policies can impact whether a build can be successfully queued:
+
+1. **Builds for Protected Branches**: If you try to queue a build for a branch that has branch policies enabled (like requiring a pull request), the build may be rejected depending on your permissions and the specific policies.
+
+2. **Pull Request Validation Builds**: Builds triggered as part of a pull request validation policy behave differently than manually queued builds. They often have different security contexts and variable values.
+
+3. **Build Validation Policy**: If a branch has a build validation policy, you may need to queue builds through a pull request rather than directly against the branch.
+
+Example of queueing a build for a feature branch that will eventually be merged into a protected branch:
+
+```typescript
+async function queueFeatureBranchBuild(definitionId: number) {
+    // Setup connection and API client
+    // ... (connection code) ...
+    
+    const buildApi = await connection.getBuildApi();
+    
+    // Use feature branch instead of protected branch
+    const build: BuildInterfaces.Build = {
+        definition: {
+            id: definitionId
+        },
+        sourceBranch: "refs/heads/feature/my-feature", // Use feature branch
+        reason: BuildInterfaces.BuildReason.Manual
+    };
+    
+    try {
+        const queuedBuild = await buildApi.queueBuild(build, "YourProject");
+        console.log(`Build queued successfully on feature branch`);
+        return queuedBuild;
+    } catch (error) {
+        if (error.message && error.message.includes("branch policy")) {
+            console.error("Failed due to branch policy. Try using a feature branch instead.");
+        } else {
+            console.error(`Error queueing build: ${error.message}`);
+        }
+        throw error;
+    }
+}
 ```
 
 ## getBuildLogs
@@ -507,29 +707,21 @@ async function getBuildLogsAndContent(buildId: number) {
         
         console.log(`Found ${logs.length} log files for build ${buildId}`);
         
-        // Display log information
-        for (const log of logs) {
-            console.log(`Log ID: ${log.id}`);
-            console.log(`Type: ${log.type}`);
-            console.log(`Created: ${log.createdOn}`);
-            console.log(`Line count: ${log.lineCount}`);
-            console.log(`URL: ${log.url}`);
-            
-            // Optionally retrieve the actual log content
-            if (log.id !== undefined) {
-                try {
-                    const logLines = await buildApi.getBuildLogLines(projectName, buildId, log.id);
-                    console.log(`Log content (first 5 lines):`);
-                    logLines.slice(0, 5).forEach((line, i) => {
-                        console.log(`  ${i+1}: ${line}`);
-                    });
-                    console.log(`  ... (${logLines.length - 5} more lines)`);
-                } catch (logError) {
-                    console.error(`Error retrieving log content: ${logError.message}`);
-                }
-            }
-            
-            console.log('---');
+        // Display log metadata
+        logs.forEach(log => {
+            console.log(`Log #${log.id}: ${log.type}`);
+            console.log(`  Created: ${log.createdOn}`);
+            console.log(`  Lines: ${log.lineCount}`);
+            console.log(`  URL: ${log.url}`);
+        });
+        
+        // Get content for the first log
+        if (logs.length > 0) {
+            const logContent = await buildApi.getBuildLogLines(projectName, buildId, logs[0].id);
+            console.log("\nSample log content (first 10 lines):");
+            logContent.slice(0, 10).forEach((line, index) => {
+                console.log(`${index + 1}: ${line}`);
+            });
         }
         
         return logs;
@@ -537,6 +729,96 @@ async function getBuildLogsAndContent(buildId: number) {
         console.error(`Error retrieving build logs: ${error.message}`);
         throw error;
     }
+}
+
+### Understanding Log Structure
+
+The logs returned by `getBuildLogs` represent metadata about the available logs, not the actual log content. To get the log content, you need to use the `getBuildLogLines` method:
+
+```typescript
+async getBuildLogLines(
+    project: string,
+    buildId: number,
+    logId: number,
+    startLine?: number,
+    endLine?: number
+): Promise<string[]>
+```
+
+#### Log Types and Their Content
+
+Build logs in Azure DevOps follow a structured format with different types:
+
+1. **Build Process Logs (id: 1)**: Overall build process logs, including preparation and finalization steps.
+2. **Task Logs**: Each task in your build pipeline generates its own log with a unique ID.
+3. **Console Logs**: Raw console output from build agents.
+4. **Warning and Error Logs**: Specific logs containing only warnings or errors.
+
+#### Parsing Log Content Effectively
+
+Log content often contains ANSI color codes and formatting. When displaying logs, you might want to:
+
+1. **Strip ANSI Color Codes**:
+   ```typescript
+   function stripAnsiCodes(text: string): string {
+       return text.replace(/\u001b\[\d+m/g, '');
+   }
+   ```
+
+2. **Parse Structured Data**:
+   ```typescript
+   function extractJsonFromLog(logLines: string[]): any[] {
+       const results = [];
+       for (const line of logLines) {
+           // Look for lines with JSON objects (often wrapped in special markers)
+           if (line.includes('##[json]')) {
+               try {
+                   const jsonStr = line.substring(line.indexOf('##[json]') + 8);
+                   results.push(JSON.parse(jsonStr));
+               } catch (e) {
+                   // Handle parsing errors
+               }
+           }
+       }
+       return results;
+   }
+   ```
+
+3. **Search for Specific Patterns**:
+   ```typescript
+   function findErrorsInLog(logLines: string[]): string[] {
+       return logLines.filter(line => 
+           line.toLowerCase().includes('error') || 
+           line.includes('##[error]'));
+   }
+   ```
+
+#### Handling Large Logs
+
+For builds with large logs, use the `startLine` and `endLine` parameters of `getBuildLogLines` to retrieve logs in chunks:
+
+```typescript
+// Get logs in chunks of 1000 lines
+async function getFullLogInChunks(projectName: string, buildId: number, logId: number) {
+    const chunkSize = 1000;
+    let allLines: string[] = [];
+    let startLine = 0;
+    let hasMoreLines = true;
+    
+    while (hasMoreLines) {
+        const endLine = startLine + chunkSize - 1;
+        const lines = await buildApi.getBuildLogLines(projectName, buildId, logId, startLine, endLine);
+        
+        allLines = allLines.concat(lines);
+        
+        if (lines.length < chunkSize) {
+            hasMoreLines = false;
+        } else {
+            startLine += chunkSize;
+        }
+    }
+    
+    return allLines;
 }
 ```
 

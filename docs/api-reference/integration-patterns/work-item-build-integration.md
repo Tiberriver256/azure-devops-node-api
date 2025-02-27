@@ -344,11 +344,17 @@ async function generateWorkItemBuildReport(workItemIds: number[]) {
             projectName,
             generatedAt: new Date(),
             workItemCount: report.length,
-            workItems: report
+            workItems: report,
+            success: true
         };
     } catch (error) {
         console.error(`Error: ${error.message}`);
-        throw error;
+        return {
+            projectName,
+            generatedAt: new Date(),
+            success: false,
+            error: error.message
+        };
     }
 }
 
@@ -472,11 +478,17 @@ async function linkBuildsToWorkItems(buildId: number) {
             buildId,
             buildNumber: build.buildNumber,
             workItemsFound: workItemIds.size,
-            linkedWorkItems
+            linkedWorkItems,
+            success: true
         };
     } catch (error) {
         console.error(`Error: ${error.message}`);
-        throw error;
+        return {
+            buildId,
+            buildNumber: build?.buildNumber,
+            success: false,
+            error: error.message
+        };
     }
 }
 
@@ -644,7 +656,16 @@ async function generateBuildDashboardByWorkItemType(projectName: string, days: n
         return dashboard;
     } catch (error) {
         console.error(`Error: ${error.message}`);
-        throw error;
+        return {
+            projectName,
+            timeRange: {
+                start: startDate,
+                end: endDate,
+                days
+            },
+            success: false,
+            error: error.message
+        };
     }
 }
 
