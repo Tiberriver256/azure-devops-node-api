@@ -4,13 +4,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
-- [ ] **Git API Documentation** (@Jordan, @Alex, Due: Apr 5)
-  - Description:
-    - Document top 5 methods with parameters and return values
-    - Create essential code examples
-    - Document common errors
-  - Dependencies: WebApi Core Documentation
-
 - [ ] **Build API Documentation** (@Quinn, Due: Apr 12)
   - Description:
     - Document top 5 methods with parameters and return values
