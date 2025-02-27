@@ -1,165 +1,59 @@
-**Navigation**: [Home](../../index.md) > [API Reference](../index.md) > WorkItemTrackingApi
+# Work Item Tracking API
 
-# WorkItemTrackingApi
-
-## Contents
-
-- [Overview](#overview)
-- [Constructor](#constructor)
-- [Properties](#properties)
-- [Methods](#methods)
-- [Usage Examples](#usage-examples)
-- [Common Scenarios](#common-scenarios)
-- [Error Handling](#error-handling)
-- [See Also](#see-also)
+**Navigation**: [Home](../../index.md) > [API Reference](../index.md) > Work Item Tracking API
 
 ## Overview
 
-The WorkItemTrackingApi class provides access to Azure DevOps work item tracking operations. It enables developers to create, retrieve, update, and delete work items, queries, and work item types within Azure DevOps projects.
+The Work Item Tracking API enables programmatic access to work items in Azure DevOps. It provides capabilities to create, read, update, and delete work items, run queries, and interact with work item types and fields. This API is essential for building integrations, automating work item management, and implementing custom workflows for Azure DevOps projects.
 
-**Package:** azure-devops-node-api  
-**Implements:** [IWorkItemTrackingApi](./interfaces/IWorkItemTrackingApi.md)
+## Key Features
 
----
-
-### Key Features
-
-- Create, update, and delete work items with full field control
-- Execute and manage work item queries (WIQL)
-- Retrieve work item type definitions and field information
+- Retrieve individual or multiple work items by ID
+- Create new work items with customized fields
+- Update existing work items with field changes
+- Query work items using Work Item Query Language (WIQL)
+- Access work item type definitions and field metadata
 - Manage work item links and attachments
-- Support for batch operations on multiple work items
 
----
+## API Client
 
-## Constructor
-
-See detailed information about the constructor in the [constructor documentation](./constructor.md).
+To use the Work Item Tracking API, you'll need to obtain an instance of the `WorkItemTrackingApi` client through the WebApi Core:
 
 ```typescript
-constructor(baseUrl: string, handlers: VsoClientRequestHandler, options?: IRequestOptions)
-```
-
----
-
-## Properties
-
-See detailed information about all properties in the [properties documentation](./properties.md).
-
-| Name | Type | Description | Access |
-|------|------|-------------|--------|
-| `client` | `RestClient` | The underlying REST client used for API requests | protected |
-| `baseUrl` | `string` | The base URL for the Azure DevOps organization | protected |
-
----
-
-## Methods
-
-See detailed information about all methods in the [methods documentation](./methods/README.md).
-
-### Work Item Methods
-
-#### ⭐ [getWorkItem](./methods/getWorkItem.md)
-Retrieves a single work item by its ID.
-
-#### ⭐ [getWorkItems](./methods/getWorkItems.md)
-Retrieves multiple work items by their IDs.
-
-#### 🆕 [createWorkItem](./methods/createWorkItem.md)
-Creates a new work item.
-
-#### 🔄 [updateWorkItem](./methods/updateWorkItem.md)
-Updates an existing work item.
-
-#### ⚠️ [deleteWorkItem](./methods/deleteWorkItem.md)
-Permanently deletes a work item.
-
-### Query Methods
-
-#### 🔍 [queryByWiql](./methods/queryByWiql.md)
-Executes a work item query using WIQL.
-
-#### 🔍 [getWorkItemType](./methods/getWorkItemType.md)
-Retrieves a specific work item type definition.
-
----
-
-## Usage Examples
-
-For detailed examples, see the [examples documentation](./examples.md).
-
-### Basic Usage
-
-```typescript
-// Example showing basic usage of the class
 import * as azdev from "azure-devops-node-api";
 
-const organizationUrl = "https://dev.azure.com/your-organization";
+// Initialize authentication
+const orgUrl = "https://dev.azure.com/your-organization";
 const token = "your-personal-access-token";
-
-// Initialize the auth handler
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 
-// Initialize the connection to Azure DevOps Services
-const connection = new azdev.WebApi(organizationUrl, authHandler);
+// Create a connection to Azure DevOps
+const connection = new azdev.WebApi(orgUrl, authHandler);
 
-// Get the WorkItemTrackingApi client
-const workItemTrackingApi = await connection.getWorkItemTrackingApi();
-
-// Get a work item
-const workItem = await workItemTrackingApi.getWorkItem(42);
-console.log(`Work Item #${workItem.id}: ${workItem.fields["System.Title"]}`);
+// Get the Work Item Tracking API client
+const witApi = await connection.getWorkItemTrackingApi();
 ```
 
-💡 **Tip**:
-For most scenarios, you should get the WorkItemTrackingApi instance through the WebApi class rather than creating it directly.
+## Documentation Contents
 
----
+- [Work Item Tracking API Reference](./work-item-tracking-api.md) - Full API documentation
+- Methods:
+  - [getWorkItem](./methods/get-work-item.md) - Retrieve a single work item
+  - [getWorkItems](./methods/get-work-items.md) - Retrieve multiple work items
+  - [createWorkItem](./methods/create-work-item.md) - Create a new work item
+  - [updateWorkItem](./methods/update-work-item.md) - Update an existing work item
+  - [queryByWiql](./methods/query-work-items.md) - Execute WIQL queries
 
-## Common Scenarios
+## Common Usage Scenarios
 
-For detailed information about common usage scenarios, see the [common scenarios documentation](./common-scenarios.md).
-
-<details>
-<summary><b>Quick Scenario Reference</b></summary>
-
-- Creating and linking work items
-- Running saved queries
-- Working with work item types
-- Batch updating work items
-- Handling work item attachments
-
-</details>
-
----
-
-## Error Handling
-
-For detailed guidance on handling errors, see the [error handling documentation](./error-handling.md).
-
-```typescript
-try {
-  const workItemTrackingApi = await connection.getWorkItemTrackingApi();
-  const workItem = await workItemTrackingApi.getWorkItem(42);
-  console.log(workItem);
-} catch (error) {
-  if (error.statusCode === 401) {
-    console.error("Authentication failed. Check your credentials.");
-  } else if (error.statusCode === 403) {
-    console.error("You don't have permission to access this work item.");
-  } else if (error.statusCode === 404) {
-    console.error("Work item not found. It may have been deleted or you may have provided an incorrect ID.");
-  } else {
-    console.error("Unexpected error:", error.message);
-  }
-}
-```
-
----
+- **Integration with External Systems**: Sync work items with third-party tools
+- **Automation**: Automate creation and updates of work items based on external events
+- **Reporting**: Generate custom reports on work item status and progress
+- **Custom Dashboards**: Build custom dashboards with work item data
+- **Bulk Operations**: Perform batch operations on multiple work items
 
 ## See Also
 
-- [Work Item Interfaces](./interfaces/README.md)
-- [Getting Started with Work Items](../../getting-started/work-items.md)
-- [Work Item Tracking Concepts](../../concepts/work-item-tracking.md)
-- [Authentication Guide](../../guides/authentication.md)
+- [WebApi Core Documentation](../webapi-core/webapi-core.md)
+- [Authentication Handlers](../webapi-core/authentication-handlers.md)
+- [Work Items REST API](https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/?view=azure-devops-rest-7.1)
