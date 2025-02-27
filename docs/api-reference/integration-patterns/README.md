@@ -24,6 +24,7 @@ This documentation covers key integration patterns between the most commonly use
 - [Work Item + Build Integration](./work-item-build-integration.md) - Patterns for connecting work items with build pipelines
 - [Git + Build Integration](./git-build-integration.md) - Patterns for automating builds based on repository events
 - [Cross-API Examples](./cross-api-examples.md) - Complex scenarios involving three or more APIs
+- [API Cross-Reference Table](./api-cross-reference-table.md) - Comprehensive table showing relationships between API methods
 
 ## Common Integration Scenarios
 
@@ -67,6 +68,60 @@ const buildApi = await connection.getBuildApi();
 // using these API clients together
 ```
 
+## API Relationships
+
+The following diagram illustrates the relationships between the primary APIs covered in these integration patterns:
+
+```
+                             ┌───────────────┐
+                             │   Core API    │
+                             │ (Projects &   │
+                             │    Teams)     │
+                             └───────┬───────┘
+                                     │
+                   ┌─────────────────┼─────────────────┐
+                   │                 │                 │
+          ┌────────▼────────┐ ┌──────▼───────┐ ┌──────▼───────┐
+          │    Git API      │ │  Work Item   │ │    Build     │
+          │ (Code & Repos)  │◄┼─────────────►│     API      │
+          └────────┬────────┘ └──────┬───────┘ └──────┬───────┘
+                   │                 │                 │
+                   └─────────────────┼─────────────────┘
+                                     │
+                             ┌──────▼───────┐
+                             │ Integration  │
+                             │  Patterns    │
+                             └──────────────┘
+```
+
+For a detailed breakdown of how specific methods relate to each other, see the [API Cross-Reference Table](./api-cross-reference-table.md).
+
+## Key API Methods Used in Integration Patterns
+
+### Work Item Tracking API
+
+- [getWorkItem](../work-item-tracking/methods/get-work-item.md) - Retrieve a single work item
+- [getWorkItems](../work-item-tracking/methods/get-work-items.md) - Retrieve multiple work items
+- [createWorkItem](../work-item-tracking/methods/create-work-item.md) - Create a new work item
+- [updateWorkItem](../work-item-tracking/methods/update-work-item.md) - Update an existing work item
+- [queryByWiql](../work-item-tracking/methods/query-work-items.md) - Execute WIQL queries
+
+### Git API
+
+- [getRepositories](../git-api/top-5-methods.md#getrepositories) - List all Git repositories
+- [getRepository](../git-api/top-5-methods.md#getrepository) - Get a specific Git repository
+- [getRefs](../git-api/top-5-methods.md#getrefs) - Get branches and tags
+- [getPullRequests](../git-api/top-5-methods.md#getpullrequests) - Get pull requests
+- [createPullRequest](../git-api/top-5-methods.md#createpullrequest) - Create a new pull request
+
+### Build API
+
+- [getDefinitions](../build-api/top-5-methods.md#getdefinitions) - Get build definitions
+- [getBuild](../build-api/top-5-methods.md#getbuild) - Get a specific build
+- [getBuilds](../build-api/top-5-methods.md#getbuilds) - Get multiple builds
+- [queueBuild](../build-api/top-5-methods.md#queuebuild) - Queue a new build
+- [getBuildLogs](../build-api/top-5-methods.md#getbuildlogs) - Get build logs
+
 ## Best Practices for API Integration
 
 When implementing integration patterns, consider these best practices:
@@ -78,9 +133,10 @@ When implementing integration patterns, consider these best practices:
 5. **Authentication Scopes**: Ensure your authentication token has all necessary scopes for the APIs you're integrating
 6. **Idempotent Operations**: Design integrations to be safely retryable in case of failures
 
-## Related Resources
+## See Also
 
-- [Work Item Tracking API](../work-item-tracking/README.md) - Documentation for Work Item Tracking API
-- [Git API](../git-api/README.md) - Documentation for Git API
-- [Build API](../build-api/README.md) - Documentation for Build API
-- [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases 
+- [Work Item Tracking API Documentation](../work-item-tracking/README.md) - Documentation for Work Item Tracking API
+- [Git API Documentation](../git-api/README.md) - Documentation for Git API
+- [Build API Documentation](../build-api/README.md) - Documentation for Build API
+- [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases
+- [WebApi Core Documentation](../webapi-core/README.md) - Essential information about the WebApi class 

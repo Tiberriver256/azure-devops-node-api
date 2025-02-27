@@ -1,5 +1,7 @@
 # Azure DevOps Node API Reference
 
+**Navigation**: [Home](../index.md) > API Reference
+
 Welcome to the Azure DevOps Node API reference documentation. This documentation provides detailed information about the classes, methods, and interfaces available in the Azure DevOps Node API.
 
 ## API Classes
@@ -7,13 +9,13 @@ Welcome to the Azure DevOps Node API reference documentation. This documentation
 | Class | Description |
 |-------|-------------|
 | [WorkItemTrackingApi](./work-item-tracking/README.md) | Work with work items, queries, and work item types |
-| BuildApi | Manage builds and build definitions |
-| GitApi | Work with Git repositories, pull requests, and commits |
-| CoreApi | Access projects, teams, and process templates |
-| ReleaseApi | Manage release definitions and deployments |
-| TaskAgentApi | Work with agent pools and task groups |
-| TestApi | Manage test plans, test suites, and test cases |
-| WikiApi | Work with wikis and wiki pages |
+| [BuildApi](./build-api/README.md) | Manage builds and build definitions |
+| [GitApi](./git-api/README.md) | Work with Git repositories, pull requests, and commits |
+| [CoreApi](./core-api/README.md) | Access projects, teams, and process templates |
+| [ReleaseApi](./release-api/README.md) | Manage release definitions and deployments |
+| [TaskAgentApi](./task-agent-api/README.md) | Work with agent pools and task groups |
+| [TestApi](./test-api/README.md) | Manage test plans, test suites, and test cases |
+| [WikiApi](./wiki-api/README.md) | Work with wikis and wiki pages |
 
 ## Getting Started
 
@@ -97,4 +99,30 @@ The Azure DevOps Node API is organized into several API clients, each focused on
 - **TestApi**: Manage test plans, test suites, and test cases
 - **WikiApi**: Work with wikis and wiki pages
 
-Each API client provides methods for interacting with the corresponding Azure DevOps service. 
+Each API client provides methods for interacting with the corresponding Azure DevOps service.
+
+## Integration Patterns
+
+While each API client can be used independently, many real-world scenarios require combining multiple APIs. The [Integration Patterns](./integration-patterns/README.md) documentation provides guidance on how to effectively combine multiple Azure DevOps APIs to solve common real-world scenarios.
+
+Key integration patterns include:
+
+- [Work Item + Git Integration](./integration-patterns/work-item-git-integration.md) - Patterns for integrating work item tracking with source control
+- [Work Item + Build Integration](./integration-patterns/work-item-build-integration.md) - Patterns for connecting work items with build pipelines
+- [Git + Build Integration](./integration-patterns/git-build-integration.md) - Patterns for automating builds based on repository events
+- [Cross-API Examples](./integration-patterns/cross-api-examples.md) - Complex scenarios involving three or more APIs
+
+## API Relationships
+
+To understand how different API clients and methods relate to each other, refer to the [API Cross-Reference Table](./integration-patterns/api-cross-reference-table.md). This table shows which methods are commonly used together and which integration patterns they support.
+
+## API Priority Matrix
+
+The [API Priority Matrix](./priority-matrix/README.md) provides a strategic view of the most important methods within each API client, along with common use cases and complexity ratings. Use this matrix to focus your learning and implementation efforts on the most impactful functionality.
+
+## See Also
+
+- [Getting Started Guide](../getting-started/README.md) - Step-by-step guide to getting started with the Azure DevOps Node API
+- [Tutorials](../tutorials/README.md) - Practical tutorials for common scenarios
+- [Troubleshooting Guide](../troubleshooting/README.md) - Solutions for common issues
+- [Azure DevOps REST API Reference](https://learn.microsoft.com/en-us/rest/api/azure/devops/?view=azure-devops-rest-7.1) - Official Microsoft documentation for the underlying REST API 

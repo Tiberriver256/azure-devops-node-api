@@ -1,5 +1,7 @@
 # Git API Documentation
 
+**Navigation**: [Home](../../index.md) > [API Reference](../index.md) > Git API
+
 ## Overview
 
 The Azure DevOps Git API provides a comprehensive set of methods for interacting with Git repositories in Azure DevOps. It enables developers to programmatically manage repositories, branches, commits, pull requests, and more. This documentation provides detailed information about the most commonly used methods in the Git API.
@@ -62,8 +64,43 @@ const repositories = await gitApi.getRepositories();
 console.log(`Found ${repositories.length} repositories`);
 ```
 
-## Related Resources
+## Integration with Other APIs
+
+The Git API is commonly used in conjunction with other Azure DevOps APIs to create comprehensive solutions:
+
+### Git + Work Item Integration
+
+Git repositories, commits, and pull requests can be linked to work items to provide traceability between code changes and requirements. Common integration patterns include:
+
+- Linking pull requests to work items
+- Creating branches based on work item information
+- Updating work item status based on pull request status
+
+See [Work Item + Git Integration](../integration-patterns/work-item-git-integration.md) for detailed examples.
+
+### Git + Build Integration
+
+Git repositories and branches can trigger builds and deployments. Common integration patterns include:
+
+- Triggering builds on commit or pull request
+- Building specific branches
+- Reporting build status on pull requests
+
+See [Git + Build Integration](../integration-patterns/git-build-integration.md) for detailed examples.
+
+### Cross-API Examples
+
+For complex scenarios involving Git, Work Item Tracking, and Build APIs together, see [Cross-API Examples](../integration-patterns/cross-api-examples.md).
+
+## Related API Methods
+
+For a comprehensive view of how Git API methods relate to other APIs, see the [API Cross-Reference Table](../integration-patterns/api-cross-reference-table.md).
+
+## See Also
 
 - [WebApi Core Documentation](../webapi-core/README.md) - Essential information about the WebApi class
 - [Authentication Handlers](../webapi-core/authentication-handlers.md) - Authentication options for connecting to Azure DevOps
+- [Work Item Tracking API Documentation](../work-item-tracking/README.md) - Documentation for Work Item Tracking API methods
+- [Build API Documentation](../build-api/README.md) - Documentation for Build API methods
+- [Integration Patterns](../integration-patterns/README.md) - Documentation for integration patterns
 - [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases 
