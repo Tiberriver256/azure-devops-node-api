@@ -4,14 +4,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
-- [ ] **API Priority Matrix** (@Alex, Due: Mar 15)
-  - Description:
-    - Define priority of methods within each API client
-    - Identify top 5-7 methods per client
-    - Document common use cases
-  - Dependencies: None
-  - Blockers: Waiting for input from development team on Git API priorities
-
 - [ ] **Work Item Tracking API Documentation** (@Casey, @Riley, Due: Mar 29)
   - Description:
     - Document top 5 methods with parameters and return values

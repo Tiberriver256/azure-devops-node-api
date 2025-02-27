@@ -56,4 +56,11 @@ Completed tasks. Include completion date and any relevant notes.
     - Create simplified guide for Azure DevOps Node API
     - Include basic setup and authentication examples
     - Provide links to detailed API documentation
-  - Notes: Created comprehensive getting started guide with step-by-step instructions for setting up a project, authenticating, and using the API. Added an API troubleshooting guide and updated the Getting Started section with an index page for better navigation. Documentation includes practical examples for JavaScript and TypeScript projects. 
+  - Notes: Created comprehensive getting started guide with step-by-step instructions for setting up a project, authenticating, and using the API. Added an API troubleshooting guide and updated the Getting Started section with an index page for better navigation. Documentation includes practical examples for JavaScript and TypeScript projects.
+
+- [x] **API Priority Matrix** (@Alex, Completed: Mar 15)
+  - Description:
+    - Define priority of methods within each API client
+    - Identify top 5-7 methods per client
+    - Document common use cases
+  - Notes: Created comprehensive API Priority Matrix with prioritized methods for all major API clients. Conducted a meeting with the development team to gather input and validate priorities. The matrix includes common use cases, complexity ratings, integration patterns, and a visual diagram of API relationships. This will guide documentation efforts to focus on the most important methods first. 
