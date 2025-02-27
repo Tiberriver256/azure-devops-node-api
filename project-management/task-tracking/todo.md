@@ -4,13 +4,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
-- [ ] **Integration Patterns Documentation** (@Taylor, Due: Apr 19)
-  - Description:
-    - Document Work Item + Git integration
-    - Document Work Item + Build integration
-    - Create cross-API examples
-  - Dependencies: Work Item, Git, and Build API documentation
-
 - [ ] **Technical Reviews** (@Alex, @Riley, @Quinn, Due: Apr 26)
   - Description:
     - Review all API documentation for technical accuracy
