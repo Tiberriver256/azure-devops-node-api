@@ -77,4 +77,11 @@ Completed tasks. Include completion date and any relevant notes.
     - Document top 5 methods with parameters and return values
     - Create essential code examples
     - Document common errors
-  - Notes: Created comprehensive documentation for the Git API, including detailed method references for getRepositories, getRepository, getRefs, getPullRequests, and createPullRequest. Added extensive code examples showcasing real-world scenarios like repository analysis, branch creation, pull request management, and more. Created a thorough troubleshooting guide for common Git API errors including authentication issues, resource conflicts, and performance considerations. Documentation follows the API Priority Matrix to focus on the most commonly used methods that will benefit the majority of developers. 
+  - Notes: Created comprehensive documentation for the Git API, including detailed method references for getRepositories, getRepository, getRefs, getPullRequests, and createPullRequest. Added extensive code examples showcasing real-world scenarios like repository analysis, branch creation, pull request management, and more. Created a thorough troubleshooting guide for common Git API errors including authentication issues, resource conflicts, and performance considerations. Documentation follows the API Priority Matrix to focus on the most commonly used methods that will benefit the majority of developers.
+
+- [x] **Build API Documentation** (@Quinn, Completed: Apr 12)
+  - Description:
+    - Document top 5 methods with parameters and return values
+    - Create essential code examples
+    - Document common errors
+  - Notes: Created comprehensive documentation for the Build API, including detailed method references for getDefinitions, getBuild, getBuilds, queueBuild, and getBuildLogs. Added practical code examples demonstrating real-world scenarios such as build dashboards, multi-branch builds, log analysis, artifact management, definition management, retention management, and status monitoring. Created a thorough troubleshooting guide for common Build API errors including authentication issues, validation errors, rate limiting, and server errors. Documentation follows the API Priority Matrix to focus on the most commonly used methods that will benefit the majority of developers. 
