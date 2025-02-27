@@ -4,13 +4,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
-- [ ] **Template Simplification** (@Taylor, Due: Mar 15)
-  - Description:
-    - Create simplified templates for MVP documentation
-    - Focus on essential sections only
-    - Create template implementation guide
-  - Dependencies: None
-
 - [ ] **API Priority Matrix** (@Alex, Due: Mar 15)
   - Description:
     - Define priority of methods within each API client
