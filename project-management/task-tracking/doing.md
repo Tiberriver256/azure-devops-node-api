@@ -4,12 +4,12 @@ Tasks currently in progress.
 
 ## In Progress
 
-- [ ] **ASCII Diagram Removal** (@Casey, @Jordan, Due: Apr 28)
+- [ ] **Standardize Terminology** (@Casey, Due: Apr 29)
   - Description:
-    - Remove all ASCII diagrams from documentation
-    - Replace with text descriptions of relationships where necessary
-    - Update cross-references that may point to these diagrams
+    - Create a glossary of key terms with preferred usage
+    - Ensure consistent use of API client names (e.g., "Git API" vs "GitApi")
+    - Standardize references to Azure DevOps services
   - Dependencies: None
-  - Status: In progress - Identifying all ASCII diagrams in the documentation and planning replacements.
+  - Status: In progress - Creating a glossary of key terms and reviewing API client naming conventions across documentation.
 
 // ... existing code ... 

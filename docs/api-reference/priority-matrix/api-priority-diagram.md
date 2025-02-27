@@ -1,67 +1,68 @@
 # API Priority Visualization
 
-This diagram provides a visual summary of the API priorities across the different Azure DevOps API clients.
+This document provides a visual summary of the API priorities across the different Azure DevOps API clients.
 
 ## API Client Priority Heat Map
 
-```
-    High                                            Priority                                         Low
-     ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-Core │███████████ getProjects ██████████ getProject █████████ getTeams ██████ getTeam ████████████│
-     ├─────────────────────────────────────────────────────────────────────────────────────────────┤
-Git  │████ getRepositories ███ getRepository ███ getRefs ███ getItems ██ getPullRequests ██████████│
-     ├─────────────────────────────────────────────────────────────────────────────────────────────┤
-Work │██████ getWorkItem ██████ getWorkItems ███ createWorkItem ██ updateWorkItem ██ queryByWiql ██│
-Item ├─────────────────────────────────────────────────────────────────────────────────────────────┤
-Build│█████ getDefinitions ████ getBuild ████ getBuilds ███ queueBuild ███ getBuildLogs ███████████│
-     ├─────────────────────────────────────────────────────────────────────────────────────────────┤
-Rel. │██ getReleaseDefinitions █ getRelease █ getReleases █ createRelease █ updateReleaseEnvironment│
-     └─────────────────────────────────────────────────────────────────────────────────────────────┘
-```
+**API Client Method Priorities (High to Low):**
+
+- **Core API:**
+  - getProjects (Highest)
+  - getProject
+  - getTeams
+  - getTeam (Lower)
+
+- **Git API:**
+  - getRepositories (Highest)
+  - getRepository
+  - getRefs
+  - getItems
+  - getPullRequests (Lower)
+
+- **Work Item API:**
+  - getWorkItem (Highest)
+  - getWorkItems
+  - createWorkItem
+  - updateWorkItem
+  - queryByWiql (Lower)
+
+- **Build API:**
+  - getDefinitions (Highest)
+  - getBuild
+  - getBuilds
+  - queueBuild
+  - getBuildLogs (Lower)
+
+- **Release API:**
+  - getReleaseDefinitions (Highest)
+  - getRelease
+  - getReleases
+  - createRelease
+  - updateReleaseEnvironment (Lower)
 
 ## API Client Method Complexity
 
-```
-    API Client            Highest Complexity Methods
-    ┌───────────────────┬────────────────────────────────────────────────────┐
-    │ Git API           │ createPullRequest, createRepository, getPullRequest │
-    ├───────────────────┼────────────────────────────────────────────────────┤
-    │ Work Item API     │ createWorkItem, updateWorkItem, queryByWiql         │
-    ├───────────────────┼────────────────────────────────────────────────────┤
-    │ Build API         │ queueBuild, updateBuild                             │
-    ├───────────────────┼────────────────────────────────────────────────────┤
-    │ Release API       │ createRelease, updateReleaseEnvironment             │
-    ├───────────────────┼────────────────────────────────────────────────────┤
-    │ Test API          │ createTestRun, updateTestResults                    │
-    └───────────────────┴────────────────────────────────────────────────────┘
-```
+**API Client Method Complexity Table:**
+
+- **Git API:** createPullRequest, createRepository, getPullRequest
+- **Work Item API:** createWorkItem, updateWorkItem, queryByWiql
+- **Build API:** queueBuild, updateBuild
+- **Release API:** createRelease, updateReleaseEnvironment
+- **Test API:** createTestRun, updateTestResults
 
 ## API Client Relationship Map
 
-```
-                             ┌───────────────┐
-                             │   Core API    │
-                             │ (Projects &   │
-                             │    Teams)     │
-                             └───────┬───────┘
-                                     │
-                   ┌─────────────────┼─────────────────┐
-                   │                 │                 │
-          ┌────────▼────────┐ ┌──────▼───────┐ ┌──────▼───────┐
-          │    Git API      │ │  Work Item   │ │    Build     │
-          │ (Code & Repos)  │ │     API      │ │     API      │
-          └────────┬────────┘ └──────┬───────┘ └──────┬───────┘
-                   │                 │                 │
-          ┌────────▼────────┐        │          ┌─────▼────────┐
-          │  Pull Request   │        │          │   Release    │
-          │      API        │◄───────┼──────────►     API      │
-          └─────────────────┘        │          └──────────────┘
-                                     │
-                             ┌──────▼───────┐
-                             │    Test      │
-                             │     API      │
-                             └──────────────┘
-```
+**API Relationship Structure:**
+
+- **Core API (Projects & Teams)** serves as the central component
+- Three main APIs branch from the Core API:
+  - **Git API (Code & Repositories)**
+  - **Work Item API**
+  - **Build API**
+- The **Git API** connects to the **Pull Request API**
+- The **Build API** connects to the **Release API**
+- The **Work Item API** connects to both the **Pull Request API** and **Release API**
+- The **Work Item API** also connects to the **Test API**
 
 ## Documentation Priority Sequence
 

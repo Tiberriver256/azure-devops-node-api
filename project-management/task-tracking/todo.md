@@ -4,22 +4,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
-- [ ] **ASCII Diagram Removal** (@Casey, @Jordan, Due: Apr 28)
-  - Description:
-    - Remove all ASCII diagrams from documentation
-    - Replace with text descriptions of relationships where necessary
-    - Update cross-references that may point to these diagrams
-  - Dependencies: None
-  - Priority: High - Immediate action required
-
-- [ ] **Standardize Terminology** (@Casey, Due: Apr 29)
-  - Description:
-    - Create a glossary of key terms with preferred usage
-    - Ensure consistent use of API client names (e.g., "Git API" vs "GitApi")
-    - Standardize references to Azure DevOps services
-  - Dependencies: None
-  - Priority: High - Immediate action required
-
 - [ ] **Improve Visual Structure** (@Jordan, Due: Apr 30)
   - Description:
     - Break up long paragraphs into shorter, focused sections

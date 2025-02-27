@@ -70,29 +70,16 @@ const buildApi = await connection.getBuildApi();
 
 ## API Relationships
 
-The following diagram illustrates the relationships between the primary APIs covered in these integration patterns:
+The following describes the relationships between the primary APIs covered in these integration patterns:
 
-```
-                             ┌───────────────┐
-                             │   Core API    │
-                             │ (Projects &   │
-                             │    Teams)     │
-                             └───────┬───────┘
-                                     │
-                   ┌─────────────────┼─────────────────┐
-                   │                 │                 │
-          ┌────────▼────────┐ ┌──────▼───────┐ ┌──────▼───────┐
-          │    Git API      │ │  Work Item   │ │    Build     │
-          │ (Code & Repos)  │◄┼─────────────►│     API      │
-          └────────┬────────┘ └──────┬───────┘ └──────┬───────┘
-                   │                 │                 │
-                   └─────────────────┼─────────────────┘
-                                     │
-                             ┌──────▼───────┐
-                             │ Integration  │
-                             │  Patterns    │
-                             └──────────────┘
-```
+**API Relationship Structure:**
+- The Core API (Projects & Teams) serves as the central component
+- Three main APIs branch from the Core API:
+  - Git API (Code & Repositories)
+  - Work Item Tracking API
+  - Build API
+- These three APIs have bidirectional relationships with each other
+- All APIs contribute to Integration Patterns
 
 For a detailed breakdown of how specific methods relate to each other, see the [API Cross-Reference Table](./api-cross-reference-table.md).
 

@@ -42,27 +42,14 @@ The following table shows common integration scenarios and the API methods they 
 
 ## API Client Relationship Diagram
 
-```
-                             ┌───────────────┐
-                             │   Core API    │
-                             │ (Projects &   │
-                             │    Teams)     │
-                             └───────┬───────┘
-                                     │
-                   ┌─────────────────┼─────────────────┐
-                   │                 │                 │
-          ┌────────▼────────┐ ┌──────▼───────┐ ┌──────▼───────┐
-          │    Git API      │ │  Work Item   │ │    Build     │
-          │ (Code & Repos)  │◄┼─────────────►│     API      │
-          └────────┬────────┘ └──────┬───────┘ └──────┬───────┘
-                   │                 │                 │
-                   └─────────────────┼─────────────────┘
-                                     │
-                             ┌──────▼───────┐
-                             │ Integration  │
-                             │  Patterns    │
-                             └──────────────┘
-```
+**API Relationship Structure:**
+- The Core API (Projects & Teams) serves as the central component
+- Three main APIs branch from the Core API:
+  - Git API (Code & Repositories)
+  - Work Item Tracking API
+  - Build API
+- These three APIs have bidirectional relationships with each other
+- All APIs contribute to Integration Patterns
 
 ## See Also
 
