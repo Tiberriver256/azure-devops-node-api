@@ -9,27 +9,69 @@ The Azure DevOps Build API provides a comprehensive set of methods for interacti
 ## Purpose
 
 The Build API is designed to facilitate:
-- Build pipeline management (creating, updating, and querying build pipelines)
-- Build execution (queuing builds and monitoring their progress)
-- Build result analysis (accessing logs, artifacts, and test results)
-- Build pipeline automation (integrating builds with other systems)
-- Build reporting and metrics (collecting data on build performance and outcomes)
+
+### Pipeline Management
+- Creating new build pipelines
+- Updating existing pipeline configurations
+- Querying pipeline information
+- Managing pipeline settings and permissions
+
+### Build Execution
+- Queuing new builds
+- Monitoring build progress
+- Canceling running builds
+- Handling build triggers and schedules
+
+### Result Analysis
+- Accessing build logs
+- Retrieving build artifacts
+- Analyzing test results
+- Evaluating build quality
+
+### Automation
+- Integrating builds with other systems
+- Creating custom build workflows
+- Implementing build approval processes
+- Setting up automated notifications
+
+### Reporting and Metrics
+- Collecting data on build performance
+- Tracking build success rates
+- Measuring build times
+- Analyzing build trends
 
 ## Common Use Cases
 
 The Build API is frequently used for:
-- CI/CD pipeline orchestration
-- Custom build dashboards and reporting tools
-- Automated build triggering based on external events
-- Cross-project build coordination
-- Build analytics and performance monitoring
-- Build notification systems
-- Integration with third-party tools and services
-- Build artifact management and deployment
+
+### CI/CD Orchestration
+Create and manage complex build and deployment pipelines that span multiple projects and repositories.
+
+### Custom Dashboards
+Build specialized dashboards that display build status, history, and performance metrics tailored to specific team needs.
+
+### Event-Based Automation
+Trigger builds automatically based on external events or system conditions beyond standard Azure DevOps triggers.
+
+### Cross-Project Coordination
+Coordinate builds across multiple projects to ensure consistent build processes and dependencies.
+
+### Performance Monitoring
+Track and analyze build performance metrics to identify bottlenecks and optimize build processes.
+
+### Notification Systems
+Create custom notification systems that alert teams about build status through various channels.
+
+### Third-Party Integration
+Connect Azure DevOps builds with external tools and services for enhanced functionality.
+
+### Artifact Management
+Automate the handling of build artifacts for deployment, archiving, or distribution.
 
 ## What's Included
 
 This documentation covers:
+
 - [Top 5 Build API Methods](./top-5-methods.md) - Detailed documentation of the most commonly used Build API methods
 - [Code Examples](./code-examples.md) - Practical examples showing how to use the Build API
 - [Common Errors](./common-errors.md) - Troubleshooting information for common Build API errors
@@ -37,6 +79,7 @@ This documentation covers:
 ## Prerequisites
 
 To use the Build API, you'll need:
+
 - An Azure DevOps account with appropriate permissions
 - A Personal Access Token (PAT) or other authentication method with Build (Read, Execute) permissions
 - The Azure DevOps Node.js API client library
@@ -70,7 +113,9 @@ The Build API is commonly used in conjunction with other Azure DevOps APIs to cr
 
 ### Build + Git Integration
 
-Builds can be triggered by Git repository events and can operate on specific branches or commits. Common integration patterns include:
+Builds can be triggered by Git repository events and can operate on specific branches or commits. 
+
+Common integration patterns include:
 
 - Triggering builds on commit or pull request
 - Building specific branches
@@ -80,7 +125,9 @@ See [Git + Build Integration](../integration-patterns/git-build-integration.md) 
 
 ### Build + Work Item Integration
 
-Builds can be linked to work items to track which requirements are implemented in which builds. Common integration patterns include:
+Builds can be linked to work items to track which requirements are implemented in which builds. 
+
+Common integration patterns include:
 
 - Linking builds to work items
 - Updating work item status based on build results

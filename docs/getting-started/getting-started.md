@@ -48,6 +48,8 @@ The Azure DevOps Node API supports multiple authentication methods. Personal Acc
 
 ### Generate a Personal Access Token (PAT)
 
+Follow these steps to create a PAT:
+
 1. Sign in to your Azure DevOps organization: `https://dev.azure.com/{your-organization}`
 2. Click on your profile icon in the top-right corner
 3. Select **Personal access tokens**
@@ -71,6 +73,8 @@ module.exports = {
 ```
 
 > **Security Note**: For production applications, always use environment variables or a secure secret management solution instead of hardcoding tokens.
+
+### Set Environment Variables
 
 Set your PAT as an environment variable:
 
@@ -101,32 +105,52 @@ async function connect() {
         // Create authentication handler
         const authHandler = azdev.getPersonalAccessTokenHandler(config.token);
         
-        // Create a connection to Azure DevOps
-        const connection = new azdev.WebApi(config.organization, authHandler);
+        // Create WebApi instance with organization URL and auth handler
+        const connection = new azdev.WebApi(config.orgUrl, authHandler);
         
-        // Test the connection
+        // Connect and get connection data to verify connection works
+        console.log("Connecting...");
         const connectionData = await connection.connect();
-        console.log("Connected successfully!");
-        console.log(`Connection established to: ${connectionData.serverUrl}`);
-        console.log(`Authenticated as: ${connectionData.authenticatedUser.providerDisplayName}`);
+        
+        console.log("Connection successful!");
+        console.log(`Connected to organization: ${connectionData.instanceId}`);
+        console.log(`API Version: ${connectionData.apiVersion}`);
+        console.log(`Server deployment type: ${connectionData.deploymentType}`);
         
         return connection;
     } catch (error) {
-        console.error("Connection failed:", error.message);
+        console.error("Connection failed", error);
         throw error;
     }
 }
 
-// Self-executing async function
+// Self-executing async function to run the example
 (async () => {
     try {
         const connection = await connect();
-        console.log("Connection object is ready to use");
+        
+        // Get a client for a specific API area
+        const workItemTrackingApi = await connection.getWorkItemTrackingApi();
+        console.log("Work Item Tracking API client created successfully");
+        
+        // List some projects to verify the connection works
+        const projects = await workItemTrackingApi.getProjects();
+        console.log("\nProjects in your organization:");
+        
+        projects.slice(0, 5).forEach(project => {
+            console.log(`- ${project.name}`);
+        });
+        
+        if (projects.length > 5) {
+            console.log(`  ... and ${projects.length - 5} more projects`);
+        }
     } catch (error) {
-        console.error("Error:", error);
+        console.error("Error:", error.message);
     }
 })();
 ```
+
+## Step 5: Run the Connection Script
 
 Run the script to test your connection:
 
@@ -134,162 +158,268 @@ Run the script to test your connection:
 node connect.js
 ```
 
-If everything is configured correctly, you should see confirmation of a successful connection.
+If everything is set up correctly, you should see output similar to:
 
-## Step 5: Access Your First API Client
+```
+Creating connection to Azure DevOps...
+Connecting...
+Connection successful!
+Connected to organization: 01234567-89ab-cdef-0123-456789abcdef
+API Version: 7.1
+Server deployment type: Hosted
+Work Item Tracking API client created successfully
 
-Now that we have established a connection, let's access an API client to interact with Azure DevOps:
+Projects in your organization:
+- Project Alpha
+- Project Beta
+- Project Gamma
+...
+```
+
+## Step 6: Explore Different Authentication Methods (Optional)
+
+You can try different authentication methods by modifying your connection code:
+
+### Basic Authentication
 
 ```javascript
-// project-info.js
-const azdev = require("azure-devops-node-api");
-const config = require("./config");
+// Using username and password (not recommended for production)
+const username = "your-username";
+const password = "your-password";
+const basicAuthHandler = azdev.getBasicHandler(username, password);
+const connection = new azdev.WebApi(config.orgUrl, basicAuthHandler);
+```
 
-async function getProjects() {
-    try {
-        // Create authentication handler
-        const authHandler = azdev.getPersonalAccessTokenHandler(config.token);
-        
-        // Create a connection to Azure DevOps
-        const connection = new azdev.WebApi(config.organization, authHandler);
-        
-        // Get Core API client (for projects, teams, etc.)
-        const coreApi = await connection.getCoreApi();
-        
-        // Get all projects
-        const projects = await coreApi.getProjects();
-        
-        console.log(`Found ${projects.length} projects:`);
-        projects.forEach(project => {
-            console.log(`- ${project.name} (${project.id})`);
-        });
-    } catch (error) {
-        console.error("Error:", error.message);
+### Bearer Token Authentication
+
+```javascript
+// Using bearer token
+const bearerToken = "your-bearer-token";
+const connection = azdev.WebApi.createWithBearerToken(config.orgUrl, bearerToken);
+```
+
+### NTLM Authentication (for on-premises)
+
+```javascript
+// Using NTLM for on-premises Azure DevOps Server
+const username = "domain\\username";
+const password = "your-password";
+const ntlmAuthHandler = azdev.getNtlmHandler(username, password);
+const connection = new azdev.WebApi(config.orgUrl, ntlmAuthHandler);
+```
+
+## Step 7: Configure Connection Options (Optional)
+
+You can configure various connection options to customize the behavior of the WebApi client:
+
+### Proxy Configuration
+
+```javascript
+const options = {
+    proxy: {
+        proxyUrl: "http://proxy-server:8080",
+        proxyUsername: "proxy-user",
+        proxyPassword: "proxy-password",
+        proxyBypassHosts: ["localhost"]
     }
-}
-
-getProjects();
+};
 ```
 
-Run the script to list all projects in your organization:
-
-```bash
-node project-info.js
-```
-
-## Step 6: Work with Common API Clients
-
-The Azure DevOps Node API provides access to multiple API clients for different services. Here are examples of accessing some common API clients:
-
-### Work Item Tracking API
+### SSL Options
 
 ```javascript
-// Get Work Item Tracking API client
-const witApi = await connection.getWorkItemTrackingApi();
-
-// Get a work item by ID
-const workItem = await witApi.getWorkItem(42); // Replace with a valid work item ID
-console.log(`Work Item Title: ${workItem.fields["System.Title"]}`);
+const options = {
+    ignoreSslError: false,  // Set to true to ignore SSL errors (not recommended for production)
+    cert: {
+        caFile: "/path/to/ca-file.pem",  // Path to CA certificate file
+        certFile: "/path/to/cert.pem",   // Path to client certificate file
+        keyFile: "/path/to/key.pem",     // Path to client key file
+        passphrase: "certificate-passphrase" // Passphrase for the key file
+    }
+};
 ```
 
-### Git API
+### HTTP Options
 
 ```javascript
-// Get Git API client
-const gitApi = await connection.getGitApi();
-
-// Get all repositories
-const repositories = await gitApi.getRepositories();
-repositories.forEach(repo => {
-    console.log(`Repository: ${repo.name}`);
-});
+const options = {
+    socketTimeout: 30000,   // 30 seconds
+    allowRetries: true,
+    maxRetries: 3
+};
 ```
 
-### Build API
+### Complete Options Example
 
 ```javascript
-// Get Build API client
-const buildApi = await connection.getBuildApi();
-
-// Get build pipelines
-const buildPipelines = await buildApi.getDefinitions("YourProject");
-buildPipelines.forEach(pipeline => {
-    console.log(`Build Pipeline: ${pipeline.name}`);
-});
-```
-
-### Release API
-
-```javascript
-// Get Release API client
-const releaseApi = await connection.getReleaseApi();
-
-// Get release pipelines
-const releasePipelines = await releaseApi.getReleaseDefinitions("YourProject");
-releasePipelines.forEach(pipeline => {
-    console.log(`Release Pipeline: ${pipeline.name}`);
-});
-```
-
-## Step 7: Create a TypeScript Version (Optional)
-
-If you're using TypeScript, create a `tsconfig.json` file:
-
-```json
-{
-    "compilerOptions": {
-        "target": "es2018",
-        "module": "commonjs",
-        "outDir": "./dist",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
+// Create connection with options
+const options = {
+    // Proxy configuration
+    proxy: {
+        proxyUrl: "http://proxy-server:8080",
+        proxyUsername: "proxy-user",
+        proxyPassword: "proxy-password",
+        proxyBypassHosts: ["localhost"]
     },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules"]
-}
+    
+    // SSL options
+    ignoreSslError: false,  // Set to true to ignore SSL errors (not recommended for production)
+    
+    // HTTP options
+    socketTimeout: 30000,   // 30 seconds
+    allowRetries: true,
+    maxRetries: 3
+};
+
+const connection = new azdev.WebApi(config.orgUrl, authHandler, options);
 ```
 
 ## Troubleshooting
 
-Common issues you might encounter and how to solve them:
+If you encounter any issues:
 
-- **Authentication Errors (401)**: 
-  - Verify your Personal Access Token (PAT) is valid and hasn't expired
-  - Check if your Personal Access Token (PAT) has the correct scopes
-  - Ensure the organization URL is correct
+### Authentication Errors (401)
+Verify your Personal Access Token (PAT) is valid and has the correct scopes.
 
-- **Resource Not Found (404)**:
-  - Verify the entity (project, repository, etc.) exists
-  - Check if you have access permissions to the resource
-  - Ensure you're using the correct organization URL format: `https://dev.azure.com/{organization}`
+### Organization Not Found (404)
+Check your organization URL is correct.
 
-- **SSL Certificate Errors**:
-  - If behind a corporate proxy, you might need to configure proxy settings
-  - In development environments, you can use the `ignoreSslError` option:
-    ```javascript
-    const connection = new azdev.WebApi(config.organization, authHandler, {
-        ignoreSslError: true // Not recommended for production
-    });
-    ```
+### Certificate Errors
+If you're behind a corporate firewall with SSL inspection, you might need to set `ignoreSslError: true` or configure the appropriate certificates.
+
+### Proxy Errors
+If you're behind a proxy, configure the proxy settings as shown in Step 7.
 
 ## Next Steps
 
-Now that you have set up your first connection to Azure DevOps and learned how to access various API clients, you can explore:
+Now that you've successfully connected to Azure DevOps, you can:
 
-- [Connect to Azure DevOps Tutorial](../tutorials/connect-to-azure-devops.md) - Detailed connection tutorial with more examples
-- [Authentication Guide](./authentication.md) - In-depth guide to authentication options
-- [Authentication Cheat Sheet](./authentication-cheat-sheet.md) - Quick reference for authentication methods
-- [WebApi Core Documentation](../api-reference/webapi-core/README.md) - Details on the core WebApi class
-- [Work Item Tracking API Documentation](../api-reference/work-item-tracking/README.md) - Guide to working with work items
-- [Git API Documentation](../api-reference/git-api/README.md) - Guide to working with repositories and code
+1. Explore other API clients available from the WebApi instance
+2. Create work items, manage builds, or interact with repositories
+3. Build a complete application that integrates with Azure DevOps
 
-For complete API details, visit the [Azure DevOps Services REST API Reference](https://docs.microsoft.com/en-us/rest/api/azure/devops/?view=azure-devops-rest-6.0).
+Check out the other tutorials and API references for more information on working with specific Azure DevOps services.
+
+## Complete Code Example
+
+Here's a complete example that puts everything together:
+
+```typescript
+// Import the Azure DevOps Node API package
+import * as azdev from "azure-devops-node-api";
+// Optional: Load environment variables from .env file
+require("dotenv").config();
+
+/**
+ * Connects to Azure DevOps and returns API clients
+ * @returns {Promise<object>} Object containing connection and API clients
+ */
+async function connectToAzureDevOps() {
+    // Get configuration from environment variables
+    // Security Note: In production, always store tokens in environment variables
+    // or a secure secret management solution, not in your code.
+    const orgUrl = process.env.AZURE_DEVOPS_ORG_URL;
+    const token = process.env.AZURE_DEVOPS_TOKEN;
+
+    // Validate required configuration
+    if (!orgUrl || !token) {
+        throw new Error("Please set AZURE_DEVOPS_ORG_URL and AZURE_DEVOPS_TOKEN environment variables");
+    }
+
+    try {
+        // Create authentication handler using Personal Access Token (PAT)
+        const authHandler = azdev.getPersonalAccessTokenHandler(token);
+        
+        // Connection options
+        const options = {
+            allowRetries: true,
+            maxRetries: 2
+        };
+        
+        // Create WebApi instance
+        const connection = new azdev.WebApi(orgUrl, authHandler, options);
+        
+        // Connect and verify
+        const connectionData = await connection.connect();
+        console.log(`Connected to ${connectionData.instanceId}`);
+        console.log(`API Version: ${connectionData.apiVersion}`);
+        console.log(`Server deployment type: ${connectionData.deploymentType}`);
+        
+        // Get API clients
+        // These clients provide access to different Azure DevOps services
+        const gitApi = await connection.getGitApi();
+        console.log("Git API client created successfully");
+        
+        const workItemTrackingApi = await connection.getWorkItemTrackingApi();
+        console.log("Work Item Tracking API client created successfully");
+        
+        const buildApi = await connection.getBuildApi();
+        console.log("Build API client created successfully");
+        
+        // Return all clients for use in the application
+        return {
+            connection,
+            gitApi,
+            workItemTrackingApi,
+            buildApi
+        };
+    } catch (error) {
+        // Handle specific error types
+        if (error.statusCode === 401) {
+            console.error("Authentication failed. Check your Personal Access Token.");
+        } else if (error.statusCode === 404) {
+            console.error("Organization not found. Check your organization URL.");
+        } else if (error.message && error.message.includes("certificate")) {
+            console.error("SSL Certificate error. You may need to configure SSL options.");
+        } else {
+            console.error("Failed to connect to Azure DevOps:", error.message);
+        }
+        throw error;
+    }
+}
+
+// Usage example
+(async () => {
+    try {
+        // Connect and get API clients
+        const { gitApi, workItemTrackingApi, buildApi } = await connectToAzureDevOps();
+        
+        // Now you can use these API clients to interact with Azure DevOps
+        
+        // Example 1: List repositories
+        const repositories = await gitApi.getRepositories();
+        console.log(`Found ${repositories.length} repositories`);
+        repositories.slice(0, 3).forEach(repo => {
+            console.log(`- ${repo.name} (${repo.defaultBranch || 'no default branch'})`);
+        });
+        
+        // Example 2: List work items
+        // Note: Replace with actual work item IDs from your project
+        const workItemIds = [1, 2, 3];
+        const workItems = await workItemTrackingApi.getWorkItems(workItemIds);
+        console.log(`Retrieved ${workItems.length} work items`);
+        workItems.forEach(item => {
+            console.log(`- #${item.id}: ${item.fields["System.Title"]}`);
+        });
+        
+        // Example 3: List build pipelines
+        // Replace with your actual project name
+        const projectName = "YourProject";
+        const buildPipelines = await buildApi.getDefinitions(projectName);
+        console.log(`Found ${buildPipelines.length} build pipelines in ${projectName}`);
+        buildPipelines.slice(0, 3).forEach(pipeline => {
+            console.log(`- ${pipeline.name} (${pipeline.id})`);
+        });
+    } catch (error) {
+        console.error("Error:", error.message);
+        process.exit(1);
+    }
+})();
+```
 
 ## See Also
 
 - [Authentication Guide](./authentication.md) - Detailed information about authentication methods
 - [API Reference](../api-reference/index.md) - Complete API reference documentation
-- [Tutorials](../tutorials/index.md) - Step-by-step tutorials for common scenarios
+- [Working with Work Items Tutorial](../tutorials/working-with-work-items.md) - Learn how to work with work items
 - [Glossary](../glossary.md) - Standardized terminology for the Azure DevOps Node API 

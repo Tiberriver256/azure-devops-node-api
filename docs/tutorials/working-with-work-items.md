@@ -148,63 +148,103 @@ Create a file called `create-work-item.js`:
 const { getConnection } = require("./connection");
 const config = require("./config");
 
+/**
+ * Creates a new work item in Azure DevOps
+ * @param {string} type - The work item type (e.g., "Bug", "Task", "User Story")
+ * @param {string} title - The title of the work item
+ * @param {string} [description] - Optional description of the work item
+ * @param {string} [assignedTo] - Optional email of the person to assign the work item to
+ * @returns {Promise<object>} The created work item
+ */
 async function createWorkItem(type, title, description, assignedTo) {
-  const connection = await getConnection();
-  const workItemTrackingApi = await connection.getWorkItemTrackingApi();
-
-  // Create a document with fields to set
-  const patchDocument = [
-    {
-      op: "add",
-      path: "/fields/System.Title",
-      value: title
-    }
-  ];
-
-  // Add description if provided
-  if (description) {
-    patchDocument.push({
-      op: "add",
-      path: "/fields/System.Description",
-      value: description
-    });
-  }
-
-  // Add assigned to if provided
-  if (assignedTo) {
-    patchDocument.push({
-      op: "add",
-      path: "/fields/System.AssignedTo",
-      value: assignedTo
-    });
-  }
-
   try {
-    // Create a new work item
-    const newWorkItem = await workItemTrackingApi.createWorkItem(
-      {}, // Custom headers (can be empty)
-      patchDocument,
-      config.project,
-      type // e.g., "Bug", "Task", "User Story"
-    );
+    // Get connection and API client
+    const connection = await getConnection();
+    const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 
-    console.log(`Created ${type} #${newWorkItem.id}: ${newWorkItem.fields["System.Title"]}`);
-    return newWorkItem;
-  } catch (err) {
-    console.error(`Error creating work item:`, err.message);
-    throw err;
+    // Create a document with fields to set
+    // We use the JSON Patch format for updating work item fields
+    const patchDocument = [
+      {
+        op: "add",
+        path: "/fields/System.Title",
+        value: title
+      }
+    ];
+
+    // Add description if provided
+    // Description is optional, so we only add it if a value was provided
+    if (description) {
+      patchDocument.push({
+        op: "add",
+        path: "/fields/System.Description",
+        value: description
+      });
+    }
+
+    // Add assigned to if provided
+    // Assignment is optional, so we only add it if a value was provided
+    if (assignedTo) {
+      patchDocument.push({
+        op: "add",
+        path: "/fields/System.AssignedTo",
+        value: assignedTo
+      });
+    }
+
+    try {
+      // Create a new work item
+      // The first parameter is for custom headers (can be empty)
+      // The second parameter is the patch document with field values
+      // The third parameter is the project name
+      // The fourth parameter is the work item type
+      const newWorkItem = await workItemTrackingApi.createWorkItem(
+        {}, // Custom headers (can be empty)
+        patchDocument,
+        config.project,
+        type // e.g., "Bug", "Task", "User Story"
+      );
+
+      console.log(`Created ${type} #${newWorkItem.id}: ${newWorkItem.fields["System.Title"]}`);
+      return newWorkItem;
+    } catch (error) {
+      // Handle specific error types
+      if (error.statusCode === 400) {
+        console.error(`Invalid request: ${error.message}`);
+        console.error("Check that all required fields are provided and valid.");
+      } else if (error.statusCode === 401) {
+        console.error("Authentication error. Check your credentials or token.");
+      } else if (error.statusCode === 403) {
+        console.error("Authorization error. You don't have permission to create work items.");
+      } else if (error.statusCode === 404) {
+        console.error(`Project '${config.project}' or work item type '${type}' not found.`);
+      } else {
+        console.error(`Error creating work item:`, error.message);
+      }
+      throw error;
+    }
+  } catch (error) {
+    console.error(`Error in createWorkItem:`, error.message);
+    throw error;
   }
 }
 
 // Usage example
-createWorkItem(
-  "Bug", 
-  "API sample bug", 
-  "This bug was created via the Azure DevOps Node.js API",
-  "user@example.com" // Replace with a valid user email in your organization
-).then(workItem => {
-  console.log(`Work item created successfully with ID: ${workItem.id}`);
-});
+(async () => {
+  try {
+    const workItem = await createWorkItem(
+      "Bug", 
+      "API sample bug", 
+      "This bug was created via the Azure DevOps Node.js API",
+      "user@example.com" // Replace with a valid user email in your organization
+    );
+    
+    console.log(`Work item created successfully with ID: ${workItem.id}`);
+    console.log(`URL: ${workItem._links.html.href}`);
+  } catch (error) {
+    console.error("Error in main process:", error.message);
+  }
+})();
 ```
 
 ## Part 4: Updating a Work Item

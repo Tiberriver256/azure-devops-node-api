@@ -10,19 +10,24 @@ Integration Patterns provide guidance on how to effectively combine multiple Azu
 
 The Integration Patterns documentation is designed to:
 
-- Demonstrate practical, real-world usage scenarios that span multiple APIs
-- Provide end-to-end code examples for common integration workflows
-- Illustrate best practices for combining different Azure DevOps services
-- Help developers understand the relationships between different APIs
-- Accelerate development by offering reusable patterns for common tasks
+- **Demonstrate Real-World Scenarios**: Show practical, real-world usage scenarios that span multiple APIs
+- **Provide Code Examples**: Offer end-to-end code examples for common integration workflows
+- **Illustrate Best Practices**: Showcase best practices for combining different Azure DevOps services
+- **Clarify API Relationships**: Help developers understand the relationships between different APIs
+- **Accelerate Development**: Provide reusable patterns for common tasks to speed up implementation
 
 ## What's Included
 
 This documentation covers key integration patterns between the most commonly used Azure DevOps APIs:
 
+### Core Integration Patterns
+
 - [Work Item + Git Integration](./work-item-git-integration.md) - Patterns for integrating work item tracking with source control
 - [Work Item + Build Integration](./work-item-build-integration.md) - Patterns for connecting work items with build pipelines
 - [Git + Build Integration](./git-build-integration.md) - Patterns for automating builds based on repository events
+
+### Advanced Integration
+
 - [Cross-API Examples](./cross-api-examples.md) - Complex scenarios involving three or more APIs
 - [API Cross-Reference Table](./api-cross-reference-table.md) - Comprehensive table showing relationships between API methods
 
@@ -30,11 +35,20 @@ This documentation covers key integration patterns between the most commonly use
 
 Integration patterns address several common scenarios in Azure DevOps workflows:
 
-- **Traceability**: Linking work items to code changes, builds, and releases
-- **Automation**: Triggering actions in one service based on events in another
-- **Reporting**: Gathering data across multiple services for comprehensive reporting
-- **Synchronization**: Keeping information consistent across different systems
-- **Workflow Orchestration**: Coordinating complex processes across multiple services
+### Traceability
+Link work items to code changes, builds, and releases to maintain a complete history of how requirements are implemented and deployed.
+
+### Automation
+Trigger actions in one service based on events in another, such as creating a build when code is pushed or updating a work item when a build completes.
+
+### Reporting
+Gather data across multiple services to create comprehensive reports that provide insights across the entire development lifecycle.
+
+### Synchronization
+Keep information consistent across different systems, ensuring that changes in one system are reflected in others.
+
+### Workflow Orchestration
+Coordinate complex processes across multiple services to implement end-to-end workflows that span the entire development lifecycle.
 
 ## Prerequisites
 
@@ -60,7 +74,7 @@ const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
 // Get API clients for integration
-const witApi = await connection.getWorkItemTrackingApi();
+const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 const gitApi = await connection.getGitApi();
 const buildApi = await connection.getBuildApi();
 
@@ -87,6 +101,8 @@ For a detailed breakdown of how specific methods relate to each other, see the [
 
 ### Work Item Tracking API
 
+The Work Item Tracking API provides methods for managing work items:
+
 - [getWorkItem](../work-item-tracking/methods/get-work-item.md) - Retrieve a single work item
 - [getWorkItems](../work-item-tracking/methods/get-work-items.md) - Retrieve multiple work items
 - [createWorkItem](../work-item-tracking/methods/create-work-item.md) - Create a new work item
@@ -95,6 +111,8 @@ For a detailed breakdown of how specific methods relate to each other, see the [
 
 ### Git API
 
+The Git API provides methods for working with repositories and code:
+
 - [getRepositories](../git-api/top-5-methods.md#getrepositories) - List all Git repositories
 - [getRepository](../git-api/top-5-methods.md#getrepository) - Get a specific Git repository
 - [getRefs](../git-api/top-5-methods.md#getrefs) - Get branches and tags
@@ -102,6 +120,8 @@ For a detailed breakdown of how specific methods relate to each other, see the [
 - [createPullRequest](../git-api/top-5-methods.md#createpullrequest) - Create a new pull request
 
 ### Build API
+
+The Build API provides methods for managing build pipelines:
 
 - [getDefinitions](../build-api/top-5-methods.md#getdefinitions) - Get build pipelines
 - [getBuild](../build-api/top-5-methods.md#getbuild) - Get a specific build
@@ -113,12 +133,23 @@ For a detailed breakdown of how specific methods relate to each other, see the [
 
 When implementing integration patterns, consider these best practices:
 
-1. **Error Handling**: Implement robust error handling that accounts for failures in any of the integrated APIs
-2. **Transactional Integrity**: Consider how to maintain consistency when operations span multiple services
-3. **Performance Optimization**: Minimize API calls by batching operations where possible
-4. **Rate Limiting**: Be aware of API rate limits, especially when making many cross-service calls
-5. **Authentication Scopes**: Ensure your authentication token has all necessary scopes for the APIs you're integrating
-6. **Idempotent Operations**: Design integrations to be safely retryable in case of failures
+### Error Handling
+Implement robust error handling that accounts for failures in any of the integrated APIs. Consider how to handle partial failures and ensure your application can recover gracefully.
+
+### Transactional Integrity
+Consider how to maintain consistency when operations span multiple services. Implement compensating transactions or idempotent operations to handle failures.
+
+### Performance Optimization
+Minimize API calls by batching operations where possible. Use efficient querying patterns and cache results when appropriate to reduce load on the server.
+
+### Rate Limiting
+Be aware of API rate limits, especially when making many cross-service calls. Implement retry logic with exponential backoff to handle rate limiting gracefully.
+
+### Authentication Scopes
+Ensure your authentication token has all necessary scopes for the APIs you're integrating. Use the principle of least privilege to minimize security risks.
+
+### Idempotent Operations
+Design integrations to be safely retryable in case of failures. Ensure that operations can be repeated without causing unintended side effects.
 
 ## See Also
 

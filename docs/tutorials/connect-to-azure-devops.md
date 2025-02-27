@@ -38,13 +38,13 @@ Create a new file named `config.js` to store your Azure DevOps connection inform
 // config.js
 module.exports = {
     orgUrl: "https://dev.azure.com/your-organization",
-    token: "your-personal-access-token"
+    token: process.env.AZURE_DEVOPS_PAT || "your-personal-access-token"
 };
 ```
 
 Replace `your-organization` with your organization name and `your-personal-access-token` with your PAT.
 
-> 🔒 Security Note: In a real application, you should store sensitive information like tokens in environment variables or a secure vault, not in your code files.
+> 🔒 **Security Note**: In a real application, you should store sensitive information like tokens in environment variables or a secure vault, not in your code files.
 
 ## Step 4: Create a connection script
 
@@ -55,11 +55,15 @@ Create a new file named `connect.js` with the following code:
 const azdev = require("azure-devops-node-api");
 const config = require("./config");
 
+/**
+ * Establishes a connection to Azure DevOps and verifies it works
+ * @returns {Promise<object>} The WebApi connection object
+ */
 async function connect() {
     try {
         console.log("Creating connection to Azure DevOps...");
         
-        // Create authentication handler
+        // Create authentication handler using Personal Access Token
         const authHandler = azdev.getPersonalAccessTokenHandler(config.token);
         
         // Create WebApi instance with organization URL and auth handler
@@ -76,7 +80,16 @@ async function connect() {
         
         return connection;
     } catch (error) {
-        console.error("Connection failed", error);
+        // Handle specific error types
+        if (error.statusCode === 401) {
+            console.error("Authentication failed. Check your Personal Access Token.");
+        } else if (error.statusCode === 404) {
+            console.error("Organization not found. Check your organization URL.");
+        } else if (error.message && error.message.includes("certificate")) {
+            console.error("SSL Certificate error. You may need to configure SSL options.");
+        } else {
+            console.error("Connection failed:", error.message);
+        }
         throw error;
     }
 }
@@ -84,6 +97,7 @@ async function connect() {
 // Self-executing async function to run the example
 (async () => {
     try {
+        // Establish connection to Azure DevOps
         const connection = await connect();
         
         // Get a client for a specific API area
@@ -94,15 +108,18 @@ async function connect() {
         const projects = await workItemTrackingApi.getProjects();
         console.log("\nProjects in your organization:");
         
+        // Display up to 5 projects
         projects.slice(0, 5).forEach(project => {
             console.log(`- ${project.name}`);
         });
         
+        // If there are more than 5 projects, indicate how many more
         if (projects.length > 5) {
             console.log(`  ... and ${projects.length - 5} more projects`);
         }
     } catch (error) {
         console.error("Error:", error.message);
+        process.exit(1);
     }
 })();
 ```
@@ -114,6 +131,8 @@ Run the script to test your connection:
 ```bash
 node connect.js
 ```
+
+### Expected Output
 
 If everything is set up correctly, you should see output similar to:
 
@@ -169,21 +188,44 @@ const connection = new azdev.WebApi(config.orgUrl, ntlmAuthHandler);
 
 You can configure various connection options to customize the behavior of the WebApi client:
 
+### Proxy Configuration
+
 ```javascript
-// Create connection with options
+// Proxy settings
 const options = {
-    // Proxy configuration
     proxy: {
         proxyUrl: "http://proxy-server:8080",
         proxyUsername: "proxy-user",
         proxyPassword: "proxy-password",
         proxyBypassHosts: ["localhost"]
-    },
-    
-    // SSL options
+    }
+};
+
+const connection = new azdev.WebApi(config.orgUrl, authHandler, options);
+```
+
+### SSL Options
+
+```javascript
+// SSL settings
+const options = {
     ignoreSslError: false,  // Set to true to ignore SSL errors (not recommended for production)
-    
-    // HTTP options
+    cert: {
+        caFile: "/path/to/ca.pem",
+        certFile: "/path/to/cert.pem",
+        keyFile: "/path/to/key.pem",
+        passphrase: "certificate-passphrase"
+    }
+};
+
+const connection = new azdev.WebApi(config.orgUrl, authHandler, options);
+```
+
+### HTTP Options
+
+```javascript
+// HTTP settings
+const options = {
     socketTimeout: 30000,   // 30 seconds
     allowRetries: true,
     maxRetries: 3
@@ -194,12 +236,23 @@ const connection = new azdev.WebApi(config.orgUrl, authHandler, options);
 
 ## Troubleshooting
 
-If you encounter any issues:
+If you encounter any issues, here are some common problems and solutions:
 
-1. **Authentication Errors (401)**: Verify your Personal Access Token (PAT) is valid and has the correct scopes.
-2. **Organization Not Found (404)**: Check your organization URL is correct.
-3. **Certificate Errors**: If you're behind a corporate firewall with SSL inspection, you might need to set `ignoreSslError: true` or configure the appropriate certificates.
-4. **Proxy Errors**: If you're behind a proxy, configure the proxy settings as shown in Step 7.
+### Authentication Errors (401)
+- **Problem**: "TF400813: The user name or password is incorrect."
+- **Solution**: Verify your Personal Access Token (PAT) is valid and has the correct scopes.
+
+### Organization Not Found (404)
+- **Problem**: "TF400404: Resource not found."
+- **Solution**: Check your organization URL is correct.
+
+### Certificate Errors
+- **Problem**: "Unable to get local issuer certificate"
+- **Solution**: If you're behind a corporate firewall with SSL inspection, you might need to set `ignoreSslError: true` or configure the appropriate certificates.
+
+### Proxy Errors
+- **Problem**: "ECONNREFUSED" or "Unable to connect to the proxy"
+- **Solution**: If you're behind a proxy, configure the proxy settings as shown in Step 7.
 
 ## Next Steps
 

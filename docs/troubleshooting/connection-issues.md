@@ -30,14 +30,17 @@ This guide provides solutions for common connection problems when using the Azur
    - For specific services, you may need dedicated scopes
 
 3. **Basic Authentication Issues:**
-   ```javascript
-   // The following code might fail
+   ```typescript
+   // The following code might fail because Microsoft is phasing out basic authentication
    const authHandler = azdev.getBasicHandler("username", "password");
    ```
    
    **Solution:** Microsoft is phasing out basic authentication. Use a PAT instead:
-   ```javascript
-   const authHandler = azdev.getPersonalAccessTokenHandler("your-pat");
+   ```typescript
+   // Use Personal Access Token authentication instead
+   // Security Note: In production, store tokens in environment variables
+   const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+   const authHandler = azdev.getPersonalAccessTokenHandler(token);
    ```
 
 ### Bearer Token Errors
@@ -52,13 +55,17 @@ This guide provides solutions for common connection problems when using the Azur
    Bearer tokens typically have a limited lifetime. Ensure your token is still valid.
 
 2. **Use the Correct Factory Method:**
-   ```javascript
-   // Incorrect way
+   ```typescript
+   // Incorrect way - don't use this approach
    const authHandler = new azdev.BearerCredentialHandler(token);
    
-   // Correct way
+   // Correct way - use the factory method
+   const token = "your-bearer-token";
    const authHandler = azdev.getBearerHandler(token);
-   // OR
+   
+   // OR use the convenience factory method
+   const orgUrl = "https://dev.azure.com/your-organization";
+   const token = "your-bearer-token";
    const connection = azdev.WebApi.createWithBearerToken(orgUrl, token);
    ```
 
@@ -74,29 +81,40 @@ This guide provides solutions for common connection problems when using the Azur
 **Solutions:**
 
 1. **Ignore SSL Errors (for development/testing only):**
-   ```javascript
+   ```typescript
+   // Configure connection to ignore SSL errors
+   // WARNING: This should only be used in development/testing environments
    const options = {
        ignoreSslError: true
    };
    
+   const orgUrl = "https://dev.azure.com/your-organization";
+   const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+   const authHandler = azdev.getPersonalAccessTokenHandler(token);
    const connection = new azdev.WebApi(orgUrl, authHandler, options);
    ```
    > ⚠️ Warning: Using `ignoreSslError: true` in production is a security risk!
 
 2. **Provide CA Certificate:**
-   ```javascript
+   ```typescript
+   // Configure connection with a custom CA certificate
+   // This is the recommended approach for custom certificates
    const options = {
        cert: {
            caFile: "/path/to/ca-certificate.pem"
        }
    };
    
+   const orgUrl = "https://dev.azure.com/your-organization";
+   const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+   const authHandler = azdev.getPersonalAccessTokenHandler(token);
    const connection = new azdev.WebApi(orgUrl, authHandler, options);
    ```
 
 3. **Set NODE_TLS_REJECT_UNAUTHORIZED Environment Variable (for testing only):**
-   ```javascript
+   ```typescript
    // In your code (not recommended for production)
+   // WARNING: This disables SSL certificate validation for ALL connections
    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
    ```
    > ⚠️ Warning: This disables SSL certificate validation for all HTTPS connections in your Node.js application!
@@ -111,15 +129,19 @@ This guide provides solutions for common connection problems when using the Azur
 **Solutions:**
 
 1. **Configure Proxy Settings:**
-   ```javascript
+   ```typescript
+   // Configure connection with proxy settings
    const options = {
        proxy: {
            proxyUrl: "http://your-proxy-server:port",
-           proxyUsername: "username",  // If needed
-           proxyPassword: "password"   // If needed
+           proxyUsername: "username",  // If proxy requires authentication
+           proxyPassword: "password"   // If proxy requires authentication
        }
    };
    
+   const orgUrl = "https://dev.azure.com/your-organization";
+   const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+   const authHandler = azdev.getPersonalAccessTokenHandler(token);
    const connection = new azdev.WebApi(orgUrl, authHandler, options);
    ```
 
@@ -133,7 +155,8 @@ This guide provides solutions for common connection problems when using the Azur
    ```
 
 3. **Bypass Proxy for Internal Resources:**
-   ```javascript
+   ```typescript
+   // Configure proxy with bypass rules for internal resources
    const options = {
        proxy: {
            proxyUrl: "http://proxy-server:port",
@@ -143,6 +166,11 @@ This guide provides solutions for common connection problems when using the Azur
            ]
        }
    };
+   
+   const orgUrl = "https://dev.azure.com/your-organization";
+   const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+   const authHandler = azdev.getPersonalAccessTokenHandler(token);
+   const connection = new azdev.WebApi(orgUrl, authHandler, options);
    ```
 
 ## Network and Timeout Errors
@@ -157,21 +185,29 @@ This guide provides solutions for common connection problems when using the Azur
 **Solutions:**
 
 1. **Configure Socket Timeout:**
-   ```javascript
+   ```typescript
+   // Configure connection with a custom socket timeout
    const options = {
        socketTimeout: 60000  // 60 seconds
    };
    
+   const orgUrl = "https://dev.azure.com/your-organization";
+   const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+   const authHandler = azdev.getPersonalAccessTokenHandler(token);
    const connection = new azdev.WebApi(orgUrl, authHandler, options);
    ```
 
 2. **Enable Request Retries:**
-   ```javascript
+   ```typescript
+   // Configure connection with retry settings
    const options = {
-       allowRetries: true,
-       maxRetries: 3
+       allowRetries: true,  // Enable automatic retries
+       maxRetries: 3        // Maximum number of retry attempts
    };
    
+   const orgUrl = "https://dev.azure.com/your-organization";
+   const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+   const authHandler = azdev.getPersonalAccessTokenHandler(token);
    const connection = new azdev.WebApi(orgUrl, authHandler, options);
    ```
 
@@ -210,12 +246,35 @@ This guide provides solutions for common connection problems when using the Azur
 
 1. **Check Resource Existence:**
    Ensure the resource you're trying to access exists:
-   ```javascript
-   try {
-       const workItem = await witApi.getWorkItem(999999);
-   } catch (error) {
-       if (error.statusCode === 404) {
-           console.log("Work item does not exist");
+   ```typescript
+   import * as azdev from "azure-devops-node-api";
+
+   async function getWorkItem(id: number) {
+       try {
+           // Setup connection
+           const orgUrl = "https://dev.azure.com/your-organization";
+           const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+           const authHandler = azdev.getPersonalAccessTokenHandler(token);
+           const connection = new azdev.WebApi(orgUrl, authHandler);
+           
+           // Get Work Item Tracking API client
+           const workItemTrackingApi = await connection.getWorkItemTrackingApi();
+           
+           // Get work item
+           const workItem = await workItemTrackingApi.getWorkItem(id);
+           console.log(`Work Item #${workItem.id}: ${workItem.fields["System.Title"]}`);
+           return workItem;
+       } catch (error) {
+           // Handle specific error types
+           if (error.statusCode === 404) {
+               console.error(`Work item ${id} does not exist`);
+               return null;
+           } else if (error.statusCode === 401) {
+               console.error("Authentication error. Check your credentials or token.");
+           } else {
+               console.error(`Error getting work item: ${error.message}`);
+           }
+           throw error;
        }
    }
    ```
@@ -233,30 +292,49 @@ This guide provides solutions for common connection problems when using the Azur
 **Solutions:**
 
 1. **Implement Exponential Backoff:**
-   ```javascript
-   async function executeWithBackoff(fn, maxRetries = 5) {
+   ```typescript
+   /**
+    * Executes a function with exponential backoff retry for rate limiting
+    * @param fn - The async function to execute
+    * @param maxRetries - Maximum number of retry attempts
+    * @returns The result of the function
+    */
+   async function executeWithBackoff<T>(fn: () => Promise<T>, maxRetries = 5): Promise<T> {
        let retries = 0;
+       
        while (true) {
            try {
+               // Attempt to execute the function
                return await fn();
            } catch (error) {
+               // Only retry on rate limiting errors (HTTP 429)
                if (error.statusCode !== 429 || retries >= maxRetries) {
                    throw error;
                }
+               
+               // Calculate exponential backoff delay
                const delay = Math.pow(2, retries) * 1000;
                console.log(`Rate limited. Retrying in ${delay}ms...`);
+               
+               // Wait for the calculated delay
                await new Promise(resolve => setTimeout(resolve, delay));
                retries++;
            }
        }
    }
    
-   // Usage
-   const workItem = await executeWithBackoff(() => witApi.getWorkItem(42));
+   // Example usage
+   async function getRepositories(projectName: string) {
+       const orgUrl = "https://dev.azure.com/your-organization";
+       const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+       const authHandler = azdev.getPersonalAccessTokenHandler(token);
+       const connection = new azdev.WebApi(orgUrl, authHandler);
+       const gitApi = await connection.getGitApi();
+       
+       // Use the executeWithBackoff function to handle rate limiting
+       return await executeWithBackoff(() => gitApi.getRepositories(projectName));
+   }
    ```
-
-2. **Reduce Request Frequency:**
-   Batch requests where possible or implement throttling in your application.
 
 ## Debugging Connection Issues
 

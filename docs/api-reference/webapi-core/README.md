@@ -6,13 +6,17 @@
 
 This directory contains the comprehensive documentation for the WebApi Core component of the Azure DevOps Node API. The WebApi Core is the foundational layer that handles authentication, connections, and provides access to all other API clients.
 
-## Contents
+## What's Included
+
+This documentation covers:
 
 - [WebApi Core](./webapi-core.md) - Main documentation for the WebApi class and core functionality
 - [Authentication Handlers](./authentication-handlers.md) - Documentation for all authentication methods
 - [Connection Options](./connection-options.md) - Documentation for connection configuration options
 
 ## Related Resources
+
+Learn more about using WebApi Core with these resources:
 
 - [Connect to Azure DevOps Tutorial](../../tutorials/connect-to-azure-devops.md) - Step-by-step guide for connecting to Azure DevOps
 - [Troubleshooting Connection Issues](../../troubleshooting/connection-issues.md) - Solutions for common connection problems
@@ -21,10 +25,27 @@ This directory contains the comprehensive documentation for the WebApi Core comp
 
 The WebApi Core documentation covers these essential concepts:
 
-1. **Connection Establishment** - How to create and configure connections to Azure DevOps
-2. **Authentication Methods** - Different ways to authenticate with Azure DevOps services
-3. **API Client Access** - How to access specific API clients from the WebApi instance
-4. **Connection Configuration** - How to customize connection behavior with options
+1. **Connection Establishment**
+   - How to create and configure connections to Azure DevOps
+   - Setting up authentication handlers
+   - Testing connection status
+
+2. **Authentication Methods**
+   - Personal Access Token (PAT) authentication
+   - Basic authentication
+   - OAuth/Bearer token authentication
+   - NTLM authentication for on-premises deployments
+
+3. **API Client Access**
+   - How to access specific API clients from the WebApi instance
+   - Available API clients and their purposes
+   - Best practices for API client usage
+
+4. **Connection Configuration**
+   - How to customize connection behavior with options
+   - Proxy configuration
+   - SSL settings
+   - Timeout and retry settings
 
 ## Target Audience
 

@@ -167,68 +167,166 @@ For production applications, you'll need to implement token refresh logic:
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+/**
+ * Client for Azure DevOps API with OAuth token management
+ * Handles token refresh and connection management
+ */
 class AzureDevOpsClient {
     private orgUrl: string;
     private accessToken: string;
     private tokenExpiration: Date;
     private connection: azdev.WebApi | null = null;
+    private refreshToken: string;
     
-    constructor(orgUrl: string, accessToken: string, expiresIn: number) {
+    /**
+     * Creates a new Azure DevOps client with OAuth token management
+     * @param orgUrl - The Azure DevOps organization URL
+     * @param accessToken - The OAuth access token
+     * @param expiresIn - Token expiration time in seconds
+     * @param refreshToken - The OAuth refresh token
+     */
+    constructor(
+        orgUrl: string, 
+        accessToken: string, 
+        expiresIn: number,
+        refreshToken: string
+    ) {
         this.orgUrl = orgUrl;
         this.accessToken = accessToken;
         this.tokenExpiration = new Date(Date.now() + expiresIn * 1000);
+        this.refreshToken = refreshToken;
     }
     
+    /**
+     * Gets a WebApi connection, refreshing the token if necessary
+     * @returns A Promise that resolves to a WebApi connection
+     */
     async getConnection(): Promise<azdev.WebApi> {
-        // Check if token needs to be refreshed
-        if (this.isTokenExpired()) {
-            await this.refreshAccessToken();
+        try {
+            // Check if token needs to be refreshed
+            if (this.isTokenExpired()) {
+                await this.refreshAccessToken();
+            }
+            
+            // Create or return existing connection
+            if (!this.connection) {
+                const authHandler = azdev.getBearerHandler(this.accessToken);
+                this.connection = new azdev.WebApi(this.orgUrl, authHandler);
+            }
+            
+            return this.connection;
+        } catch (error) {
+            console.error("Error getting connection:", error.message);
+            throw new Error(`Failed to get Azure DevOps connection: ${error.message}`);
         }
-        
-        // Create or return existing connection
-        if (!this.connection) {
-            const authHandler = azdev.getBearerHandler(this.accessToken);
-            this.connection = new azdev.WebApi(this.orgUrl, authHandler);
-        }
-        
-        return this.connection;
     }
     
+    /**
+     * Checks if the current token is expired or about to expire
+     * @returns True if token is expired or will expire within 5 minutes
+     */
     private isTokenExpired(): boolean {
         // Check if token is expired or about to expire (within 5 minutes)
         const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000);
         return this.tokenExpiration < fiveMinutesFromNow;
     }
     
+    /**
+     * Refreshes the access token using the refresh token
+     * @returns A Promise that resolves when the token is refreshed
+     */
     private async refreshAccessToken(): Promise<void> {
         try {
             // Implement your token refresh logic here
             // This typically involves calling your auth server with a refresh token
             
             // Example (pseudo-code):
-            // const response = await refreshTokenFromAuthServer(this.refreshToken);
-            // this.accessToken = response.accessToken;
-            // this.tokenExpiration = new Date(Date.now() + response.expiresIn * 1000);
+            // const response = await fetch('https://your-auth-server.com/token', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({
+            //         grant_type: 'refresh_token',
+            //         refresh_token: this.refreshToken,
+            //         client_id: 'your-client-id'
+            //     })
+            // });
+            // const data = await response.json();
+            // this.accessToken = data.access_token;
+            // this.tokenExpiration = new Date(Date.now() + data.expires_in * 1000);
+            // this.refreshToken = data.refresh_token || this.refreshToken;
             
             // Reset connection so it will be recreated with the new token
             this.connection = null;
         } catch (error) {
-            console.error("Failed to refresh access token:", error);
+            console.error("Failed to refresh access token:", error.message);
             throw new Error("Authentication failed: Unable to refresh access token");
         }
     }
     
+    /**
+     * Gets Git repositories from a project
+     * @param project - The project name
+     * @returns A Promise that resolves to an array of repositories
+     */
     async getGitRepositories(project: string): Promise<any[]> {
         try {
             const connection = await this.getConnection();
             const gitApi = await connection.getGitApi();
             return await gitApi.getRepositories(project);
         } catch (error) {
-            console.error("Error getting repositories:", error);
+            // Handle specific error types
+            if (error.statusCode === 401) {
+                console.error("Authentication error. Your token may be invalid or expired.");
+                throw new Error("Authentication failed. Please re-authenticate.");
+            } else if (error.statusCode === 404) {
+                console.error(`Project '${project}' not found.`);
+                throw new Error(`Project '${project}' not found. Check the project name.`);
+            } else {
+                console.error("Error getting repositories:", error.message);
+                throw error;
+            }
+        }
+    }
+    
+    /**
+     * Gets work items by IDs
+     * @param ids - Array of work item IDs
+     * @returns A Promise that resolves to an array of work items
+     */
+    async getWorkItems(ids: number[]): Promise<any[]> {
+        try {
+            const connection = await this.getConnection();
+            const workItemTrackingApi = await connection.getWorkItemTrackingApi();
+            return await workItemTrackingApi.getWorkItems(ids);
+        } catch (error) {
+            console.error("Error getting work items:", error.message);
             throw error;
         }
     }
 }
+
+// Usage example
+(async () => {
+    try {
+        // Initialize client with OAuth tokens
+        const client = new AzureDevOpsClient(
+            "https://dev.azure.com/your-organization",
+            "your-access-token",
+            3600, // Token expires in 1 hour
+            "your-refresh-token"
+        );
+        
+        // Use the client to get repositories
+        const repositories = await client.getGitRepositories("YourProject");
+        console.log(`Found ${repositories.length} repositories`);
+        
+        // Use the client to get work items
+        const workItems = await client.getWorkItems([1, 2, 3]);
+        console.log(`Retrieved ${workItems.length} work items`);
+    } catch (error) {
+        console.error("Error:", error.message);
+    }
+})();
 ```
 
 #### When to Use OAuth:

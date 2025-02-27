@@ -21,7 +21,9 @@ import * as azdev from "azure-devops-node-api";
 const orgUrl = "https://dev.azure.com/your-organization";
 
 // Authentication using Personal Access Token (recommended)
-const token = "your-personal-access-token";
+// Security Note: In production, always store tokens in environment variables
+// or a secure secret management solution, not in your code.
+const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
@@ -60,8 +62,13 @@ constructor(
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and authentication information
 const orgUrl = "https://dev.azure.com/your-organization";
-const token = "your-personal-access-token";
+// Security Note: In production, always store tokens in environment variables
+// or a secure secret management solution, not in your code.
+const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
+
+// Create authentication handler using Personal Access Token
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 
 // Basic connection
@@ -104,10 +111,12 @@ static createWithBearerToken(
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and bearer token
 const orgUrl = "https://dev.azure.com/your-organization";
 const token = "your-bearer-token";
 
 // Create connection with bearer token
+// This is useful when using OAuth authentication
 const connection = azdev.WebApi.createWithBearerToken(orgUrl, token);
 ```
 
@@ -128,15 +137,28 @@ async connect(): Promise<ConnectionData>
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and authentication information
 const orgUrl = "https://dev.azure.com/your-organization";
-const token = "your-personal-access-token";
+const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
 // Connect and get instance information
-const connectionData = await connection.connect();
-console.log(`Connected to organization: ${connectionData.instanceId}`);
-console.log(`API version: ${connectionData.deploymentType}`);
+try {
+    const connectionData = await connection.connect();
+    console.log(`Connected to organization: ${connectionData.instanceId}`);
+    console.log(`API version: ${connectionData.apiVersion}`);
+    console.log(`Server deployment type: ${connectionData.deploymentType}`);
+} catch (error) {
+    // Handle connection errors
+    if (error.statusCode === 401) {
+        console.error("Authentication failed. Check your credentials or token.");
+    } else if (error.statusCode === 404) {
+        console.error("Organization not found. Check your organization URL.");
+    } else {
+        console.error(`Connection error: ${error.message}`);
+    }
+}
 ```
 
 ### 🔍 getWorkItemTrackingApi
@@ -161,17 +183,28 @@ async getWorkItemTrackingApi(
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and authentication information
 const orgUrl = "https://dev.azure.com/your-organization";
-const token = "your-personal-access-token";
+const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
 // Get Work Item Tracking API client
-const workItemTrackingApi = await connection.getWorkItemTrackingApi();
-
-// Get work item
-const workItem = await workItemTrackingApi.getWorkItem(42);
-console.log(`Work Item Title: ${workItem.fields["System.Title"]}`);
+try {
+    // Get the Work Item Tracking API client
+    const workItemTrackingApi = await connection.getWorkItemTrackingApi();
+    
+    // Use the client to get a work item
+    const workItem = await workItemTrackingApi.getWorkItem(42);
+    console.log(`Work Item Title: ${workItem.fields["System.Title"]}`);
+} catch (error) {
+    // Handle errors
+    if (error.statusCode === 404) {
+        console.error("Work item not found.");
+    } else {
+        console.error(`Error: ${error.message}`);
+    }
+}
 ```
 
 ### 🔍 getGitApi
@@ -196,19 +229,42 @@ async getGitApi(
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and authentication information
 const orgUrl = "https://dev.azure.com/your-organization";
-const token = "your-personal-access-token";
+const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
-// Get Git API client
-const gitApi = await connection.getGitApi();
+// Get Git API client and list repositories
+async function listRepositories() {
+    try {
+        // Get the Git API client
+        const gitApi = await connection.getGitApi();
+        
+        // Get repositories
+        const repositories = await gitApi.getRepositories();
+        console.log(`Found ${repositories.length} repositories:`);
+        
+        // Display repository information
+        repositories.forEach(repo => {
+            console.log(`Repository: ${repo.name} (${repo.id})`);
+            console.log(`  Default branch: ${repo.defaultBranch}`);
+            console.log(`  URL: ${repo.remoteUrl}`);
+        });
+    } catch (error) {
+        // Handle specific error types
+        if (error.statusCode === 401) {
+            console.error("Authentication error. Check your credentials or token.");
+        } else if (error.statusCode === 403) {
+            console.error("Authorization error. You don't have permission to access repositories.");
+        } else {
+            console.error(`Error listing repositories: ${error.message}`);
+        }
+    }
+}
 
-// Get repositories
-const repositories = await gitApi.getRepositories();
-repositories.forEach(repo => {
-    console.log(`Repository: ${repo.name}`);
-});
+// Call the function
+listRepositories();
 ```
 
 ## Common Errors
@@ -221,13 +277,17 @@ try {
     await connection.connect();
 } catch (error) {
     if (error.statusCode === 401) {
-        console.log("Authentication error. Check your credentials or token.");
+        console.error("Authentication error. Check your credentials or token.");
     } else if (error.statusCode === 404) {
-        console.log("Organization not found. Check your organization URL.");
+        console.error("Organization not found. Check your organization URL.");
     } else if (error.message.includes("unable to get local issuer certificate")) {
-        console.log("SSL certificate error. Consider setting ignoreSslError option to true.");
+        console.error("SSL certificate error. Consider setting ignoreSslError option to true.");
+    } else if (error.code === 'ECONNREFUSED') {
+        console.error("Connection refused. Check your network or proxy settings.");
+    } else if (error.code === 'ETIMEDOUT') {
+        console.error("Connection timed out. Check your network or try again later.");
     } else {
-        console.log(`Error connecting: ${error.message}`);
+        console.error(`Error connecting: ${error.message}`);
     }
 }
 ```

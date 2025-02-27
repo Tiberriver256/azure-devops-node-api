@@ -11,10 +11,15 @@ import * as azdev from "azure-devops-node-api";
 
 // Connection setup
 const orgUrl = "https://dev.azure.com/yourorganization";
-const token = "your-personal-access-token";
+// Security Note: In production, always store tokens in environment variables
+// or a secure secret management solution, not in your code.
+const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
 
+// Create authentication handler using Personal Access Token
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
+// Create WebApi instance with organization URL and auth handler
 const connection = new azdev.WebApi(orgUrl, authHandler);
+// Get Git API client
 const gitApi = await connection.getGitApi();
 ```
 
@@ -30,6 +35,7 @@ This example demonstrates how to analyze repositories in a project by collecting
 async function analyzeRepositories(projectName: string) {
     try {
         // Get all repositories in the project
+        // This provides a list of all Git repositories the user has access to
         const repositories = await gitApi.getRepositories(projectName);
         console.log(`Found ${repositories.length} repositories in ${projectName}`);
         
@@ -38,6 +44,7 @@ async function analyzeRepositories(projectName: string) {
             console.log(`\nAnalyzing repository: ${repo.name}`);
             
             // Get branches
+            // We use "heads/" to filter only branches (not tags or other refs)
             const branches = await gitApi.getRefs(
                 repo.id,
                 projectName,
@@ -48,6 +55,7 @@ async function analyzeRepositories(projectName: string) {
             // Get recent commits on default branch
             const defaultBranch = repo.defaultBranch?.replace('refs/heads/', '');
             if (defaultBranch) {
+                // Create search criteria to get the most recent commits
                 const searchCriteria = {
                     itemVersion: {
                         version: defaultBranch
@@ -70,6 +78,7 @@ async function analyzeRepositories(projectName: string) {
             }
             
             // Get active pull requests
+            // We filter to only show active PRs (status = 1)
             const prSearchCriteria = {
                 repositoryId: repo.id,
                 status: 1 // Active
@@ -87,12 +96,27 @@ async function analyzeRepositories(projectName: string) {
             });
         }
     } catch (error) {
-        console.error("Error analyzing repositories:", error.message);
+        // Handle specific error types
+        if (error.statusCode === 404) {
+            console.error(`Project '${projectName}' not found. Check the project name.`);
+        } else if (error.statusCode === 401) {
+            console.error("Authentication error. Check your credentials or token.");
+        } else {
+            console.error("Error analyzing repositories:", error.message);
+        }
+        throw error;
     }
 }
 
-// Usage
-analyzeRepositories("MyProject");
+// Usage example
+(async () => {
+    try {
+        await analyzeRepositories("MyProject");
+        console.log("Repository analysis completed successfully");
+    } catch (error) {
+        console.error("Error in main process:", error.message);
+    }
+})();
 ```
 
 ## 2. Create Branch and Pull Request

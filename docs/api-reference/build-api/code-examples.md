@@ -12,9 +12,13 @@ import * as BuildInterfaces from "azure-devops-node-api/interfaces/BuildInterfac
 
 // Connection setup
 const orgUrl = "https://dev.azure.com/yourorganization";
-const token = process.env.AZURE_DEVOPS_PAT; // Personal Access Token
+// Security Note: In production, always store tokens in environment variables
+// or a secure secret management solution, not in your code.
+const token = process.env.AZURE_DEVOPS_PAT || "your-personal-access-token";
 
+// Create authentication handler using Personal Access Token
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
+// Create WebApi instance with organization URL and auth handler
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
 // Get Build API client
@@ -24,12 +28,17 @@ const projectName = "YourProject";
 
 ## Example 1: Build Dashboard
 
-Create a dashboard showing recent builds across all definitions:
+The following example demonstrates how to create a dashboard showing recent builds across all definitions:
 
 ```typescript
+/**
+ * Creates a dashboard showing recent builds across all definitions
+ * @returns An array of dashboard items with build information
+ */
 async function createBuildDashboard() {
     try {
-        // Get all build definitions
+        // 1. Get all build definitions
+        // This retrieves all build pipeline definitions in the project
         const definitions = await buildApi.getDefinitions(
             projectName,
             undefined, // name
@@ -41,7 +50,8 @@ async function createBuildDashboard() {
         
         console.log(`Found ${definitions.length} build definitions`);
         
-        // Get recent builds (last 7 days)
+        // 2. Get recent builds (last 7 days)
+        // Calculate date from 7 days ago to filter builds
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         
@@ -67,7 +77,8 @@ async function createBuildDashboard() {
         
         console.log(`Found ${builds.length} builds in the last 7 days`);
         
-        // Group builds by definition
+        // 3. Group builds by definition
+        // Create a map of definition ID to array of builds
         const buildsByDefinition = {};
         
         builds.forEach(build => {
@@ -78,7 +89,8 @@ async function createBuildDashboard() {
             buildsByDefinition[definitionId].push(build);
         });
         
-        // Create dashboard data
+        // 4. Create dashboard data
+        // Transform the raw data into a more usable dashboard format
         const dashboard = definitions.map(def => {
             const definitionBuilds = buildsByDefinition[def.id] || [];
             const successCount = definitionBuilds.filter(b => b.result === BuildInterfaces.BuildResult.Succeeded).length;
@@ -120,12 +132,23 @@ async function createBuildDashboard() {
         
         return dashboard;
     } catch (error) {
-        console.error(`Error creating build dashboard: ${error.message}`);
+        // Handle specific error types
+        if (error.statusCode === 404) {
+            console.error(`Project '${projectName}' not found. Check the project name.`);
+        } else if (error.statusCode === 401) {
+            console.error("Authentication error. Check your credentials or token.");
+        } else {
+            console.error(`Error creating build dashboard: ${error.message}`);
+        }
         throw error;
     }
 }
 
-// Helper functions to convert enum values to readable text
+/**
+ * Converts a build status enum value to a readable text string
+ * @param status The numeric status value from the BuildStatus enum
+ * @returns A human-readable status string
+ */
 function getBuildStatusText(status: number): string {
     const statusMap = {
         0: "None",
@@ -138,6 +161,11 @@ function getBuildStatusText(status: number): string {
     return statusMap[status] || `Unknown (${status})`;
 }
 
+/**
+ * Converts a build result enum value to a readable text string
+ * @param result The numeric result value from the BuildResult enum
+ * @returns A human-readable result string
+ */
 function getBuildResultText(result: number): string {
     const resultMap = {
         0: "None",
@@ -148,6 +176,24 @@ function getBuildResultText(result: number): string {
     };
     return resultMap[result] || `Unknown (${result})`;
 }
+
+// Usage example
+(async () => {
+    try {
+        const dashboard = await createBuildDashboard();
+        console.log(`Dashboard created with ${dashboard.length} entries`);
+        
+        // Display some dashboard information
+        dashboard.slice(0, 3).forEach(item => {
+            console.log(`${item.definitionName}: ${item.successRate.toFixed(1)}% success rate (${item.totalBuilds} builds)`);
+            if (item.latestBuild) {
+                console.log(`  Latest build: ${item.latestBuild.result} (${item.latestBuild.duration.toFixed(0)}s)`);
+            }
+        });
+    } catch (error) {
+        console.error("Error in main process:", error.message);
+    }
+})();
 ```
 
 ## Example 2: Queue Builds for Multiple Branches
