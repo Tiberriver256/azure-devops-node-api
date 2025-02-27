@@ -4,12 +4,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
 
 ## Tasks
 
-- [ ] **Cross-Reference Implementation** (@Taylor, @Casey, Due: Apr 19)
-  - Description:
-    - Establish links between related API methods
-    - Create navigation structure between documents
-  - Dependencies: Work Item, Git, and Build API documentation
-
 - [ ] **Editorial Reviews** (@Casey, @Jordan, Due: Apr 26)
   - Description:
     - Review all documentation for clarity and consistency
