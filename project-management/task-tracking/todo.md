@@ -12,19 +12,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
   - Dependencies: None
   - Blockers: Waiting for input from development team on Git API priorities
 
-- [ ] **Getting Started Guide** (@Jordan, Due: Mar 22)
-  - Description:
-    - Create simplified guide for Azure DevOps Node API
-    - Include basic setup and authentication examples
-    - Provide links to detailed API documentation
-  - Dependencies: None
-
-- [ ] **WebApi Core Documentation** (@Taylor, Due: Mar 22)
-  - Description:
-    - Document essential connection methods and authentication handlers
-    - Create code examples for basic connections
-  - Dependencies: None
-
 - [ ] **Work Item Tracking API Documentation** (@Casey, @Riley, Due: Mar 29)
   - Description:
     - Document top 5 methods with parameters and return values

@@ -2,10 +2,12 @@
 
 ## Overview
 
-This directory contains comprehensive documentation for authenticating with the Azure DevOps Node API. Authentication is the first step in using the API and is essential for accessing Azure DevOps resources securely.
+This directory contains comprehensive documentation for getting started with the Azure DevOps Node API, including authentication methods and initial setup.
 
 ## Contents
 
+- [Getting Started Guide](./getting-started.md) - Step-by-step introduction to the Azure DevOps Node API
+- [Getting Started Index](./index.md) - Overview and navigation for getting started resources
 - [Authentication Guide](authentication.md) - Complete guide to authentication methods and best practices
 - [OAuth Authentication](oauth-authentication.md) - Detailed implementation guide for OAuth 2.0 flows
 - [Security Best Practices](security-best-practices.md) - Guide to secure credential management
@@ -13,9 +15,7 @@ This directory contains comprehensive documentation for authenticating with the 
 
 ## Getting Started
 
-If you're new to the Azure DevOps Node API, start with the [Authentication Guide](authentication.md), which provides a comprehensive overview of all authentication methods and helps you choose the best option for your scenario.
-
-For a quick reference with code snippets, see the [Authentication Cheat Sheet](authentication-cheat-sheet.md).
+If you're new to the Azure DevOps Node API, start with the [Getting Started Guide](./getting-started.md), which provides a comprehensive introduction to setting up and using the API. Then check the [Authentication Guide](authentication.md) for details on authentication methods.
 
 ## Authentication Methods
 
@@ -28,7 +28,7 @@ The Azure DevOps Node API supports several authentication methods:
 
 ## Code Examples
 
-Each authentication guide includes practical code examples that you can adapt for your applications. Here's a simple example of PAT authentication:
+Each guide includes practical code examples that you can adapt for your applications. Here's a simple example of PAT authentication:
 
 ```typescript
 import * as azdev from "azure-devops-node-api";

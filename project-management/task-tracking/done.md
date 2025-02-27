@@ -49,4 +49,11 @@ Completed tasks. Include completion date and any relevant notes.
   - Description:
     - Document PAT, Basic, and OAuth authentication
     - Include code examples for each method
-  - Notes: Created comprehensive authentication documentation including main authentication guide, OAuth-specific guide, and security best practices. Documentation provides detailed examples for all authentication methods with practical implementation patterns and security recommendations. 
+  - Notes: Created comprehensive authentication documentation including main authentication guide, OAuth-specific guide, and security best practices. Documentation provides detailed examples for all authentication methods with practical implementation patterns and security recommendations.
+
+- [x] **Getting Started Guide** (@Jordan, Completed: Mar 22)
+  - Description:
+    - Create simplified guide for Azure DevOps Node API
+    - Include basic setup and authentication examples
+    - Provide links to detailed API documentation
+  - Notes: Created comprehensive getting started guide with step-by-step instructions for setting up a project, authenticating, and using the API. Added an API troubleshooting guide and updated the Getting Started section with an index page for better navigation. Documentation includes practical examples for JavaScript and TypeScript projects. 
