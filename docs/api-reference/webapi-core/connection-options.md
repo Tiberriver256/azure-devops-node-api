@@ -149,14 +149,14 @@ const connection = new azdev.WebApi(orgUrl, authHandler, options, requestSetting
 When getting a specific API client, you can override the server URL and authentication handlers for that client only:
 
 ```typescript
-// Get the Git API with default settings
+// Get the Git API client with default settings
 const gitApi = await connection.getGitApi();
 
-// Get the Work Item Tracking API with a custom server URL
+// Get the Work Item Tracking API client with a custom server URL
 const customServerUrl = "https://custom-server.dev.azure.com/your-organization";
-const witApi = await connection.getWorkItemTrackingApi(customServerUrl);
+const workItemTrackingApi = await connection.getWorkItemTrackingApi(customServerUrl);
 
-// Get the Build API with custom authentication handlers
+// Get the Build API client with custom authentication handlers
 const customHandlers = [
     customAuthHandler1,
     customAuthHandler2
@@ -221,4 +221,5 @@ const connection = new azdev.WebApi(orgUrl, authHandler, options);
 
 - [WebApi Core](./webapi-core.md)
 - [Authentication Handlers](./authentication-handlers.md)
-- [Authentication Guide](../../getting-started/authentication.md) 
+- [Authentication Guide](../../getting-started/authentication.md)
+- [Glossary](../../glossary.md) - Standardized terminology for the Azure DevOps Node API 

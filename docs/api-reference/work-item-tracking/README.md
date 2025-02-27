@@ -17,7 +17,7 @@ The Work Item Tracking API enables programmatic access to work items in Azure De
 
 ## API Client
 
-To use the Work Item Tracking API, you'll need to obtain an instance of the `WorkItemTrackingApi` client through the WebApi Core:
+To use the Work Item Tracking API, you'll need to obtain an instance of the Work Item Tracking API client through the WebApi Core:
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
@@ -92,3 +92,4 @@ For a comprehensive view of how Work Item Tracking API methods relate to other A
 - [Build API Documentation](../build-api/README.md)
 - [Integration Patterns](../integration-patterns/README.md)
 - [Work Items REST API](https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/?view=azure-devops-rest-7.1)
+- [Glossary](../../glossary.md) - Standardized terminology for the Azure DevOps Node API

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Authentication handlers are responsible for adding the appropriate authentication information to requests sent to Azure DevOps services. The Azure DevOps Node API provides several factory methods to create authentication handlers for different authentication methods.
+Authentication handlers are responsible for adding the appropriate authentication information to requests sent to Azure DevOps services. The Azure DevOps Node API client provides several factory methods to create authentication handlers for different authentication methods.
 
 ## Personal Access Token Handler
 
@@ -38,9 +38,9 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 ```
 
 **Usage Notes**:
-- PATs can be created in your Azure DevOps profile settings
-- Set appropriate scopes for your PAT based on the APIs you need to access
-- Store your PATs securely and don't commit them to version control
+- Personal Access Tokens can be created in your Azure DevOps profile settings
+- Set appropriate scopes for your Personal Access Token based on the APIs you need to access
+- Store your Personal Access Tokens securely and don't commit them to version control
 
 ## Basic Authentication Handler
 
@@ -78,8 +78,8 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 ```
 
 **Usage Notes**:
-- Basic authentication is less secure than PATs and may not work in all scenarios
-- Consider using PATs instead of passwords when possible
+- Basic authentication is less secure than Personal Access Tokens and may not work in all scenarios
+- Consider using Personal Access Tokens instead of passwords when possible
 
 ## OAuth Authentication
 
@@ -207,7 +207,7 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 
 **Usage Notes**:
 - Certificate authentication is ideal for service accounts and CI/CD pipelines
-- Provides better security than username/password or PAT in some scenarios
+- Provides better security than username/password or Personal Access Token in some scenarios
 - Certificates can be rotated on a schedule without code changes
 - Works best with on-premises Azure DevOps Server deployments that support certificate authentication
 

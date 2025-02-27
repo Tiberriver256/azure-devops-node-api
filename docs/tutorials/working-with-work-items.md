@@ -95,11 +95,11 @@ const config = require("./config");
 
 async function getWorkItem(id) {
   const connection = await getConnection();
-  const witApi = await connection.getWorkItemTrackingApi();
+  const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 
   try {
     // Get a single work item
-    const workItem = await witApi.getWorkItem(id);
+    const workItem = await workItemTrackingApi.getWorkItem(id);
     console.log(`Work Item #${workItem.id}: ${workItem.fields["System.Title"]}`);
     console.log(`State: ${workItem.fields["System.State"]}`);
     console.log(`Type: ${workItem.fields["System.WorkItemType"]}`);
@@ -113,11 +113,11 @@ async function getWorkItem(id) {
 
 async function getMultipleWorkItems(ids) {
   const connection = await getConnection();
-  const witApi = await connection.getWorkItemTrackingApi();
+  const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 
   try {
     // Get multiple work items in a single request
-    const workItems = await witApi.getWorkItems(ids);
+    const workItems = await workItemTrackingApi.getWorkItems(ids);
     console.log(`Retrieved ${workItems.length} work items:`);
     
     workItems.forEach(workItem => {
@@ -150,7 +150,7 @@ const config = require("./config");
 
 async function createWorkItem(type, title, description, assignedTo) {
   const connection = await getConnection();
-  const witApi = await connection.getWorkItemTrackingApi();
+  const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 
   // Create a document with fields to set
   const patchDocument = [
@@ -181,7 +181,7 @@ async function createWorkItem(type, title, description, assignedTo) {
 
   try {
     // Create a new work item
-    const newWorkItem = await witApi.createWorkItem(
+    const newWorkItem = await workItemTrackingApi.createWorkItem(
       {}, // Custom headers (can be empty)
       patchDocument,
       config.project,
@@ -218,7 +218,7 @@ const config = require("./config");
 
 async function updateWorkItem(id, updates) {
   const connection = await getConnection();
-  const witApi = await connection.getWorkItemTrackingApi();
+  const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 
   // Create a document with the field updates
   const patchDocument = [];
@@ -234,7 +234,7 @@ async function updateWorkItem(id, updates) {
 
   try {
     // Update the work item
-    const updatedWorkItem = await witApi.updateWorkItem(
+    const updatedWorkItem = await workItemTrackingApi.updateWorkItem(
       {}, // Custom headers (can be empty)
       patchDocument,
       id,
@@ -273,7 +273,7 @@ const config = require("./config");
 
 async function queryWorkItems(workItemType, state, assignedTo, limit) {
   const connection = await getConnection();
-  const witApi = await connection.getWorkItemTrackingApi();
+  const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 
   // Build the WIQL query
   let query = `SELECT [System.Id], [System.Title], [System.State], [System.AssignedTo], [System.CreatedDate]
@@ -306,7 +306,7 @@ async function queryWorkItems(workItemType, state, assignedTo, limit) {
 
   try {
     // Execute the query
-    const queryResult = await witApi.queryByWiql(wiql, config.project, undefined, undefined, limit);
+    const queryResult = await workItemTrackingApi.queryByWiql(wiql, config.project, undefined, undefined, limit);
 
     console.log(`Query found ${queryResult.workItems?.length || 0} work items`);
 
@@ -317,7 +317,7 @@ async function queryWorkItems(workItemType, state, assignedTo, limit) {
 
     // Get the work items with all fields
     const ids = queryResult.workItems.map(wi => wi.id);
-    const workItems = await witApi.getWorkItems(ids);
+    const workItems = await workItemTrackingApi.getWorkItems(ids);
 
     workItems.forEach(workItem => {
       console.log(`- #${workItem.id}: ${workItem.fields["System.Title"]}`);
@@ -360,13 +360,13 @@ const config = require("./config");
 class WorkItemManager {
   constructor() {
     this.connection = null;
-    this.witApi = null;
+    this.workItemTrackingApi = null;
   }
 
   async initialize() {
     try {
       this.connection = await getConnection();
-      this.witApi = await this.connection.getWorkItemTrackingApi();
+      this.workItemTrackingApi = await this.connection.getWorkItemTrackingApi();
       console.log("Work Item Manager initialized successfully");
     } catch (err) {
       console.error("Failed to initialize Work Item Manager:", err.message);
@@ -375,39 +375,38 @@ class WorkItemManager {
   }
 
   async getWorkItem(id, fields) {
-    if (!this.witApi) await this.initialize();
-
+    if (!this.workItemTrackingApi) await this.initialize();
+    
     try {
-      return await this.witApi.getWorkItem(id, fields);
+      return await this.workItemTrackingApi.getWorkItem(id, fields);
     } catch (err) {
-      console.error(`Error retrieving work item ${id}:`, err.message);
+      console.error(`Error getting work item ${id}:`, err.message);
       throw err;
     }
   }
 
   async getWorkItems(ids, fields) {
-    if (!this.witApi) await this.initialize();
-
+    if (!this.workItemTrackingApi) await this.initialize();
+    
     try {
-      return await this.witApi.getWorkItems(ids, fields);
+      return await this.workItemTrackingApi.getWorkItems(ids, fields);
     } catch (err) {
-      console.error(`Error retrieving work items:`, err.message);
+      console.error(`Error getting work items:`, err.message);
       throw err;
     }
   }
 
   async createWorkItem(type, fields) {
-    if (!this.witApi) await this.initialize();
-
-    // Create patch document from fields object
-    const patchDocument = Object.entries(fields).map(([field, value]) => ({
+    if (!this.workItemTrackingApi) await this.initialize();
+    
+    const patchDocument = Object.entries(fields).map(([key, value]) => ({
       op: "add",
-      path: `/fields/${field}`,
+      path: `/fields/${key}`,
       value
     }));
-
+    
     try {
-      return await this.witApi.createWorkItem(
+      return await this.workItemTrackingApi.createWorkItem(
         {}, 
         patchDocument,
         config.project,
@@ -420,21 +419,19 @@ class WorkItemManager {
   }
 
   async updateWorkItem(id, fields) {
-    if (!this.witApi) await this.initialize();
-
-    // Create patch document from fields object
-    const patchDocument = Object.entries(fields).map(([field, value]) => ({
-      op: "replace",
-      path: `/fields/${field}`,
+    if (!this.workItemTrackingApi) await this.initialize();
+    
+    const patchDocument = Object.entries(fields).map(([key, value]) => ({
+      op: "add",
+      path: `/fields/${key}`,
       value
     }));
-
+    
     try {
-      return await this.witApi.updateWorkItem(
-        {}, 
+      return await this.workItemTrackingApi.updateWorkItem(
+        {},
         patchDocument,
-        id,
-        config.project
+        id
       );
     } catch (err) {
       console.error(`Error updating work item ${id}:`, err.message);
@@ -442,20 +439,18 @@ class WorkItemManager {
     }
   }
 
-  async queryWorkItems(wiqlQuery, top) {
-    if (!this.witApi) await this.initialize();
-
-    const wiql = { query: wiqlQuery };
-
+  async queryWorkItems(wiql, top = 100) {
+    if (!this.workItemTrackingApi) await this.initialize();
+    
     try {
-      const queryResult = await this.witApi.queryByWiql(wiql, config.project, undefined, undefined, top);
+      const queryResult = await this.workItemTrackingApi.queryByWiql(wiql, config.project, undefined, undefined, top);
       
       if (!queryResult.workItems || queryResult.workItems.length === 0) {
         return [];
       }
-
+      
       const ids = queryResult.workItems.map(wi => wi.id);
-      return await this.witApi.getWorkItems(ids);
+      return await this.workItemTrackingApi.getWorkItems(ids);
     } catch (err) {
       console.error(`Error querying work items:`, err.message);
       throw err;
@@ -585,12 +580,12 @@ node app.js
 ### Authentication Issues
 
 - **Error**: "TF400813: The user name or password is incorrect."
-- **Solution**: Verify your Personal Access Token and ensure it has the appropriate scopes.
+- **Solution**: Verify your Personal Access Token (PAT) and ensure it has the appropriate scopes.
 
 ### Permission Issues
 
 - **Error**: "TF401019: The current user does not have permission to access the resource."
-- **Solution**: Make sure your PAT has the appropriate permissions for the operations you're trying to perform.
+- **Solution**: Make sure your Personal Access Token (PAT) has the appropriate permissions for the operations you're trying to perform.
 
 ### Project Not Found
 
@@ -613,7 +608,7 @@ node app.js
 
 ## Conclusion
 
-This tutorial has provided a comprehensive guide to working with Azure DevOps work items using the Node.js API. You've learned how to:
+This tutorial has provided a comprehensive guide to working with Azure DevOps work items using the Azure DevOps Node API. You've learned how to:
 
 - Connect to Azure DevOps
 - Retrieve individual and multiple work items
@@ -626,7 +621,8 @@ You can extend these examples to build more complex applications that integrate 
 
 ## See Also
 
-- [Work Item Tracking API Reference](../api-reference/work-item-tracking/work-item-tracking-api.md)
+- [Work Item Tracking API Documentation](../api-reference/work-item-tracking/README.md)
 - [Authentication Handlers](../api-reference/webapi-core/authentication-handlers.md)
 - [Connection Options](../api-reference/webapi-core/connection-options.md)
-- [Work Items REST API](https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/?view=azure-devops-rest-7.1) 
+- [Work Items REST API](https://learn.microsoft.com/en-us/rest/api/azure/devops/wit/?view=azure-devops-rest-7.1)
+- [Glossary](../glossary.md) - Standardized terminology for the Azure DevOps Node API 

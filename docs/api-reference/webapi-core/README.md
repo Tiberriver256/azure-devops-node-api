@@ -1,5 +1,7 @@
 # WebApi Core Documentation
 
+**Navigation**: [Home](../../index.md) > [API Reference](../index.md) > WebApi Core
+
 ## Overview
 
 This directory contains the comprehensive documentation for the WebApi Core component of the Azure DevOps Node API. The WebApi Core is the foundational layer that handles authentication, connections, and provides access to all other API clients.
@@ -38,7 +40,7 @@ This documentation is designed for:
 Quick reference for common WebApi Core tasks:
 
 ```typescript
-// Basic connection with PAT
+// Basic connection with Personal Access Token (PAT)
 import * as azdev from "azure-devops-node-api";
 
 const orgUrl = "https://dev.azure.com/your-organization";
@@ -47,9 +49,17 @@ const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
 // Connect and get an API client
-const witApi = await connection.getWorkItemTrackingApi();
-const workItem = await witApi.getWorkItem(42);
+const workItemTrackingApi = await connection.getWorkItemTrackingApi();
+const workItem = await workItemTrackingApi.getWorkItem(42);
 ```
+
+## See Also
+
+- [Git API Documentation](../git-api/README.md) - Documentation for Git API methods
+- [Work Item Tracking API Documentation](../work-item-tracking/README.md) - Documentation for Work Item Tracking API methods
+- [Build API Documentation](../build-api/README.md) - Documentation for Build API methods
+- [Integration Patterns](../integration-patterns/README.md) - Documentation for integration patterns
+- [Glossary](../../glossary.md) - Standardized terminology for the Azure DevOps Node API
 
 ## Feedback
 

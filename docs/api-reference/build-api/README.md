@@ -4,12 +4,12 @@
 
 ## Overview
 
-The Azure DevOps Build API provides a comprehensive set of methods for interacting with build pipelines in Azure DevOps. It enables developers to programmatically manage build definitions, queue builds, monitor build status, and access build artifacts and logs. This documentation provides detailed information about the most commonly used methods in the Build API.
+The Azure DevOps Build API provides a comprehensive set of methods for interacting with build pipelines in Azure DevOps. It enables developers to programmatically manage build pipelines, queue builds, monitor build status, and access build artifacts and logs. This documentation provides detailed information about the most commonly used methods in the Build API.
 
 ## Purpose
 
 The Build API is designed to facilitate:
-- Build definition management (creating, updating, and querying build definitions)
+- Build pipeline management (creating, updating, and querying build pipelines)
 - Build execution (queuing builds and monitoring their progress)
 - Build result analysis (accessing logs, artifacts, and test results)
 - Build pipeline automation (integrating builds with other systems)
@@ -38,7 +38,7 @@ This documentation covers:
 
 To use the Build API, you'll need:
 - An Azure DevOps account with appropriate permissions
-- A personal access token (PAT) or other authentication method with Build (Read, Execute) permissions
+- A Personal Access Token (PAT) or other authentication method with Build (Read, Execute) permissions
 - The Azure DevOps Node.js API client library
 
 ## Getting Started
@@ -59,9 +59,9 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 const buildApi = await connection.getBuildApi();
 
 // Now you can use the Build API methods
-// Example: Get all build definitions
+// Example: Get all build pipelines
 const buildDefinitions = await buildApi.getDefinitions("YourProject");
-console.log(`Found ${buildDefinitions.length} build definitions`);
+console.log(`Found ${buildDefinitions.length} build pipelines`);
 ```
 
 ## Integration with Other APIs
@@ -103,4 +103,5 @@ For a comprehensive view of how Build API methods relate to other APIs, see the 
 - [Git API Documentation](../git-api/README.md) - Documentation for Git API methods
 - [Work Item Tracking API Documentation](../work-item-tracking/README.md) - Documentation for Work Item Tracking API methods
 - [Integration Patterns](../integration-patterns/README.md) - Documentation for integration patterns
-- [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases 
+- [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases
+- [Glossary](../../glossary.md) - Standardized terminology for the Azure DevOps Node API 

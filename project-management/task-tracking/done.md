@@ -4,6 +4,11 @@ Completed tasks. Include completion date and any relevant notes.
 
 ## Completed Tasks
 
+- [x] **Standardize Terminology** (@Casey, Completed: Apr 29)
+  - Description: Create a glossary of key terms used in the API documentation and ensure consistent use of API client names, Azure DevOps concepts, and technical terms throughout the documentation.
+  - Dependencies: None
+  - Notes: Created a comprehensive glossary of standardized terminology for the Azure DevOps Node API. Identified and resolved inconsistencies in API client naming (e.g., GitApi vs Git API) and Azure DevOps concepts (e.g., build definition vs build pipeline). Updated API reference documentation for Git API, Work Item Tracking API, Build API, and WebApi Core to use standardized terminology. Standardized variable names in code examples (e.g., changing 'gitApiClient' to 'gitApi', 'witApi' to 'workItemTrackingApi') across authentication guide and tutorials. Added references to the glossary in "See Also" sections to help users find standardized terminology.
+
 - [x] **ASCII Diagram Removal** (@Casey, @Jordan, Completed: Apr 27)
   - Description:
     - Remove all ASCII diagrams from documentation

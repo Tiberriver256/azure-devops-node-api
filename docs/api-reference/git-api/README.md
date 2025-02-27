@@ -38,7 +38,7 @@ This documentation covers:
 
 To use the Git API, you'll need:
 - An Azure DevOps account with appropriate permissions
-- A personal access token (PAT) or other authentication method
+- A Personal Access Token (PAT) or other authentication method
 - The Azure DevOps Node.js API client library
 
 ## Getting Started
@@ -103,4 +103,5 @@ For a comprehensive view of how Git API methods relate to other APIs, see the [A
 - [Work Item Tracking API Documentation](../work-item-tracking/README.md) - Documentation for Work Item Tracking API methods
 - [Build API Documentation](../build-api/README.md) - Documentation for Build API methods
 - [Integration Patterns](../integration-patterns/README.md) - Documentation for integration patterns
-- [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases 
+- [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases
+- [Glossary](../../glossary.md) - Standardized terminology for the Azure DevOps Node API 

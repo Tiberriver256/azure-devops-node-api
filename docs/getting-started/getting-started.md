@@ -1,8 +1,10 @@
 # Getting Started with Azure DevOps Node API
 
+**Navigation**: [Home](../index.md) > [Getting Started](./index.md) > Getting Started Guide
+
 ## Overview
 
-This guide will help you get started with the Azure DevOps Node API, a JavaScript/TypeScript client library for interacting with Azure DevOps Services and Azure DevOps Server. Whether you're building DevOps tools, integrating with your existing systems, or automating your workflows, this guide will help you take your first steps with the API.
+This guide will help you get started with the Azure DevOps Node API, a JavaScript/TypeScript client library for interacting with Azure DevOps. Whether you're building DevOps tools, integrating with your existing systems, or automating your workflows, this guide will help you take your first steps with the API.
 
 ## Prerequisites
 
@@ -44,7 +46,7 @@ npm install --save-dev typescript @types/node
 
 The Azure DevOps Node API supports multiple authentication methods. Personal Access Tokens (PATs) are recommended for most scenarios.
 
-### Generate a Personal Access Token
+### Generate a Personal Access Token (PAT)
 
 1. Sign in to your Azure DevOps organization: `https://dev.azure.com/{your-organization}`
 2. Click on your profile icon in the top-right corner
@@ -179,7 +181,7 @@ node project-info.js
 
 The Azure DevOps Node API provides access to multiple API clients for different services. Here are examples of accessing some common API clients:
 
-### Work Item Tracking
+### Work Item Tracking API
 
 ```javascript
 // Get Work Item Tracking API client
@@ -190,7 +192,7 @@ const workItem = await witApi.getWorkItem(42); // Replace with a valid work item
 console.log(`Work Item Title: ${workItem.fields["System.Title"]}`);
 ```
 
-### Git Repositories
+### Git API
 
 ```javascript
 // Get Git API client
@@ -203,29 +205,29 @@ repositories.forEach(repo => {
 });
 ```
 
-### Build Pipelines
+### Build API
 
 ```javascript
 // Get Build API client
 const buildApi = await connection.getBuildApi();
 
-// Get build definitions
-const definitions = await buildApi.getDefinitions("YourProject");
-definitions.forEach(def => {
-    console.log(`Build Definition: ${def.name}`);
+// Get build pipelines
+const buildPipelines = await buildApi.getDefinitions("YourProject");
+buildPipelines.forEach(pipeline => {
+    console.log(`Build Pipeline: ${pipeline.name}`);
 });
 ```
 
-### Release Management
+### Release API
 
 ```javascript
 // Get Release API client
 const releaseApi = await connection.getReleaseApi();
 
-// Get release definitions
-const releaseDefinitions = await releaseApi.getReleaseDefinitions("YourProject");
-releaseDefinitions.forEach(def => {
-    console.log(`Release Definition: ${def.name}`);
+// Get release pipelines
+const releasePipelines = await releaseApi.getReleaseDefinitions("YourProject");
+releasePipelines.forEach(pipeline => {
+    console.log(`Release Pipeline: ${pipeline.name}`);
 });
 ```
 
@@ -249,83 +251,13 @@ If you're using TypeScript, create a `tsconfig.json` file:
 }
 ```
 
-And here's a TypeScript example:
-
-```typescript
-// src/connect.ts
-import * as azdev from "azure-devops-node-api";
-
-interface Config {
-    organization: string;
-    token: string;
-}
-
-const config: Config = {
-    organization: "https://dev.azure.com/your-organization",
-    token: process.env.AZURE_DEVOPS_PAT || "your-personal-access-token"
-};
-
-async function connect(): Promise<azdev.WebApi> {
-    try {
-        console.log("Connecting to Azure DevOps...");
-        
-        // Create authentication handler
-        const authHandler = azdev.getPersonalAccessTokenHandler(config.token);
-        
-        // Create a connection to Azure DevOps
-        const connection = new azdev.WebApi(config.organization, authHandler);
-        
-        // Test the connection
-        const connectionData = await connection.connect();
-        console.log("Connected successfully!");
-        console.log(`Connection established to: ${connectionData.serverUrl}`);
-        console.log(`Authenticated as: ${connectionData.authenticatedUser.providerDisplayName}`);
-        
-        return connection;
-    } catch (error) {
-        console.error("Connection failed:", error.message);
-        throw error;
-    }
-}
-
-// Self-executing async function
-(async () => {
-    try {
-        const connection = await connect();
-        
-        // Get Git API client
-        const gitApi = await connection.getGitApi();
-        
-        // Get repositories
-        const repositories = await gitApi.getRepositories();
-        console.log(`Found ${repositories.length} repositories`);
-    } catch (error) {
-        if (error instanceof Error) {
-            console.error("Error:", error.message);
-        } else {
-            console.error("Unknown error occurred");
-        }
-    }
-})();
-```
-
-Compile and run your TypeScript code:
-
-```bash
-# Compile TypeScript
-npx tsc
-
-# Run compiled JavaScript
-node dist/connect.js
-```
-
 ## Troubleshooting
 
 Common issues you might encounter and how to solve them:
 
 - **Authentication Errors (401)**: 
-  - Verify your PAT is valid and hasn't expired
-  - Check if your PAT has the correct scopes
+  - Verify your Personal Access Token (PAT) is valid and hasn't expired
+  - Check if your Personal Access Token (PAT) has the correct scopes
   - Ensure the organization URL is correct
 
 - **Resource Not Found (404)**:
@@ -349,8 +281,15 @@ Now that you have set up your first connection to Azure DevOps and learned how t
 - [Connect to Azure DevOps Tutorial](../tutorials/connect-to-azure-devops.md) - Detailed connection tutorial with more examples
 - [Authentication Guide](./authentication.md) - In-depth guide to authentication options
 - [Authentication Cheat Sheet](./authentication-cheat-sheet.md) - Quick reference for authentication methods
-- [WebApi Core Documentation](../api-reference/webapi-core/webapi-core.md) - Details on the core WebApi class
-- [Work Item Tracking Guide](../api-reference/work-item-tracking/work-item-tracking.md) - Guide to working with work items
-- [Git API Guide](../api-reference/git/git-api.md) - Guide to working with repositories and code
+- [WebApi Core Documentation](../api-reference/webapi-core/README.md) - Details on the core WebApi class
+- [Work Item Tracking API Documentation](../api-reference/work-item-tracking/README.md) - Guide to working with work items
+- [Git API Documentation](../api-reference/git-api/README.md) - Guide to working with repositories and code
 
-For complete API details, visit the [Azure DevOps Services REST API Reference](https://docs.microsoft.com/en-us/rest/api/azure/devops/?view=azure-devops-rest-6.0). 
+For complete API details, visit the [Azure DevOps Services REST API Reference](https://docs.microsoft.com/en-us/rest/api/azure/devops/?view=azure-devops-rest-6.0).
+
+## See Also
+
+- [Authentication Guide](./authentication.md) - Detailed information about authentication methods
+- [API Reference](../api-reference/index.md) - Complete API reference documentation
+- [Tutorials](../tutorials/index.md) - Step-by-step tutorials for common scenarios
+- [Glossary](../glossary.md) - Standardized terminology for the Azure DevOps Node API 

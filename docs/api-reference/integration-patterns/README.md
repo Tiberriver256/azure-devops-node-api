@@ -41,7 +41,7 @@ Integration patterns address several common scenarios in Azure DevOps workflows:
 To use these integration patterns, you'll need:
 
 - An Azure DevOps account with appropriate permissions
-- A personal access token (PAT) with scopes for all relevant services
+- A Personal Access Token (PAT) with scopes for all relevant services
 - The Azure DevOps Node.js API client library
 - Familiarity with the individual APIs being integrated
 
@@ -103,7 +103,7 @@ For a detailed breakdown of how specific methods relate to each other, see the [
 
 ### Build API
 
-- [getDefinitions](../build-api/top-5-methods.md#getdefinitions) - Get build definitions
+- [getDefinitions](../build-api/top-5-methods.md#getdefinitions) - Get build pipelines
 - [getBuild](../build-api/top-5-methods.md#getbuild) - Get a specific build
 - [getBuilds](../build-api/top-5-methods.md#getbuilds) - Get multiple builds
 - [queueBuild](../build-api/top-5-methods.md#queuebuild) - Queue a new build
@@ -126,4 +126,5 @@ When implementing integration patterns, consider these best practices:
 - [Git API Documentation](../git-api/README.md) - Documentation for Git API
 - [Build API Documentation](../build-api/README.md) - Documentation for Build API
 - [API Priority Matrix](../priority-matrix/README.md) - Understand the most important APIs and their use cases
-- [WebApi Core Documentation](../webapi-core/README.md) - Essential information about the WebApi class 
+- [WebApi Core Documentation](../webapi-core/README.md) - Essential information about the WebApi class
+- [Glossary](../../glossary.md) - Standardized terminology for the Azure DevOps Node API 

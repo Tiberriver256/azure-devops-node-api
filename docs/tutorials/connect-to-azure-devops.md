@@ -1,6 +1,8 @@
-# Tutorial: Connecting to Azure DevOps Services
+# Tutorial: Connecting to Azure DevOps
 
-This tutorial walks you through the process of connecting to Azure DevOps Services using the Azure DevOps Node API. By the end of this guide, you'll be able to establish a connection and verify that it works correctly.
+**Navigation**: [Home](../index.md) > [Tutorials](./index.md) > Connect to Azure DevOps
+
+This tutorial walks you through the process of connecting to Azure DevOps using the Azure DevOps Node API. By the end of this guide, you'll be able to establish a connection and verify that it works correctly.
 
 ## Prerequisites
 
@@ -85,11 +87,11 @@ async function connect() {
         const connection = await connect();
         
         // Get a client for a specific API area
-        const witApi = await connection.getWorkItemTrackingApi();
+        const workItemTrackingApi = await connection.getWorkItemTrackingApi();
         console.log("Work Item Tracking API client created successfully");
         
         // List some projects to verify the connection works
-        const projects = await witApi.getProjects();
+        const projects = await workItemTrackingApi.getProjects();
         console.log("\nProjects in your organization:");
         
         projects.slice(0, 5).forEach(project => {
@@ -194,7 +196,7 @@ const connection = new azdev.WebApi(config.orgUrl, authHandler, options);
 
 If you encounter any issues:
 
-1. **Authentication Errors (401)**: Verify your PAT is valid and has the correct scopes.
+1. **Authentication Errors (401)**: Verify your Personal Access Token (PAT) is valid and has the correct scopes.
 2. **Organization Not Found (404)**: Check your organization URL is correct.
 3. **Certificate Errors**: If you're behind a corporate firewall with SSL inspection, you might need to set `ignoreSslError: true` or configure the appropriate certificates.
 4. **Proxy Errors**: If you're behind a proxy, configure the proxy settings as shown in Step 7.
@@ -228,7 +230,7 @@ if (!orgUrl || !token) {
 
 async function connectToAzureDevOps() {
     try {
-        // Create authentication handler using PAT
+        // Create authentication handler using Personal Access Token (PAT)
         const authHandler = azdev.getPersonalAccessTokenHandler(token);
         
         // Connection options
@@ -248,29 +250,52 @@ async function connectToAzureDevOps() {
         const gitApi = await connection.getGitApi();
         console.log("Git API client created successfully");
         
-        // List repositories
-        const repositories = await gitApi.getRepositories();
-        console.log("\nRepositories:");
-        repositories.forEach(repo => {
-            console.log(`- ${repo.name} (${repo.id})`);
-        });
+        // Example: Get Work Item Tracking API client
+        const workItemTrackingApi = await connection.getWorkItemTrackingApi();
+        console.log("Work Item Tracking API client created successfully");
         
-        return connection;
+        // Example: Get Build API client
+        const buildApi = await connection.getBuildApi();
+        console.log("Build API client created successfully");
+        
+        return {
+            connection,
+            gitApi,
+            workItemTrackingApi,
+            buildApi
+        };
     } catch (error) {
-        console.error("Connection failed:", error.message);
+        console.error("Failed to connect to Azure DevOps", error);
         throw error;
     }
 }
 
-// Run the example
-connectToAzureDevOps().catch(error => {
-    console.error("Error:", error);
-    process.exit(1);
-});
+// Usage
+(async () => {
+    try {
+        const { gitApi, workItemTrackingApi, buildApi } = await connectToAzureDevOps();
+        
+        // Now you can use these API clients to interact with Azure DevOps
+        // Example: List repositories
+        const repositories = await gitApi.getRepositories();
+        console.log(`Found ${repositories.length} repositories`);
+        
+        // Example: List work items
+        const workItems = await workItemTrackingApi.getWorkItems([1, 2, 3]);
+        console.log(`Retrieved ${workItems.length} work items`);
+        
+        // Example: List build pipelines
+        const buildPipelines = await buildApi.getDefinitions("YourProject");
+        console.log(`Found ${buildPipelines.length} build pipelines`);
+    } catch (error) {
+        console.error("Error:", error.message);
+    }
+})();
 ```
 
 ## See Also
 
-- [WebApi Core Documentation](../api-reference/webapi-core/webapi-core.md)
-- [Authentication Handlers](../api-reference/webapi-core/authentication-handlers.md)
-- [Connection Options](../api-reference/webapi-core/connection-options.md) 
+- [Authentication Guide](../getting-started/authentication.md) - Detailed information about authentication methods
+- [API Reference](../api-reference/index.md) - Complete API reference documentation
+- [Working with Work Items Tutorial](./working-with-work-items.md) - Learn how to work with work items
+- [Glossary](../glossary.md) - Standardized terminology for the Azure DevOps Node API 

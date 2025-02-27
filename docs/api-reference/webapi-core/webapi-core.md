@@ -2,7 +2,7 @@
 
 ## Overview
 
-The WebApi Core is the foundation of the Azure DevOps Node API. It provides essential connection and authentication functionality to connect to Azure DevOps services and access various API clients. It serves as the entry point for all interactions with the Azure DevOps REST APIs.
+The WebApi Core is the foundation of the Azure DevOps Node API client. It provides essential connection and authentication functionality to connect to Azure DevOps services and access various API clients. It serves as the entry point for all interactions with the Azure DevOps REST APIs.
 
 ## Installation
 
@@ -12,7 +12,7 @@ npm install azure-devops-node-api
 
 ## Authentication
 
-The WebApi Core supports multiple authentication methods for connecting to Azure DevOps, including Personal Access Tokens (PAT), Basic Authentication, Bearer Tokens, and NTLM.
+The WebApi Core supports multiple authentication methods for connecting to Azure DevOps, including Personal Access Tokens (PATs), Basic Authentication, Bearer Tokens, and NTLM.
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
@@ -155,7 +155,7 @@ async getWorkItemTrackingApi(
 - `serverUrl`: (Optional) Override the server URL for this API client
 - `handlers`: (Optional) Override the request handlers for this API client
 
-**Returns**: A Promise that resolves to a WorkItemTrackingApi client.
+**Returns**: A Promise that resolves to a Work Item Tracking API client.
 
 **Example**:
 ```typescript
@@ -167,10 +167,10 @@ const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
 // Get Work Item Tracking API client
-const witApi = await connection.getWorkItemTrackingApi();
+const workItemTrackingApi = await connection.getWorkItemTrackingApi();
 
 // Get work item
-const workItem = await witApi.getWorkItem(42);
+const workItem = await workItemTrackingApi.getWorkItem(42);
 console.log(`Work Item Title: ${workItem.fields["System.Title"]}`);
 ```
 
@@ -190,7 +190,7 @@ async getGitApi(
 - `serverUrl`: (Optional) Override the server URL for this API client
 - `handlers`: (Optional) Override the request handlers for this API client
 
-**Returns**: A Promise that resolves to a GitApi client.
+**Returns**: A Promise that resolves to a Git API client.
 
 **Example**:
 ```typescript
@@ -236,4 +236,5 @@ try {
 
 - [Authentication Guide](../../getting-started/authentication.md)
 - [Connection Options](./connection-options.md)
-- [Authentication Handlers](./authentication-handlers.md) 
+- [Authentication Handlers](./authentication-handlers.md)
+- [Glossary](../../glossary.md) - Standardized terminology for the Azure DevOps Node API 

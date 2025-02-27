@@ -6,7 +6,7 @@ This guide describes the authentication methods available in the Azure DevOps No
 
 > **🔑 RECOMMENDATION**: For most scenarios, Personal Access Tokens (PATs) are the recommended authentication method due to their security, flexibility, and scoped access control.
 
-## Authentication Methods
+## Authentication Methods for Azure DevOps Node API
 
 The Azure DevOps Node API supports multiple authentication methods:
 
@@ -17,284 +17,309 @@ The Azure DevOps Node API supports multiple authentication methods:
 | Bearer Token (OAuth) | Web applications, user-centric tools | High | Medium-High |
 | NTLM | On-premises deployments | Medium | Medium |
 
-## Personal Access Token (PAT) Authentication
+### Personal Access Token (PAT) Authentication
 
-### What are PATs?
+Personal Access Tokens (PATs) are the recommended authentication method for the Azure DevOps Node API. They provide a secure way to authenticate with Azure DevOps services without using your password directly.
 
-Personal Access Tokens (PATs) are alternatives to passwords that provide a secure way to authenticate with Azure DevOps services. PATs offer several advantages:
+#### Advantages of PATs:
+- Scoped permissions (limit access to specific resources)
+- Revocable without changing your password
+- Expiration dates for enhanced security
+- No need to handle multi-factor authentication in your code
 
-- **Scoped permissions**: Limit token access to specific resources and operations
-- **Expiration**: Set an expiration date for each token
-- **Revocation**: Easily revoke tokens if they are compromised
-- **Auditability**: Track token usage in audit logs
+#### Generating a PAT:
+1. Navigate to your Azure DevOps organization: `https://dev.azure.com/{organization}`
+2. Click on your profile icon in the top right corner
+3. Select "Personal access tokens"
+4. Click "New Token"
+5. Configure the token scope based on your application's needs
+6. Set an expiration date
+7. Create the token and save it securely
 
-### Generating a PAT
-
-To use PAT authentication, you first need to generate a token:
-
-1. Sign in to your Azure DevOps organization: `https://dev.azure.com/{your-organization}`
-2. Click on your profile picture in the top right corner and select "Security"
-3. Select "Personal access tokens" and click "New Token"
-4. Name your token and set an expiration date
-5. Select the scopes (permissions) your application needs
-   - For most API operations, "Read" scope is sufficient
-   - For write operations, select the appropriate scopes
-6. Click "Create" and save your token securely (it will only be shown once)
-
-### Using PAT Authentication
+#### Using PAT Authentication (TypeScript):
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and Personal Access Token
 const orgUrl = "https://dev.azure.com/your-organization";
 const token = "your-personal-access-token";
 
-// Create a PAT authentication handler
+// Create a connection using Personal Access Token authentication
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
-
-// Create the WebApi connection
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
-// Use the connection
-async function useConnection() {
+// Use the connection to access Azure DevOps APIs
+async function getRepositories() {
     try {
-        // Test the connection
-        const connData = await connection.connect();
-        console.log(`Connected to organization: ${connData.authenticatedUser.customDisplayName}`);
-        
-        // Get a client for a specific API
+        // Get Git API client
         const gitApi = await connection.getGitApi();
         
-        // Use the client
-        const repos = await gitApi.getRepositories();
-        console.log(`Found ${repos.length} repositories`);
+        // Get repositories from the project
+        const repositories = await gitApi.getRepositories("your-project");
+        console.log(repositories);
     } catch (error) {
         console.error("Error connecting to Azure DevOps:", error);
     }
 }
 
-useConnection();
+getRepositories();
 ```
 
-### Security Best Practices for PATs
+#### Security Best Practices for PATs:
 
-- **Store tokens securely**: Never hardcode tokens in your source code
-- **Use environment variables or a secret manager**:
-  ```typescript
-  const token = process.env.AZURE_DEVOPS_PAT;
-  ```
-- **Set appropriate scopes**: Only request the permissions your application needs
-- **Set reasonable expiration dates**: Balance security with maintenance overhead
-- **Use different tokens for different applications**: Limit the impact if a token is compromised
-- **Rotate tokens regularly**: Establish a process for token rotation
+1. **Store tokens securely**: Never hardcode tokens in your application or commit them to source control
+2. **Use environment variables**: Store tokens in environment variables or secure configuration systems
+3. **Set appropriate scopes**: Limit token permissions to only what your application needs
+4. **Rotate tokens regularly**: Create new tokens and invalidate old ones periodically
+5. **Set expiration dates**: Use the shortest practical expiration period for your use case
 
-## Basic Authentication
+### Basic Authentication
 
-Basic authentication uses a username and password to authenticate requests. While simple to implement, it has security limitations and is primarily recommended for development and testing.
+Basic authentication is a simple authentication scheme built into the HTTP protocol. With the Azure DevOps Node API, you can use Basic authentication with your username and password or with a Personal Access Token (PAT) as the password.
 
-### Using Basic Authentication
+#### Using Basic Authentication (TypeScript):
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and credentials
 const orgUrl = "https://dev.azure.com/your-organization";
 const username = "your-username";
-const password = "your-password"; // or PAT used as password
+const password = "your-password-or-pat"; // Using PAT as password is recommended
 
-// Create a Basic authentication handler
+// Create a connection using Basic authentication
 const authHandler = azdev.getBasicHandler(username, password);
-
-// Create the WebApi connection
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
-// Use the connection
-async function useConnection() {
+// Use the connection to access Azure DevOps APIs
+async function getProjects() {
     try {
-        const connData = await connection.connect();
-        console.log("Connection successful");
+        // Get Core API client
+        const coreApi = await connection.getCoreApi();
+        
+        // Get projects
+        const projects = await coreApi.getProjects();
+        console.log(projects);
     } catch (error) {
         console.error("Error connecting to Azure DevOps:", error);
     }
 }
 
-useConnection();
+getProjects();
 ```
 
-### When to Use Basic Authentication
+#### When to Use Basic Authentication:
+- Development environments
+- Simple scripts and utilities
+- When using a Personal Access Token as the password
 
-- **Development environments**: For quick testing during development
-- **Simple scripts**: For one-off automation tasks
-- **PAT as password**: You can use a PAT as the password with your username:
-  ```typescript
-  const authHandler = azdev.getBasicHandler("username", "your-pat-token");
-  ```
+#### Limitations of Basic Authentication:
+- Security risks if using actual password (prefer PAT as password)
+- No granular permission control (unless using PAT as password)
+- Subject to organizational password policies and complexity requirements
 
-### Basic Authentication Limitations
+### OAuth 2.0 Authentication
 
-- **Security risk**: Sending credentials with each request creates more exposure
-- **No granular permissions**: Unlike PATs, basic auth doesn't support scopes
-- **Password policies**: Subject to organizational password complexity and rotation policies
+OAuth 2.0 provides a secure way for your application to access Azure DevOps resources on behalf of a user without exposing their credentials to your application.
 
-## OAuth Authentication (Bearer Token)
+#### Typical OAuth Flow for Azure DevOps:
 
-OAuth 2.0 is an industry-standard protocol for authorization that enables secure delegated access. It's ideal for web applications where users want to grant your application access to their Azure DevOps resources without sharing credentials.
+1. Register your application with Azure AD
+2. Implement authorization code flow to obtain an access token
+3. Use the access token for API requests
+4. Refresh the token when it expires
 
-### OAuth Flow Overview
-
-The typical OAuth flow for Azure DevOps:
-
-1. **Register your application** with Azure AD
-2. **Implement authorization code flow** to obtain an access token
-3. **Use the token** to authenticate API requests
-4. **Refresh the token** when it expires
-
-### Using Bearer Token Authentication
-
-Once you have obtained an OAuth access token:
+#### Using Bearer Token Authentication (TypeScript):
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and OAuth access token
 const orgUrl = "https://dev.azure.com/your-organization";
-const bearerToken = "your-oauth-access-token";
+const token = "your-oauth-access-token";
 
-// Create a Bearer Token authentication handler
-const authHandler = azdev.getBearerHandler(bearerToken);
-
-// Create the WebApi connection
+// Create a connection using Bearer Token authentication
+const authHandler = azdev.getBearerHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 
-// Alternative: Use the built-in factory method
-const connection2 = azdev.WebApi.createWithBearerToken(orgUrl, bearerToken);
-
-// Use the connection
-async function useConnection() {
+// Use the connection to access Azure DevOps APIs
+async function getTeams() {
     try {
-        const connData = await connection.connect();
-        console.log("Connection successful");
+        // Get Core API client
+        const coreApi = await connection.getCoreApi();
+        
+        // Get teams
+        const teams = await coreApi.getAllTeams();
+        console.log(teams);
     } catch (error) {
         console.error("Error connecting to Azure DevOps:", error);
     }
 }
 
-useConnection();
+getTeams();
 ```
 
-### OAuth Token Management
+#### OAuth Token Management
 
-For production applications, implement token refresh logic:
+For production applications, you'll need to implement token refresh logic:
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
 class AzureDevOpsClient {
+    private orgUrl: string;
+    private accessToken: string;
+    private tokenExpiration: Date;
     private connection: azdev.WebApi | null = null;
-    private tokenExpirationTime: Date | null = null;
     
-    constructor(
-        private orgUrl: string,
-        private clientId: string,
-        private clientSecret: string,
-        private refreshToken: string
-    ) {}
+    constructor(orgUrl: string, accessToken: string, expiresIn: number) {
+        this.orgUrl = orgUrl;
+        this.accessToken = accessToken;
+        this.tokenExpiration = new Date(Date.now() + expiresIn * 1000);
+    }
     
     async getConnection(): Promise<azdev.WebApi> {
-        // Check if token needs refresh
-        if (!this.connection || this.isTokenExpired()) {
-            const token = await this.refreshAccessToken();
-            const authHandler = azdev.getBearerHandler(token.accessToken);
+        // Check if token needs to be refreshed
+        if (this.isTokenExpired()) {
+            await this.refreshAccessToken();
+        }
+        
+        // Create or return existing connection
+        if (!this.connection) {
+            const authHandler = azdev.getBearerHandler(this.accessToken);
             this.connection = new azdev.WebApi(this.orgUrl, authHandler);
-            
-            // Set expiration time
-            const expiresIn = token.expiresIn || 3600; // Default 1 hour
-            this.tokenExpirationTime = new Date(Date.now() + expiresIn * 1000);
         }
         
         return this.connection;
     }
     
     private isTokenExpired(): boolean {
-        if (!this.tokenExpirationTime) return true;
-        
-        // Refresh if less than 5 minutes until expiration
+        // Check if token is expired or about to expire (within 5 minutes)
         const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000);
-        return this.tokenExpirationTime < fiveMinutesFromNow;
+        return this.tokenExpiration < fiveMinutesFromNow;
     }
     
-    private async refreshAccessToken() {
-        // Implementation would use refresh token to get a new access token
-        // from your OAuth provider
-        
-        // This is a simplified example - real implementation would call
-        // your OAuth token endpoint
-        return {
-            accessToken: "new-access-token",
-            refreshToken: "new-refresh-token",
-            expiresIn: 3600
-        };
+    private async refreshAccessToken(): Promise<void> {
+        try {
+            // Implement your token refresh logic here
+            // This typically involves calling your auth server with a refresh token
+            
+            // Example (pseudo-code):
+            // const response = await refreshTokenFromAuthServer(this.refreshToken);
+            // this.accessToken = response.accessToken;
+            // this.tokenExpiration = new Date(Date.now() + response.expiresIn * 1000);
+            
+            // Reset connection so it will be recreated with the new token
+            this.connection = null;
+        } catch (error) {
+            console.error("Failed to refresh access token:", error);
+            throw new Error("Authentication failed: Unable to refresh access token");
+        }
+    }
+    
+    async getGitRepositories(project: string): Promise<any[]> {
+        try {
+            const connection = await this.getConnection();
+            const gitApi = await connection.getGitApi();
+            return await gitApi.getRepositories(project);
+        } catch (error) {
+            console.error("Error getting repositories:", error);
+            throw error;
+        }
     }
 }
 ```
 
-### When to Use OAuth
+#### When to Use OAuth:
+- Web applications with user login
+- Multi-tenant applications
+- When you need user-based permissions
+- Integration with other Azure services
 
-- **Web applications**: Where users log in with their own credentials
-- **Multi-tenant applications**: Applications that serve multiple organizations
-- **User-based permissions**: When you need to act on behalf of the user
-- **Integration with other Azure services**: When part of a broader Azure ecosystem
-
-## Advanced Authentication Scenarios
-
-### NTLM Authentication (On-premises)
+### NTLM Authentication
 
 For on-premises Azure DevOps Server installations that use Windows authentication:
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
-const serverUrl = "https://azuredevops.yourcompany.com/tfs";
+// Server URL and credentials
+const serverUrl = "http://tfs-server:8080/tfs/DefaultCollection";
 const username = "domain\\username";
-const password = "your-password";
-const domain = "your-domain";
-const workstation = "your-workstation"; // Optional
+const password = "password";
+const domain = "domain"; // Optional if included in username
+const workstation = "workstation"; // Optional
 
-// Create an NTLM authentication handler
-const authHandler = azdev.getNtlmHandler(username, password, workstation, domain);
-
-// Create the WebApi connection
+// Create a connection using NTLM authentication
+const authHandler = azdev.getNtlmHandler(username, password, domain, workstation);
 const connection = new azdev.WebApi(serverUrl, authHandler);
+
+// Use the connection to access Azure DevOps Server APIs
+async function getProjects() {
+    try {
+        const coreApi = await connection.getCoreApi();
+        const projects = await coreApi.getProjects();
+        console.log(projects);
+    } catch (error) {
+        console.error("Error connecting to Azure DevOps Server:", error);
+    }
+}
+
+getProjects();
 ```
 
-### Cross-Origin Authentication
+### Cross-Origin Authentication (Browser)
 
-For browser-based applications that need to make authenticated requests:
+For browser-based applications that need to authenticate with Azure DevOps:
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
 
+// Organization URL and Personal Access Token
 const orgUrl = "https://dev.azure.com/your-organization";
 const token = "your-personal-access-token";
 
-// Enable cross-origin authentication
-const authHandler = azdev.getPersonalAccessTokenHandler(token, true);
+// Create a connection with cross-origin support
+const authHandler = azdev.getPersonalAccessTokenHandler(token);
+const options = {
+    allowCrossOriginAuthentication: true
+};
+const connection = new azdev.WebApi(orgUrl, authHandler, options);
 
-// Create the WebApi connection
-const connection = new azdev.WebApi(orgUrl, authHandler);
+// Use the connection in your browser application
+async function getProjects() {
+    try {
+        const coreApi = await connection.getCoreApi();
+        const projects = await coreApi.getProjects();
+        console.log(projects);
+    } catch (error) {
+        console.error("Error connecting to Azure DevOps:", error);
+    }
+}
+
+getProjects();
 ```
 
 ### Custom Authentication Handlers
 
-For specialized authentication requirements, you can implement custom handlers:
+You can create custom authentication handlers for specialized scenarios:
 
 ```typescript
 import * as azdev from "azure-devops-node-api";
-import { IRequestHandler, IRequestOptions } from "typed-rest-client/Interfaces";
+import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 
 class CustomAuthHandler implements IRequestHandler {
-    constructor(private token: string, private scheme: string) {}
-
-    // Add authentication headers to the request
-    prepareRequest(options: IRequestOptions): void {
+    private token: string;
+    private scheme: string;
+    
+    constructor(token: string, scheme: string = "Bearer") {
+        this.token = token;
+        this.scheme = scheme;
+    }
+    
+    // Prepare request with custom authentication
+    prepareRequest(options: any): void {
         options.headers = options.headers || {};
         options.headers["Authorization"] = `${this.scheme} ${this.token}`;
         
@@ -325,7 +350,7 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
 | 401 Unauthorized | Invalid credentials or insufficient permissions | Verify your token/credentials and scopes |
 | 403 Forbidden | Authentication successful but access denied | Check resource permissions and token scopes |
 | TF400813 | Invalid organization name or credentials | Confirm organization URL and credentials |
-| VS800075 | PAT has expired | Generate a new PAT |
+| VS800075 | Personal Access Token has expired | Generate a new Personal Access Token |
 | AADSTS700016 | Application not found in tenant | Verify app registration in Azure AD |
 
 ### Debugging Tips
@@ -346,16 +371,16 @@ const connection = new azdev.WebApi(orgUrl, authHandler);
    curl -u "username:pat" https://dev.azure.com/{org}/_apis/projects?api-version=7.0
    ```
 
-4. **Verify token scopes**: Ensure your PAT has appropriate scopes for the APIs you're using
+4. **Verify token scopes**: Ensure your Personal Access Token has appropriate scopes for the APIs you're using
 
 ## Environment Configuration
 
 ### Environment Variables
 
-The Azure DevOps Node API looks for authentication information in environment variables:
+The Azure DevOps Node API client looks for authentication information in environment variables:
 
 ```bash
-# PAT authentication
+# Personal Access Token authentication
 export AZURE_DEVOPS_EXT_PAT="your-personal-access-token"
 
 # Organization URL
@@ -372,7 +397,7 @@ const orgUrl = process.env.AZURE_DEVOPS_ORG_URL || "https://dev.azure.com/your-o
 const token = process.env.AZURE_DEVOPS_EXT_PAT;
 
 if (!token) {
-    throw new Error("Azure DevOps PAT token not found in environment variables");
+    throw new Error("Azure DevOps Personal Access Token not found in environment variables");
 }
 
 // Create connection using environment variables
