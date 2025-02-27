@@ -25,12 +25,6 @@ Tasks are listed in priority order. Move tasks to `done.md` when they are comple
     - Create code examples for basic connections
   - Dependencies: None
 
-- [ ] **Authentication Documentation** (@Riley, Due: Mar 22)
-  - Description:
-    - Document PAT, Basic, and OAuth authentication
-    - Include code examples for each method
-  - Dependencies: None
-
 - [ ] **Work Item Tracking API Documentation** (@Casey, @Riley, Due: Mar 29)
   - Description:
     - Document top 5 methods with parameters and return values
